@@ -58,7 +58,7 @@ gifCount(names)
 audioCount(names)
 
 print(json.dumps(info, indent=2))
-
+print("ahoj testuju github")
 
 
 def imgs():
