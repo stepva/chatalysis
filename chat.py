@@ -1,58 +1,50 @@
 import json, pprint, operator, sys
 from datetime import datetime, date
 
-with open("message_1.json") as chat:
-    data = json.load(chat)
+
 
 
 def main():
-    print("ahoj")
-    #add more for more chat.json files - and change their number (message_N) and (dataN)
-    #REMEMBER TO DO THIS ON LINES 13, 121, 151, 163, 181
+    file = 'message_1.json'
 
+    with open(file) as chat:
+        data = json.load(chat)
+        #add more for more chat.json files - and change their number (message_N) and (dataN)
+        #REMEMBER TO DO THIS ON LINES 13, 121, 151, 163, 181
 
-    """with open("message_2.json") as chat:
-        data2 = json.load(chat)"""
-    """with open("message_3.json") as chat:
-        data3 = json.load(chat)
-    with open("message_4.json") as chat:
-        data4 = json.load(chat)"""
+        #change "dataN" in fromDay to the highest data object
+        fromDay = str(date.fromtimestamp(data["messages"][-1]["timestamp_ms"]//1000))
+        toDay = str(date.fromtimestamp(data["messages"][0]["timestamp_ms"]//1000))
+        title = data["title"]
+        names = getNames(data)
+        chats = [chatAlysis(data["messages"], names)]
+        result = getResult(chats)
 
-    #change "dataN" in fromDay to the highest data object
-    fromDay = str(date.fromtimestamp(data["messages"][-1]["timestamp_ms"]//1000))
-    toDay = str(date.fromtimestamp(data["messages"][0]["timestamp_ms"]//1000))
-    title = data["title"]
-    names = getNames()
-    chats = [chatAlysis(data, names)]
-    result = getResult(chats)
+        result["0) Chat: " + title] = fromDay + " to " + toDay
+        for n in names:
+            result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
 
-    result["0) Chat: " + title] = fromDay + " to " + toDay
-    for n in names:
-        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
-
-    finale = decode(result)
-    pprint.pprint(finale, indent=2, sort_dicts=True)
-    topDays = [topDay(data)]
-    theTopDay = max(topDays, key=lambda x: x[1])
-    print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
-    daySts = [dayStats(data)]
-    dayStsSum = getResult(daySts)
-    topDoW(dayStsSum)
-    monSts = [monthStats(data)]
-    monStsSum = getResult(monSts)  
-    topMoY(monStsSum)
+        finale = decode(result)
+        pprint.pprint(finale, indent=2, sort_dicts=True)
+        topDays = [topDay(data)]
+        theTopDay = max(topDays, key=lambda x: x[1])
+        print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
+        daySts = [dayStats(data)]
+        dayStsSum = getResult(daySts)
+        topDoW(dayStsSum)
+        monSts = [monthStats(data)]
+        monStsSum = getResult(monSts)  
+        topMoY(monStsSum)
 
 
 
-def getNames():
+def getNames(data):
     ns = []
     for i in range(len(data["participants"])):
         ns.append(data["participants"][i]["name"])
     return ns
 
-def chatAlysis(dataObject, names):
-    ps = dataObject["participants"]
-    ms = dataObject["messages"]
+def chatAlysis(ms, names):
     total = len(ms)
 
     info = {
@@ -123,20 +115,17 @@ def chatAlysis(dataObject, names):
 
     #pprint.pprint(final, indent=2, sort_dicts=False)
 
-    def vibeCheck():
-        sum_con = sum(1 for i in range(total) if "content" in ms[i])
-        sum_img = sum(1 for i in range(total) if "photos" in ms[i])
-        sum_gif = sum(1 for i in range(total) if "gifs" in ms[i])
-        sum_sti = sum(1 for i in range(total) if "sticker" in ms[i])
-        sum_vid = sum(1 for i in range(total) if "videos" in ms[i])
-        sum_aud = sum(1 for i in range(total) if "audio_files" in ms[i])
-        sum_fil = sum(1 for i in range(total) if "files" in ms[i])
-        sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
-        if sumsum == total:
-            return "ok"
-        else:
-            print("something’s wrong: " + str(sumsum))
-    vibeCheck()
+    #vibecheck
+    sum_con = sum(1 for i in range(total) if "content" in ms[i])
+    sum_img = sum(1 for i in range(total) if "photos" in ms[i])
+    sum_gif = sum(1 for i in range(total) if "gifs" in ms[i])
+    sum_sti = sum(1 for i in range(total) if "sticker" in ms[i])
+    sum_vid = sum(1 for i in range(total) if "videos" in ms[i])
+    sum_aud = sum(1 for i in range(total) if "audio_files" in ms[i])
+    sum_fil = sum(1 for i in range(total) if "files" in ms[i])
+    sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
+    if sumsum != total:
+        print("something’s wrong: " + str(sumsum))
 
     return info
 
