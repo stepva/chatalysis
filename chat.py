@@ -1,29 +1,54 @@
-import json, pprint, operator
+import json, pprint, operator, sys
 from datetime import datetime, date
 
-#add more for more chat.json files - and change their number (message_N) and (dataN)
-#REMEMBER TO DO THIS ON LINES 13, 121, 151, 163, 181
 with open("message_1.json") as chat:
     data = json.load(chat)
 
-"""with open("message_2.json") as chat:
-    data2 = json.load(chat)"""
-"""with open("message_3.json") as chat:
-    data3 = json.load(chat)
-with open("message_4.json") as chat:
-    data4 = json.load(chat)"""
 
-#change "dataN" in fromDay to the highest data object
-fromDay = str(date.fromtimestamp(data["messages"][-1]["timestamp_ms"]//1000))
-toDay = str(date.fromtimestamp(data["messages"][0]["timestamp_ms"]//1000))
-title = data["title"]
+def main():
+    print("ahoj")
+    #add more for more chat.json files - and change their number (message_N) and (dataN)
+    #REMEMBER TO DO THIS ON LINES 13, 121, 151, 163, 181
+
+
+    """with open("message_2.json") as chat:
+        data2 = json.load(chat)"""
+    """with open("message_3.json") as chat:
+        data3 = json.load(chat)
+    with open("message_4.json") as chat:
+        data4 = json.load(chat)"""
+
+    #change "dataN" in fromDay to the highest data object
+    fromDay = str(date.fromtimestamp(data["messages"][-1]["timestamp_ms"]//1000))
+    toDay = str(date.fromtimestamp(data["messages"][0]["timestamp_ms"]//1000))
+    title = data["title"]
+    names = getNames()
+    chats = [chatAlysis(data, names)]
+    result = getResult(chats)
+
+    result["0) Chat: " + title] = fromDay + " to " + toDay
+    for n in names:
+        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+
+    finale = deCode(result)
+    pprint.pprint(finale, indent=2, sort_dicts=True)
+    topDays = [topDay(data)]
+    theTopDay = max(topDays, key=lambda x: x[1])
+    print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
+    daySts = [dayStats(data)]
+    dayStsSum = getResult(daySts)
+    topDoW(dayStsSum)
+    monSts = [monthStats(data)]
+    monStsSum = getResult(monSts)  
+    topMoY(monStsSum)
+
+
 
 def getNames():
     ns = []
     for i in range(len(data["participants"])):
         ns.append(data["participants"][i]["name"])
     return ns
-names = getNames()
 
 def chatAlysis(dataObject, names):
     ps = dataObject["participants"]
@@ -121,19 +146,8 @@ def deCode(dictx):
         final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
     return final
 
-#add more for more data objects and change their "data_" number
-chats = [chatAlysis(data, names)]
-
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
-result = getResult(chats)
-
-result["0) Chat: " + title] = fromDay + " to " + toDay
-for n in names:
-    result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
-
-finale = deCode(result)
-pprint.pprint(finale, indent=2, sort_dicts=True)
 
 def topDay(dataO):
     topD = 0
@@ -151,10 +165,6 @@ def topDay(dataO):
             countX = 1
             dayX = dayY
     return [topD, countD]
-#add more for more data objects and change their number
-topDays = [topDay(data)]
-theTopDay = max(topDays, key=lambda x: x[1])
-print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
 
 def dayStats(dataO):
     days = {}
@@ -163,16 +173,14 @@ def dayStats(dataO):
         if msgD > 0:
             days["{0}".format(d)] = msgD
     return days
-#add more for more data objects and change their number
-daySts = [dayStats(data)]
-dayStsSum = getResult(daySts)
+
 def topDoW(dayss):
     dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
     dayDay = max(dayss.items(), key=operator.itemgetter(1))[0]
     dayDayN = dNames[dayDay]
     dayDayC = dayss[dayDay]
     print("Most messages were sent on " + dayDayN + "s - " + str(dayDayC) + ".")
-topDoW(dayStsSum)
+
 
 def monthStats(dataO):
     months = {}
@@ -181,13 +189,14 @@ def monthStats(dataO):
         if msgM > 0:
             months["{0}".format(m)] = msgM
     return months
-#add more for more data objects and change their number
-monSts = [monthStats(data)]
-monStsSum = getResult(monSts)
+
 def topMoY(monthss):
     dNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
     monthMonth = max(monthss.items(), key=operator.itemgetter(1))[0]
     monthMonthN = dNames[monthMonth]
     monthMonthC = monthss[monthMonth]
     print("Most messages were sent in " + monthMonthN + " - " + str(monthMonthC) + ".")
-topMoY(monStsSum)
+
+
+if __name__ == "__main__":
+    main()
