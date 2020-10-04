@@ -141,7 +141,10 @@ def chatAlysis(dataObject, names):
     return info
 
 def decode(dictx):
-    return { k.encode('iso-8859-1').decode('utf-8'): k for k in dictx }
+    final = {}
+    for k in dictx:
+        final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
+    return final
 
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
