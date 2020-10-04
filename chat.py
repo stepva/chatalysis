@@ -1,40 +1,53 @@
-import json, pprint, operator, sys
+import json, pprint, operator, sys, os
 from datetime import datetime, date
 
-
-
-
 def main():
+    path = "messages/inbox/eliskakalinova_ogwzg96p3q"
+
+    if not os.path.isdir(path):
+        raise Exception("NOT A FOLDER")
+
+    files = []
+    for file in os.listdir(path):
+        if os.path.isfile(file) and file.startswith("message") and file.endswith(".json"):
+            files.append(file)
+
+    if not files:
+        raise Exception("NO JSON FILES")
     file = 'message_1.json'
 
-    with open(file) as chat:
+    with open(files[0]) as chat:
         data = json.load(chat)
-        #add more for more chat.json files - and change their number (message_N) and (dataN)
-        #REMEMBER TO DO THIS ON LINES 13, 121, 151, 163, 181
-
-        #change "dataN" in fromDay to the highest data object
-        fromDay = str(date.fromtimestamp(data["messages"][-1]["timestamp_ms"]//1000))
-        toDay = str(date.fromtimestamp(data["messages"][0]["timestamp_ms"]//1000))
         title = data["title"]
         names = getNames(data)
-        chats = [chatAlysis(data["messages"], names)]
-        result = getResult(chats)
+    
+    messages = []
+    for f in files:
+        with open(f) as data:
+            data = json.load(data)
+            messages.extend(data["messages"])
 
-        result["0) Chat: " + title] = fromDay + " to " + toDay
-        for n in names:
-            result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
+    toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
+    
+    chats = [chatAlysis(messages, names)]
+    result = getResult(chats)
 
-        finale = decode(result)
-        pprint.pprint(finale, indent=2, sort_dicts=True)
-        topDays = [topDay(data)]
-        theTopDay = max(topDays, key=lambda x: x[1])
-        print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
-        daySts = [dayStats(data)]
-        dayStsSum = getResult(daySts)
-        topDoW(dayStsSum)
-        monSts = [monthStats(data)]
-        monStsSum = getResult(monSts)  
-        topMoY(monStsSum)
+    result["0) Chat: " + title] = fromDay + " to " + toDay
+    for n in names:
+        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+
+    finale = decode(result)
+    pprint.pprint(finale, indent=2, sort_dicts=True)
+    topDays = [topDay(data)]
+    theTopDay = max(topDays, key=lambda x: x[1])
+    print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
+    daySts = [dayStats(data)]
+    dayStsSum = getResult(daySts)
+    topDoW(dayStsSum)
+    monSts = [monthStats(data)]
+    monStsSum = getResult(monSts)  
+    topMoY(monStsSum)
 
 
 
