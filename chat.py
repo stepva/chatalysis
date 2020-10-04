@@ -30,7 +30,7 @@ def main():
     for n in names:
         result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
 
-    finale = deCode(result)
+    finale = decode(result)
     pprint.pprint(finale, indent=2, sort_dicts=True)
     topDays = [topDay(data)]
     theTopDay = max(topDays, key=lambda x: x[1])
@@ -140,11 +140,8 @@ def chatAlysis(dataObject, names):
 
     return info
 
-def deCode(dictx):
-    final = {}
-    for k in dictx:
-        final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
-    return final
+def decode(dictx):
+    return { k.encode('iso-8859-1').decode('utf-8'): k for k in dictx }
 
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
