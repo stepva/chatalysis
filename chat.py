@@ -12,7 +12,7 @@ def main():
     for file in os.listdir(path):
         if file.startswith("message") and file.endswith(".json"):
             files.append(path + "/" + file)
-    
+
     if not files:
         raise Exception("NO JSON FILES")
 
@@ -32,10 +32,8 @@ def main():
     toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
     fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     
+    result = chatAlysis(messages, names)
     
-    chats = [chatAlysis(messages, names)]
-    result = getResult(chats)
-
     result["0) Chat: " + title] = fromDay + " to " + toDay
     for n in names:
         result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
@@ -52,13 +50,14 @@ def main():
     monStsSum = getResult(monSts)  
     topMoY(monStsSum)
 
-
-
 def getNames(data):
     ns = []
     for i in range(len(data["participants"])):
         ns.append(data["participants"][i]["name"])
     return ns
+
+def countFiltered(iterable, predicate):
+    return len(list(filter(predicate, iterable)))
 
 def chatAlysis(ms, names):
     total = len(ms)
@@ -67,82 +66,55 @@ def chatAlysis(ms, names):
         "1) Total messages": total
     }
 
-    def msgCount(names):
+    sum_con = countFiltered(ms, lambda x: "content" in x)
+    sum_img = countFiltered(ms, lambda x: "photos" in x)
+    sum_gif = countFiltered(ms, lambda x: "gifs" in x)
+    sum_sti = countFiltered(ms, lambda x: "sticker" in x)
+    sum_vid = countFiltered(ms, lambda x: "videos" in x)
+    sum_aud = countFiltered(ms, lambda x: "audio_files" in x)
+    sum_fil = countFiltered(ms, lambda x: "files" in x)
+
+    info["2) Total audios"] = sum_aud
+    info["3) Total files"] = sum_fil
+    info["4) Total gifs"] = sum_gif
+    info["5) Total images"] = sum_img
+    info["6) Total stickers"] = sum_sti
+    info["7) Total videos"] = sum_vid
+
+    for n in names:
+        num = countFiltered(ms, lambda x: x["sender_name"]==n)
+        info[n] = num
+
+    if sum_img > 0:
         for n in names:
-            num = sum(1 for i in range(total) if ms[i]["sender_name"]==n)
-            info[n] = num
-        return info
+            info[n + " images"] = countFiltered(ms, lambda x: "photos" in x and x["sender_name"]==n)
 
-    def imgCount(names):
-        sum_img = sum(1 for i in range(total) if "photos" in ms[i])
-        if sum_img > 0:
-            info["4) Total images"] = sum_img
-            for n in names:
-                info[n + " images"] = sum(1 for i in range(total) if "photos" in ms [i] and ms[i]["sender_name"]==n)
-        return info
+    if sum_gif > 0:
+        for n in names:
+            info[n + " gifs"] = countFiltered(ms, lambda x: "gifs" in x and x["sender_name"]==n)
 
-    def gifCount(names):
-        sum_gif = sum(1 for i in range(total) if "gifs" in ms[i])
-        if sum_gif > 0:
-            info["3) Total gifs"] = sum_gif
-            for n in names:
-                info[n + " gifs"] = sum(1 for i in range(total) if "gifs" in ms [i] and ms[i]["sender_name"]==n)
-        return info
+    if sum_vid > 0:
+        for n in names:
+            info[n + " videos"] = countFiltered(ms, lambda x: "videos" in x and x["sender_name"]==n)
 
-    def vidCount(names):
-        sum_vid = sum(1 for i in range(total) if "videos" in ms[i])
-        if sum_vid > 0:
-            info["6) Total videos"] = sum_vid
-            for n in names:
-                info[n + " videos"] = sum(1 for i in range(total) if "videos" in ms [i] and ms[i]["sender_name"]==n)
-        return info
+    if sum_sti > 0:
+        for n in names:
+            info[n + " stickers"] = countFiltered(ms, lambda x: "sticker" in x and x["sender_name"]==n)
 
-    def stiCount(names):
-        sum_sti = sum(1 for i in range(total) if "sticker" in ms[i])
-        if sum_sti > 0:
-            info["5) Total stickers"] = sum_sti
-            for n in names:
-                info[n + " stickers"] = sum(1 for i in range(total) if "sticker" in ms [i] and ms[i]["sender_name"]==n)
-        return info
+    if sum_aud > 0:
+        for n in names:
+            info[n + " audio"] = countFiltered(ms, lambda x: "audio_files" in x and x["sender_name"]==n)
 
-    def audioCount(names):
-        sum_aud = sum(1 for i in range(total) if "audio_files" in ms[i])
-        if sum_aud > 0:
-            info["7) Total audios"] = sum_aud
-            for n in names:
-                info[n + " audio"] = sum(1 for i in range(total) if "audio_files" in ms [i] and ms[i]["sender_name"]==n)
-        return info
-
-    def fileCount(names):
-        sum_fil = sum(1 for i in range(total) if "files" in ms[i])
-        if sum_fil > 0:
-            info["2) Total files"] = sum_fil
-            for n in names:
-                info[n + " files"] = sum(1 for i in range(total) if "files" in ms [i] and ms[i]["sender_name"]==n)
-        return info
-
-    msgCount(names)
-    imgCount(names)
-    gifCount(names)
-    vidCount(names)
-    stiCount(names)
-    audioCount(names)
-    fileCount(names)
-
-    #pprint.pprint(final, indent=2, sort_dicts=False)
+    if sum_fil > 0:
+        for n in names:
+            info[n + " files"] = countFiltered(ms, lambda x: "files" in x and x["sender_name"]==n)
 
     #vibecheck
-    sum_con = sum(1 for i in range(total) if "content" in ms[i])
-    sum_img = sum(1 for i in range(total) if "photos" in ms[i])
-    sum_gif = sum(1 for i in range(total) if "gifs" in ms[i])
-    sum_sti = sum(1 for i in range(total) if "sticker" in ms[i])
-    sum_vid = sum(1 for i in range(total) if "videos" in ms[i])
-    sum_aud = sum(1 for i in range(total) if "audio_files" in ms[i])
-    sum_fil = sum(1 for i in range(total) if "files" in ms[i])
     sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
     if sumsum != total:
         print("something’s wrong: " + str(sumsum))
-
+        #print(list(filter(lambda x: not any(y in ["content", "photos", "gifs", "sticker", "videos", "audio_files", "files"] for y in x), ms)))
+    
     return info
 
 def decode(dictx):
