@@ -1,34 +1,37 @@
-import json, pprint, operator, sys, os
+import json, operator, sys, os
 from datetime import datetime, date
+from pprint import pprint
 
 def main():
-    path = "messages/inbox/eliskakalinova_ogwzg96p3q"
+    path = ""
 
     if not os.path.isdir(path):
         raise Exception("NOT A FOLDER")
 
     files = []
     for file in os.listdir(path):
-        if os.path.isfile(file) and file.startswith("message") and file.endswith(".json"):
-            files.append(file)
-
+        if file.startswith("message") and file.endswith(".json"):
+            files.append(path + "/" + file)
+    
     if not files:
         raise Exception("NO JSON FILES")
-    file = 'message_1.json'
+
+    files.sort()
 
     with open(files[0]) as chat:
         data = json.load(chat)
         title = data["title"]
         names = getNames(data)
-    
+        
     messages = []
     for f in files:
         with open(f) as data:
             data = json.load(data)
             messages.extend(data["messages"])
 
-    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
+    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
+    
     
     chats = [chatAlysis(messages, names)]
     result = getResult(chats)
@@ -38,7 +41,7 @@ def main():
         result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
 
     finale = decode(result)
-    pprint.pprint(finale, indent=2, sort_dicts=True)
+    pprint(finale, indent=2, sort_dicts=True)
     topDays = [topDay(data)]
     theTopDay = max(topDays, key=lambda x: x[1])
     print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
