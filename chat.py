@@ -28,21 +28,14 @@ def main():
         with open(f) as data:
             data = json.load(data)
             messages.extend(data["messages"])
-
-    toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
-    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     
     result = chatAlysis(messages, names)
-    
-    result["0) Chat: " + title] = fromDay + " to " + toDay
-    for n in names:
-        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+    format(result, title, messages, names)
 
-    finale = decode(result)
-    pprint(finale, indent=2, sort_dicts=True)
-    topDays = [topDay(data)]
-    theTopDay = max(topDays, key=lambda x: x[1])
-    print("The top day was " + str(theTopDay[0]) + " with " + str(theTopDay[1]) + " messages.")
+    final = decode(result)
+    pprint(final, indent=2, sort_dicts=True)
+
+    topDay(messages)
     daySts = [dayStats(data)]
     dayStsSum = getResult(daySts)
     topDoW(dayStsSum)
@@ -117,6 +110,14 @@ def chatAlysis(ms, names):
     
     return info
 
+def format(result, title, messages, names):
+    toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
+    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
+    result["0) Chat: " + title] = fromDay + " to " + toDay
+    for n in names:
+        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+    return result
+
 def decode(dictx):
     final = {}
     for k in dictx:
@@ -126,13 +127,13 @@ def decode(dictx):
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
 
-def topDay(dataO):
+def topDay(messages):
     topD = 0
     countD = 0
-    dayX = date.fromtimestamp(dataO["messages"][0]["timestamp_ms"]//1000)
+    dayX = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     countX = 0
-    for i in range(len(dataO["messages"])):
-        dayY = date.fromtimestamp(dataO["messages"][i]["timestamp_ms"]//1000)
+    for i in range(len(messages)):
+        dayY = date.fromtimestamp(messages[i]["timestamp_ms"]//1000)
         if dayY == dayX:
             countX += 1
             if countX > countD:
@@ -141,7 +142,7 @@ def topDay(dataO):
         else:
             countX = 1
             dayX = dayY
-    return [topD, countD]
+    print("The top day was " + str(topD) + " with " + str(countD) + " messages.")
 
 def dayStats(dataO):
     days = {}
