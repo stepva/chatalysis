@@ -101,7 +101,7 @@ def chatAlysis(ms, names):
     #vibecheck
     sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
     if sumsum != total:
-        print("something’s wrong: " + str(sumsum))
+        print(f"something’s wrong: {str(sumsum)}")
         #print(list(filter(lambda x: not any(y in ["content", "photos", "gifs", "sticker", "videos", "audio_files", "files"] for y in x), ms)))
     
     return info
@@ -109,9 +109,9 @@ def chatAlysis(ms, names):
 def format(result, title, messages, names):
     toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
     fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
-    result["0) Chat: " + title] = fromDay + " to " + toDay
+    result[f"0) Chat: {title}"] = fromDay + " to " + toDay
     for n in names:
-        result["{0} %".format(n)] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+        result[f"{n} %"] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
     return result
 
 def decode(dictx):
@@ -138,21 +138,21 @@ def topDay(messages):
         else:
             countX = 1
             dayX = dayY
-    print("The top day was " + str(topD) + " with " + str(countD) + " messages.")
+    print(f"The top day was {str(topD)} with {str(countD)} messages.")
 
 def dayStats(messages):
     days = {}
     for d in range(1,8):
         msgD = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).isoweekday() == d)
-        days["{0}".format(d)] = msgD
+        days[f"{d}"] = msgD
     return days
 
 def topDoW(days):
     dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
     dayDay = max(days.items(), key=operator.itemgetter(1))[0]
     dayDayN = dNames[dayDay]
-    dayDayC = days[dayDay]
-    print("On average, most messages were sent on " + dayDayN + "s.")
+    #dayDayC = days[dayDay]
+    print(f"On average, most messages were sent on {dayDayN}s.")
 
 def monthStats(messages):
     first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
@@ -169,7 +169,7 @@ def topMonth(months):
     #mNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
     monthMonth = max(months.items(), key=operator.itemgetter(1))[0]
     monthMonthC = months[monthMonth]
-    print("The top month was " + monthMonth + " with " + str(monthMonthC) + " messages.")
+    print(f"The top month was {monthMonth} with {str(monthMonthC)} messages.")
 
 def yearStats(messages):
     first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
@@ -177,7 +177,7 @@ def yearStats(messages):
     years = {}
     for y in range(first, last+1):
         msgY = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
-        years["{0}".format(y)] = msgY
+        years[f"{y}"] = msgY
     return years
 
 if __name__ == "__main__":
