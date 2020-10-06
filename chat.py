@@ -36,12 +36,8 @@ def main():
     pprint(final, indent=2, sort_dicts=True)
 
     topDay(messages)
-    daySts = [dayStats(data)]
-    dayStsSum = getResult(daySts)
-    topDoW(dayStsSum)
-    monSts = [monthStats(data)]
-    monStsSum = getResult(monSts)  
-    topMoY(monStsSum)
+    topDoW(dayStats(messages))
+    topMoY(monthStats(messages))
 
 def getNames(data):
     ns = []
@@ -144,35 +140,32 @@ def topDay(messages):
             dayX = dayY
     print("The top day was " + str(topD) + " with " + str(countD) + " messages.")
 
-def dayStats(dataO):
+def dayStats(messages):
     days = {}
     for d in range(1,8):
-        msgD = sum(1 for i in range(len(dataO["messages"])) if date.fromtimestamp(dataO["messages"][i]["timestamp_ms"]//1000).isoweekday()==d)
-        if msgD > 0:
-            days["{0}".format(d)] = msgD
+        msgD = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).isoweekday() == d)
+        days["{0}".format(d)] = msgD
     return days
 
-def topDoW(dayss):
+def topDoW(days):
     dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
-    dayDay = max(dayss.items(), key=operator.itemgetter(1))[0]
+    dayDay = max(days.items(), key=operator.itemgetter(1))[0]
     dayDayN = dNames[dayDay]
-    dayDayC = dayss[dayDay]
+    dayDayC = days[dayDay]
     print("Most messages were sent on " + dayDayN + "s - " + str(dayDayC) + ".")
 
-
-def monthStats(dataO):
+def monthStats(messages):
     months = {}
-    for m in range(1,12):
-        msgM = sum(1 for i in range(len(dataO["messages"])) if date.fromtimestamp(dataO["messages"][i]["timestamp_ms"]//1000).month==m)
-        if msgM > 0:
-            months["{0}".format(m)] = msgM
+    for m in range(1,13):
+        msgM = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).month == m)
+        months["{0}".format(m)] = msgM
     return months
 
-def topMoY(monthss):
+def topMoY(months):
     dNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
-    monthMonth = max(monthss.items(), key=operator.itemgetter(1))[0]
+    monthMonth = max(months.items(), key=operator.itemgetter(1))[0]
     monthMonthN = dNames[monthMonth]
-    monthMonthC = monthss[monthMonth]
+    monthMonthC = months[monthMonth]
     print("Most messages were sent in " + monthMonthN + " - " + str(monthMonthC) + ".")
 
 
