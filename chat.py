@@ -28,7 +28,7 @@ def main():
         with open(f) as data:
             data = json.load(data)
             messages.extend(data["messages"])
-    
+
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
 
@@ -36,8 +36,8 @@ def main():
     pprint(final, indent=2, sort_dicts=True)
 
     topDay(messages)
+    topMonth(monthStats(messages))
     topDoW(dayStats(messages))
-    topMoY(monthStats(messages))
 
 def getNames(data):
     ns = []
@@ -152,22 +152,33 @@ def topDoW(days):
     dayDay = max(days.items(), key=operator.itemgetter(1))[0]
     dayDayN = dNames[dayDay]
     dayDayC = days[dayDay]
-    print("Most messages were sent on " + dayDayN + "s - " + str(dayDayC) + ".")
+    print("On average, most messages were sent on " + dayDayN + "s.")
 
 def monthStats(messages):
+    first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
+    last = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
     months = {}
-    for m in range(1,13):
-        msgM = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).month == m)
-        months["{0}".format(m)] = msgM
+    for y in range(first, last+1):
+        for m in range(1,13):
+            msgM = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).month == m and date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
+            if msgM > 0:
+                months[f"{m}/{y}"] = msgM
     return months
 
-def topMoY(months):
-    dNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
+def topMonth(months):
+    #mNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
     monthMonth = max(months.items(), key=operator.itemgetter(1))[0]
-    monthMonthN = dNames[monthMonth]
     monthMonthC = months[monthMonth]
-    print("Most messages were sent in " + monthMonthN + " - " + str(monthMonthC) + ".")
+    print("The top month was " + monthMonth + " with " + str(monthMonthC) + " messages.")
 
+def yearStats(messages):
+    first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
+    last = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
+    years = {}
+    for y in range(first, last+1):
+        msgY = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
+        years["{0}".format(y)] = msgY
+    return years
 
 if __name__ == "__main__":
     main()
