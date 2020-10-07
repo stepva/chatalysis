@@ -32,12 +32,14 @@ def main():
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
 
-    final = decode(result)
-    pprint(final, indent=2, sort_dicts=True)
+    #final = decode(result)
+    #pprint(final, indent=2, sort_dicts=True)
 
-    topDay(messages)
-    topMonth(monthStats(messages))
-    topDoW(dayStats(messages))
+    #topDay(messages)
+    #topMonth(monthStats(messages))
+    #topDoW(dayStats(messages))
+
+    print(reactionStats(messages, names))
 
 def getNames(data):
     ns = []
@@ -179,6 +181,46 @@ def yearStats(messages):
         msgY = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
         years[f"{y}"] = msgY
     return years
+
+def reactionStats(messages, names):
+    reactTypes = {"sad": "\u00f0\u009f\u0098\u00a2",
+                  "heart": "\u00e2\u009d\u00a4",
+                  "wow": "\u00f0\u009f\u0098\u00ae",
+                  "like": "\u00f0\u009f\u0091\u008d",
+                  "haha": "\u00f0\u009f\u0098\u0086",
+                  "angry": "\u00f0\u009f\u0098\u00a0",
+                  "dislike": "\u00f0\u009f\u0091\u008e"
+                  }
+    reactions = {"total": 0}
+    avgReacts = {}
+    sad = {"total": 0}
+    heart = {"total": 0}
+    wow = {"total": 0}
+    like = {"total": 0}
+    haha = {"total": 0}
+    angry = {"total": 0}
+    dislike = {"total": 0}
+    for n in names:
+        reactions[n] = 0
+        sad[n] = 0
+        heart = 0
+        wow = 0
+        like = 0
+        haha = 0
+        angry = 0
+        dislike = 0
+        for m in messages:
+            if "reactions" in m and m["sender_name"]==n:
+                reactions["total"] += len(m["reactions"])
+                reactions[n] += len(m["reactions"])
+                #sad[n] = countFiltered(m["reactions"], lambda x: x["reaction"] == reactTypes["sad"])
+                for i in m["reactions"]:
+                    if i["reaction"] == reactTypes["sad"]:
+                        sad[n] += 1
+        avgReacts[n] = round(reactions[n]/countFiltered(messages, lambda x: x["sender_name"] == n)*100, 2)
+    return avgReacts
+
+
 
 if __name__ == "__main__":
     main()
