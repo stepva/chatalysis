@@ -32,8 +32,8 @@ def main():
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
 
-    #final = decode(result)
-    #pprint(final, indent=2, sort_dicts=True)
+    final = decode(result)
+    pprint(final, indent=2, sort_dicts=True)
 
     #topDay(messages)
     #topMonth(monthStats(messages))
@@ -189,7 +189,8 @@ def reactionStats(messages, names):
                   "like": "\u00f0\u009f\u0091\u008d",
                   "haha": "\u00f0\u009f\u0098\u0086",
                   "angry": "\u00f0\u009f\u0098\u00a0",
-                  "dislike": "\u00f0\u009f\u0091\u008e"
+                  "dislike": "\u00f0\u009f\u0091\u008e",
+                  "heart_eyes": "\u00f0\u009f\u0098\u008d"
                   }
     reactions = {"total": 0}
     avgReacts = {}
@@ -200,24 +201,38 @@ def reactionStats(messages, names):
     haha = {"total": 0}
     angry = {"total": 0}
     dislike = {"total": 0}
+    wrong = []
     for n in names:
         reactions[n] = 0
         sad[n] = 0
-        heart = 0
-        wow = 0
-        like = 0
-        haha = 0
-        angry = 0
-        dislike = 0
+        heart[n] = 0
+        wow[n] = 0
+        like[n] = 0
+        haha[n] = 0
+        angry[n] = 0
+        dislike[n] = 0
         for m in messages:
             if "reactions" in m and m["sender_name"]==n:
                 reactions["total"] += len(m["reactions"])
                 reactions[n] += len(m["reactions"])
-                #sad[n] = countFiltered(m["reactions"], lambda x: x["reaction"] == reactTypes["sad"])
                 for i in m["reactions"]:
-                    if i["reaction"] == reactTypes["sad"]:
-                        sad[n] += 1
+                    if i["reaction"] == reactTypes["sad"]: sad[n] += 1
+                    elif i["reaction"] == reactTypes["heart"] or i["reaction"] == reactTypes["heart_eyes"]: heart[n] += 1
+                    elif i["reaction"] == reactTypes["wow"]: wow[n] += 1
+                    elif i["reaction"] == reactTypes["like"]: like[n] += 1
+                    elif i["reaction"] == reactTypes["haha"]: haha[n] += 1
+                    elif i["reaction"] == reactTypes["angry"]: angry[n] += 1
+                    elif i["reaction"] == reactTypes["dislike"]: dislike[n] += 1
+                    else: wrong.append(i["reaction"])          
         avgReacts[n] = round(reactions[n]/countFiltered(messages, lambda x: x["sender_name"] == n)*100, 2)
+    if len(wrong) > 0: raise Exception("UNEXPECTED REACT")
+    print(sad)
+    print(heart)
+    print(wow)
+    print(like)
+    print(haha)
+    print(angry)
+    print(dislike)
     return avgReacts
 
 
