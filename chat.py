@@ -1,4 +1,4 @@
-#TODO: argparse, graphs, decode reaction stats result
+#TODO: argparse, graphs
 
 import json, operator, sys, os
 from datetime import datetime, date
@@ -66,6 +66,7 @@ def chatAlysis(ms, names):
     sum_vid = countFiltered(ms, lambda x: "videos" in x)
     sum_aud = countFiltered(ms, lambda x: "audio_files" in x)
     sum_fil = countFiltered(ms, lambda x: "files" in x)
+    sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
 
     info["2) Total audios"] = sum_aud
     info["3) Total files"] = sum_fil
@@ -73,10 +74,10 @@ def chatAlysis(ms, names):
     info["5) Total images"] = sum_img
     info["6) Total stickers"] = sum_sti
     info["7) Total videos"] = sum_vid
+    info["8) Deleted messages"] = total-sumsum
 
     for n in names:
-        num = countFiltered(ms, lambda x: x["sender_name"]==n)
-        info[n] = num
+        info[n] = countFiltered(ms, lambda x: x["sender_name"]==n)
 
     if sum_img > 0:
         for n in names:
@@ -103,9 +104,8 @@ def chatAlysis(ms, names):
             info[n + " files"] = countFiltered(ms, lambda x: "files" in x and x["sender_name"]==n)
 
     #vibecheck
-    sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
-    if sumsum != total:
-        print(f"something’s wrong: {str(sumsum)}")
+    #if sumsum != total:
+        #print(f"something’s wrong: {str(sumsum)}")
         #print(list(filter(lambda x: not any(y in ["content", "photos", "gifs", "sticker", "videos", "audio_files", "files"] for y in x), ms)))
     
     return info
@@ -128,21 +128,15 @@ def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
 
 def topDay(messages):
-    topD = 0
-    countD = 0
-    dayX = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
-    countX = 0
-    for i in range(len(messages)):
-        dayY = date.fromtimestamp(messages[i]["timestamp_ms"]//1000)
-        if dayY == dayX:
-            countX += 1
-            if countX > countD:
-                countD = countX
-                topD = dayX
+    days = {}
+    for i in messages:
+        day = date.fromtimestamp(i["timestamp_ms"]//1000)
+        if day in days:
+            days[day] += 1
         else:
-            countX = 1
-            dayX = dayY
-    print(f"The top day was {str(topD)} with {str(countD)} messages.")
+            days[day] = 1
+    topD = sorted(days.items(), key=lambda item: item[1])[-1]
+    print(f"The top day was {str(topD[0])} with {str(topD[1])} messages.")
 
 def dayStats(messages):
     days = {}
@@ -155,7 +149,7 @@ def topDoW(days):
     dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
     dayDay = max(days.items(), key=operator.itemgetter(1))[0]
     dayDayN = dNames[dayDay]
-    #dayDayC = days[dayDay]
+    dayDayC = days[dayDay]
     print(f"On average, most messages were sent on {dayDayN}s.")
 
 def monthStats(messages):
@@ -248,8 +242,11 @@ def reactionStats(messages, names):
                         elif i["reaction"] == reactTypes["dislike"]: 
                             dislike[n] += 1
                             dislike["dislike"] += 1
-                        else: wrong.append(i["reaction"])  
-        avgReacts[n] = round(reactions[n]/countFiltered(messages, lambda x: x["sender_name"] == n)*100, 2)
+                        else: wrong.append(i["reaction"]) 
+        if reactions[n] > 0:
+            avgReacts[n] = round(reactions[n]/countFiltered(messages, lambda x: x["sender_name"] == n), 2)
+        else:
+            avgReacts[n] = 0    
 
     if len(wrong) > 0: 
         raise Exception("UNEXPECTED REACT")
@@ -261,13 +258,11 @@ def reactionStats(messages, names):
     finalStats = {
         "total reactions": totalReacts,
         "most used reaction": topReact,
-        "gets most reactions": sorted(reactions.items(), key=lambda item: item[1])[-2],
-        "gets most reactions on avg": sorted(avgReacts.items(), key=lambda item: item[1])[-1],
-        "gives most reactions": sorted(reactsGiven.items(), key=lambda item: item[1])[-1]
+        "gets most reactions": sorted(decode(reactions).items(), key=lambda item: item[1])[-2],
+        "gets most reactions on avg": sorted(decode(avgReacts).items(), key=lambda item: item[1])[-1],
+        "gives most reactions": sorted(decode(reactsGiven).items(), key=lambda item: item[1])[-1]
     }
     return finalStats
-
-
 
 if __name__ == "__main__":
     main()
