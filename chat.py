@@ -1,6 +1,6 @@
-#TODO: argparse, graphs, emojis???, pandas table series and numpy
+#TODO: argparse, emojis???, WORK ON REACTIONS GRAPH
 
-import json, sys, os
+import json, sys, os, matplotlib.pyplot as plt
 from datetime import datetime, date
 from pprint import pprint
 
@@ -29,18 +29,26 @@ def main():
             data = json.load(data)
             messages.extend(data["messages"])
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])        
-
+    
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
-
+    
     pprint(decode(result), indent=2, sort_dicts=True)
 
+    days = dayStats(messages)
+    months = monthStats(messages)
+
     topDay(messages)
-    topMonth(monthStats(messages))
-    topDoW(dayStats(messages))
+    topMonth(months)
+    topDoW(days)
 
     reacts = reactionStats(messages, names)
     pprint(reacts, indent=2, sort_dicts=False)
+ 
+    graphPieDict(result, names)
+    graphBarValues(days)
+    graphBarValues(months)
+    
 
 def getNames(data):
     ns = []
@@ -114,7 +122,7 @@ def format(result, title, messages, names):
     toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     result[f"0) Chat: {title}"] = fromDay + " to " + toDay
     for n in names:
-        result[f"{n} %"] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
+        result[f"{n} %"] = round(result[n]/result["1) Total messages"]*100, 2)
     return result
 
 def decode(dictx):
@@ -122,6 +130,12 @@ def decode(dictx):
     for k in dictx:
         final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
     return final
+
+def decodeList(listx):
+    listy = []
+    for l in listx:
+        listy.append(l.encode('iso-8859-1').decode('utf-8'))
+    return listy
 
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
@@ -138,18 +152,16 @@ def topDay(messages):
     print(f"The top day was {str(topD[0])} with {str(topD[1])} messages.")
 
 def dayStats(messages):
-    days = {}
+    weekdays = {"Monday": 0, "Tuesday": 0, "Wednesday": 0, "Thursday": 0, "Friday": 0, "Saturday": 0, "Sunday": 0}
+    dNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
     for d in range(1,8):
         msgD = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).isoweekday() == d)
-        days[f"{d}"] = msgD
-    return days
+        weekdays[dNames[d]] = msgD
+    return weekdays
 
 def topDoW(days):
-    dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
     dayDay = max(days.items(), key=lambda item: item[1])[0]
-    dayDayN = dNames[dayDay]
-    dayDayC = days[dayDay]
-    print(f"On average, most messages were sent on {dayDayN}s.")
+    print(f"On average, most messages were sent on {dayDay}s.")
 
 def monthStats(messages):
     first = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
@@ -250,10 +262,15 @@ def reactionStats(messages, names):
     if len(wrong) > 0: 
         raise Exception("UNEXPECTED REACT")
  
+    reactNames = ["sad", "heart", "wow", "like", "haha", "angry", "dislike"]
     totals = [sad["sad"], heart["heart"], wow["wow"], like["like"], haha["haha"], angry["angry"], dislike["dislike"]]
     totalReacts = reactions["total"]
     topReact = [reactionNames[totals.index(max(totals))], max(totals)]
     
+    totalsPct = []
+    for i in totals:
+        totalsPct.append(round(i/totalReacts, 2))
+
     finalStats = {
         "total reactions": totalReacts,
         "most used reaction": topReact,
@@ -261,7 +278,31 @@ def reactionStats(messages, names):
         "gets most reactions on avg": sorted(decode(avgReacts).items(), key=lambda item: item[1])[-1],
         "gives most reactions": sorted(decode(reactsGiven).items(), key=lambda item: item[1])[-1]
     }
+
+    graphPie(totalsPct, reactNames)
     return finalStats
+
+def graphBarValues(dictio):
+    plt.bar(*zip(*dictio.items()))
+    plt.show()
+
+def graphPieDict(result, names):
+    result = decode(result)
+    names = decodeList(names)
+    sizes = []
+    for n in names:
+        code = n + " %"
+        sizes.append(result[code])
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, labels=names, autopct="%1.2f %%")
+    ax1.axis("equal")
+    plt.show()
+
+def graphPie(values, labels):
+    fig1, ax1 = plt.subplots()
+    ax1.pie(values, labels=labels)
+    ax1.axis("equal")
+    plt.show()
 
 if __name__ == "__main__":
     main()
