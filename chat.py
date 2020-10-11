@@ -1,6 +1,6 @@
-#TODO: argparse, graphs
+#TODO: argparse, graphs, emojis???, pandas table series and numpy
 
-import json, operator, sys, os
+import json, sys, os
 from datetime import datetime, date
 from pprint import pprint
 
@@ -18,18 +18,17 @@ def main():
     if not files:
         raise Exception("NO JSON FILES")
 
-    files.sort()
-
     with open(files[0]) as chat:
         data = json.load(chat)
         title = data["title"]
         names = getNames(data)
-        
+    
     messages = []
     for f in files:
         with open(f) as data:
             data = json.load(data)
             messages.extend(data["messages"])
+    messages = sorted(messages, key=lambda k: k["timestamp_ms"])        
 
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
@@ -45,8 +44,8 @@ def main():
 
 def getNames(data):
     ns = []
-    for i in range(len(data["participants"])):
-        ns.append(data["participants"][i]["name"])
+    for i in data["participants"]:
+        ns.append(i["name"])
     return ns
 
 def countFiltered(iterable, predicate):
@@ -111,8 +110,8 @@ def chatAlysis(ms, names):
     return info
 
 def format(result, title, messages, names):
-    toDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
-    fromDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
+    fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
+    toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     result[f"0) Chat: {title}"] = fromDay + " to " + toDay
     for n in names:
         result[f"{n} %"] = str(round(result[n]/result["1) Total messages"]*100, 2)) + " %"
@@ -147,14 +146,14 @@ def dayStats(messages):
 
 def topDoW(days):
     dNames = {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}
-    dayDay = max(days.items(), key=operator.itemgetter(1))[0]
+    dayDay = max(days.items(), key=lambda item: item[1])[0]
     dayDayN = dNames[dayDay]
     dayDayC = days[dayDay]
     print(f"On average, most messages were sent on {dayDayN}s.")
 
 def monthStats(messages):
-    first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
-    last = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
+    first = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
+    last = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
     months = {}
     for y in range(first, last+1):
         for m in range(1,13):
