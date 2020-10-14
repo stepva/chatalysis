@@ -1,4 +1,4 @@
-#TODO: argparse, emojis???, WORK ON REACTIONS GRAPH
+#TODO: argparse, emojis???, WORK ON REACTIONS GRAPH, ideas: first message, time of day distribution, nicks and groupchat names, lenght of voices (need to be from files not json)
 
 import json, sys, os, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -20,7 +20,7 @@ def main():
 
     with open(files[0]) as chat:
         data = json.load(chat)
-        title = data["title"]
+        title = decode1(data["title"])
         names = getNames(data)
     
     messages = []
@@ -28,12 +28,13 @@ def main():
         with open(f) as data:
             data = json.load(data)
             messages.extend(data["messages"])
-    messages = sorted(messages, key=lambda k: k["timestamp_ms"])        
-    
+    messages = sorted(messages, key=lambda k: k["timestamp_ms"])     
+    decodeMsgs(messages)
+
     result = chatAlysis(messages, names)
     format(result, title, messages, names)
     
-    pprint(decode(result), indent=2, sort_dicts=True)
+    pprint(result, indent=2, sort_dicts=True)
 
     days = dayStats(messages)
     months = monthStats(messages)
@@ -41,19 +42,33 @@ def main():
     topDay(messages)
     topMonth(months)
     topDoW(days)
-
+    """
     reacts = reactionStats(messages, names)
     pprint(reacts, indent=2, sort_dicts=False)
  
     graphPieDict(result, names)
     graphBarValues(days)
     graphBarValues(months)
-    
+    """
+
+def decode1(word):
+    return word.encode('iso-8859-1').decode('utf-8')
+
+def decodeMsgs(messages):
+    for m in messages:
+        m["sender_name"] = m["sender_name"].encode('iso-8859-1').decode('utf-8')
+        if "content" in m:
+            m["content"] = m["content"].encode('iso-8859-1').decode('utf-8')
+        if "reactions" in m:
+            for r in m["reactions"]:
+                r["reaction"] = r["reaction"].encode('iso-8859-1').decode('utf-8')
+                r["actor"] = r["actor"].encode('iso-8859-1').decode('utf-8')
+    return messages
 
 def getNames(data):
     ns = []
     for i in data["participants"]:
-        ns.append(i["name"])
+        ns.append(i["name"].encode('iso-8859-1').decode('utf-8'))
     return ns
 
 def countFiltered(iterable, predicate):
@@ -130,12 +145,6 @@ def decode(dictx):
     for k in dictx:
         final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
     return final
-
-def decodeList(listx):
-    listy = []
-    for l in listx:
-        listy.append(l.encode('iso-8859-1').decode('utf-8'))
-    return listy
 
 def getResult(chatRess):
     return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
@@ -288,7 +297,6 @@ def graphBarValues(dictio):
 
 def graphPieDict(result, names):
     result = decode(result)
-    names = decodeList(names)
     sizes = []
     for n in names:
         code = n + " %"
