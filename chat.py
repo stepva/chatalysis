@@ -1,4 +1,5 @@
-#TODO: argparse, emojis???, WORK ON REACTIONS GRAPH, ideas: first message, time of day distribution, nicks and groupchat names, lenght of voices (need to be from files not json)
+#TODO: argparse, WORK ON GRAPHS, 
+#ideas: first message, time of day distribution, nicks and groupchat names, lenght of voices (need to be from files not json), emojis
 
 import json, sys, os, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -31,7 +32,7 @@ def main():
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])     
     decodeMsgs(messages)
 
-    result = chatAlysis(messages, names)
+    result = chatStats(messages, names)
     format(result, title, messages, names)
     
     pprint(result, indent=2, sort_dicts=True)
@@ -42,14 +43,9 @@ def main():
     topDay(messages)
     topMonth(months)
     topDoW(days)
-    """
-    reacts = reactionStats(messages, names)
-    pprint(reacts, indent=2, sort_dicts=False)
- 
-    graphPieDict(result, names)
-    graphBarValues(days)
-    graphBarValues(months)
-    """
+
+    reacts = reactionStats(messages)
+    pprint(reacts, indent=2, sort_dicts=False)  
 
 def decode1(word):
     return word.encode('iso-8859-1').decode('utf-8')
@@ -74,7 +70,7 @@ def getNames(data):
 def countFiltered(iterable, predicate):
     return len(list(filter(predicate, iterable)))
 
-def chatAlysis(ms, names):
+def chatStats(ms, names):
     total = len(ms)
 
     info = {
@@ -198,98 +194,29 @@ def yearStats(messages):
         years[f"{y}"] = msgY
     return years
 
-def reactionStats(messages, names):
-    reactTypes = {"sad": "\u00f0\u009f\u0098\u00a2",
-                  "heart": "\u00e2\u009d\u00a4",
-                  "wow": "\u00f0\u009f\u0098\u00ae",
-                  "like": "\u00f0\u009f\u0091\u008d",
-                  "haha": "\u00f0\u009f\u0098\u0086",
-                  "angry": "\u00f0\u009f\u0098\u00a0",
-                  "dislike": "\u00f0\u009f\u0091\u008e",
-                  "heart_eyes": "\u00f0\u009f\u0098\u008d"
-                  }
-    reactionNames = list(reactTypes.keys())
+def reactionStats(messages):
+    reaccs = {}
+    gave = {}
+    got = {}
+    gotAvg = {}
+    for m in messages:
+        if "reactions" in m:
+            for r in m["reactions"]:
+                reaccs[r["reaction"]] = 1 + reaccs.get(r["reaction"], 0)
+                gave[r["actor"]] = 1 + gave.get(r["actor"], 0)
+                got[m["sender_name"]] = 1 + got.get(m["sender_name"], 0)
 
-    reactions = {"total": 0}
-    avgReacts = {}
-    reactsGiven = {}
-    sad = {"sad": 0}
-    heart = {"heart": 0}
-    wow = {"wow": 0}
-    like = {"like": 0}
-    haha = {"haha": 0}
-    angry = {"angry": 0}
-    dislike = {"dislike": 0}
-    wrong = []
+    for k in got:
+        gotAvg[k] = round(got[k]/countFiltered(messages, lambda x: x["sender_name"] == k), 2)
 
-    for n in names:
-        reactions[n] = 0
-        reactsGiven[n] = 0
-        sad[n] = 0
-        heart[n] = 0
-        wow[n] = 0
-        like[n] = 0
-        haha[n] = 0
-        angry[n] = 0
-        dislike[n] = 0
-        for m in messages:
-            if "reactions" in m:
-                for i in m["reactions"]:
-                    if i["actor"] == n:
-                        reactsGiven[n] += 1
-                if m["sender_name"]==n:    
-                    reactions["total"] += len(m["reactions"])
-                    reactions[n] += len(m["reactions"])
-                    for i in m["reactions"]:
-                        if i["reaction"] == reactTypes["sad"]: 
-                            sad[n] += 1
-                            sad["sad"] += 1
-                        elif i["reaction"] == reactTypes["heart"] or i["reaction"] == reactTypes["heart_eyes"]: 
-                            heart[n] += 1
-                            heart["heart"] += 1
-                        elif i["reaction"] == reactTypes["wow"]: 
-                            wow[n] += 1
-                            wow["wow"] += 1
-                        elif i["reaction"] == reactTypes["like"]: 
-                            like[n] += 1
-                            like["like"] += 1
-                        elif i["reaction"] == reactTypes["haha"]: 
-                            haha[n] += 1
-                            haha["haha"] += 1
-                        elif i["reaction"] == reactTypes["angry"]: 
-                            angry[n] += 1
-                            angry["angry"] += 1
-                        elif i["reaction"] == reactTypes["dislike"]: 
-                            dislike[n] += 1
-                            dislike["dislike"] += 1
-                        else: wrong.append(i["reaction"]) 
-        if reactions[n] > 0:
-            avgReacts[n] = round(reactions[n]/countFiltered(messages, lambda x: x["sender_name"] == n), 2)
-        else:
-            avgReacts[n] = 0    
-
-    if len(wrong) > 0: 
-        raise Exception("UNEXPECTED REACT")
- 
-    reactNames = ["sad", "heart", "wow", "like", "haha", "angry", "dislike"]
-    totals = [sad["sad"], heart["heart"], wow["wow"], like["like"], haha["haha"], angry["angry"], dislike["dislike"]]
-    totalReacts = reactions["total"]
-    topReact = [reactionNames[totals.index(max(totals))], max(totals)]
-    
-    totalsPct = []
-    for i in totals:
-        totalsPct.append(round(i/totalReacts, 2))
-
-    finalStats = {
-        "total reactions": totalReacts,
-        "most used reaction": topReact,
-        "gets most reactions": sorted(decode(reactions).items(), key=lambda item: item[1])[-2],
-        "gets most reactions on avg": sorted(decode(avgReacts).items(), key=lambda item: item[1])[-1],
-        "gives most reactions": sorted(decode(reactsGiven).items(), key=lambda item: item[1])[-1]
+    stats = {
+        "total reactions": sum(reaccs.values()),
+        "top 3 reactions": sorted(reaccs.items(), key=lambda item: item[1], reverse=True)[0:3],
+        "gets most reactions": sorted(got.items(), key=lambda item: item[1], reverse=True)[0],
+        "gets most reactions on avg": sorted(gotAvg.items(), key=lambda item: item[1], reverse=True)[0],
+        "gives most reactions": sorted(gave.items(), key=lambda item: item[1], reverse=True)[0]
     }
-
-    graphPie(totalsPct, reactNames)
-    return finalStats
+    return stats
 
 def graphBarValues(dictio):
     plt.bar(*zip(*dictio.items()))
