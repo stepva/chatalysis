@@ -1,5 +1,5 @@
-#TODO: argparse, WORK ON GRAPHS, 
-#ideas: first message, time of day distribution, nicks and groupchat names, lenght of voices (need to be from files not json), emojis
+#TODO: argparse, WORK ON GRAPHS 
+#ideas: nicks and groupchat names, lenght of voices (need to be from files not json), emojis
 
 import json, sys, os, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -21,7 +21,7 @@ def main():
 
     with open(files[0]) as chat:
         data = json.load(chat)
-        title = decode1(data["title"])
+        title = decode(data["title"])
         names = getNames(data)
     
     messages = []
@@ -34,20 +34,28 @@ def main():
 
     result = chatStats(messages, names)
     format(result, title, messages, names)
-    
+
     pprint(result, indent=2, sort_dicts=True)
 
     days = dayStats(messages)
     months = monthStats(messages)
+    hours = hoursStats(messages)
 
     topDay(messages)
+    topHours(hours)
     topMonth(months)
     topDoW(days)
+    firstMsg(messages)
 
     reacts = reactionStats(messages)
     pprint(reacts, indent=2, sort_dicts=False)  
 
-def decode1(word):
+    #graphBarMessages(days, title, "Days", "Messages per day of the week")
+    #graphBarMessages(months, title, "Months", "Messages per month")
+    #graphBarMessages(hours, title, "Hours", "Messages per hours of the day")
+    #graphPieMessages(result, names, title, "Messages per person")
+
+def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
 
 def decodeMsgs(messages):
@@ -136,15 +144,6 @@ def format(result, title, messages, names):
         result[f"{n} %"] = round(result[n]/result["1) Total messages"]*100, 2)
     return result
 
-def decode(dictx):
-    final = {}
-    for k in dictx:
-        final[k.encode('iso-8859-1').decode('utf-8')] = dictx[k]
-    return final
-
-def getResult(chatRess):
-    return {k: sum(t.get(k, 0) for t in chatRess) for k in set.union(*[set(t) for t in chatRess])}
-
 def topDay(messages):
     days = {}
     for i in messages:
@@ -166,7 +165,7 @@ def dayStats(messages):
 
 def topDoW(days):
     dayDay = max(days.items(), key=lambda item: item[1])[0]
-    print(f"On average, most messages were sent on {dayDay}s.")
+    print(f"Most messages were sent on {dayDay}s.")
 
 def monthStats(messages):
     first = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
@@ -180,7 +179,6 @@ def monthStats(messages):
     return months
 
 def topMonth(months):
-    #mNames = {"1": "Januray", "2": "February", "3": "March", "4": "April", "5": "May", "6": "June", "7": "July", "8": "August", "9": "September", "10": "October", "11": "November", "12": "December"}
     monthMonth = max(months.items(), key=lambda item: item[1])[0]
     monthMonthC = months[monthMonth]
     print(f"The top month was {monthMonth} with {str(monthMonthC)} messages.")
@@ -193,6 +191,22 @@ def yearStats(messages):
         msgY = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
         years[f"{y}"] = msgY
     return years
+
+def hoursStats(messages):
+    hours = {
+        "00:00 - 03:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 4),
+        "04:00 - 07:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 4 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 8),
+        "08:00 - 11:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 8 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 12),
+        "12:00 - 15:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 12 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 16),
+        "16:00 - 19:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 16 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 20),
+        "20:00 - 23:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 20)
+    }
+    return hours
+
+def topHours(hours):
+    hoursH = max(hours.items(), key=lambda item: item[1])[0]
+    countH = hours[hoursH]
+    print(f"Most messages were sent between {hoursH[:5]} and {hoursH[-5:]}.")
 
 def reactionStats(messages):
     reaccs = {}
@@ -211,32 +225,52 @@ def reactionStats(messages):
 
     stats = {
         "total reactions": sum(reaccs.values()),
-        "top 3 reactions": sorted(reaccs.items(), key=lambda item: item[1], reverse=True)[0:3],
+        "top reactions": sorted(reaccs.items(), key=lambda item: item[1], reverse=True)[0:5],
         "gets most reactions": sorted(got.items(), key=lambda item: item[1], reverse=True)[0],
         "gets most reactions on avg": sorted(gotAvg.items(), key=lambda item: item[1], reverse=True)[0],
         "gives most reactions": sorted(gave.items(), key=lambda item: item[1], reverse=True)[0]
     }
     return stats
 
-def graphBarValues(dictio):
-    plt.bar(*zip(*dictio.items()))
+def firstMsg(messages):
+    if not "content" in messages[0]:
+        raise Exception("FIRST MESSAGE WASN'T A TEXT")
+    msg = messages[0]["content"]
+    author = messages[0]["sender_name"]
+    print(f"First message was \"{msg}\" sent by {author}")
+
+def graphBarMessages(stats, title, x, graphtitle):
+    plt.bar(*zip(*stats.items()))
+    plt.suptitle(f"Chat {title}: {graphtitle}")
+    plt.ylabel("Messages")
+    plt.xlabel(x)
+    plt.savefig(graphtitle)
     plt.show()
 
-def graphPieDict(result, names):
-    result = decode(result)
+def graphPieMessages(result, names, title, graphtitle):
     sizes = []
     for n in names:
-        code = n + " %"
-        sizes.append(result[code])
-    fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, labels=names, autopct="%1.2f %%")
-    ax1.axis("equal")
+        sizes.append(result[n])
+    def func(pct, allvalues):
+        absolute = int(pct / 100.*sum(allvalues))
+        return "{:d}\n({:.1f} %)".format(absolute, pct)
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=names, autopct=lambda pct: func(pct, sizes))
+    ax.axis("equal")
+    plt.suptitle(f"Chat {title}: {graphtitle}")
+    plt.savefig(graphtitle)
     plt.show()
 
-def graphPie(values, labels):
-    fig1, ax1 = plt.subplots()
-    ax1.pie(values, labels=labels)
-    ax1.axis("equal")
+def graphBarhReacts(stats):
+    reacts = stats["top reactions"]
+    types = []
+    values = []
+    for r in reacts:
+        types.append(r[0])
+        values.append(r[1])
+    #y_pos = arrange(len(bars))
+    plt.barh(types, values)
+    #plt.yticks(types)
     plt.show()
 
 if __name__ == "__main__":
