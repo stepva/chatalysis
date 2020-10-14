@@ -1,7 +1,7 @@
-#TODO: argparse, WORK ON GRAPHS 
+#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once 
 #ideas: nicks and groupchat names, lenght of voices (need to be from files not json), emojis
 
-import json, sys, os, matplotlib.pyplot as plt
+import json, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
 from pprint import pprint
 
@@ -34,7 +34,7 @@ def main():
             messages.extend(data["messages"])
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])     
     decodeMsgs(messages)
-
+    
     result = chatStats(messages, names)
     format(result, title, messages, names)
 
@@ -57,6 +57,9 @@ def main():
     #graphBarMessages(months, title, "Months", "Messages per month")
     #graphBarMessages(hours, title, "Hours", "Messages per hours of the day")
     #graphPieMessages(result, names, title, "Messages per person")
+
+    emojis = emojiStats(messages)
+    pprint(emojis, indent=2, sort_dicts=False)
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
@@ -228,10 +231,11 @@ def reactionStats(messages):
 
     stats = {
         "total reactions": sum(reaccs.values()),
+        "total different reactions": len(reaccs),
         "top reactions": sorted(reaccs.items(), key=lambda item: item[1], reverse=True)[0:5],
-        "gets most reactions": sorted(got.items(), key=lambda item: item[1], reverse=True)[0],
-        "gets most reactions on avg": sorted(gotAvg.items(), key=lambda item: item[1], reverse=True)[0],
-        "gives most reactions": sorted(gave.items(), key=lambda item: item[1], reverse=True)[0]
+        "got most reactions": sorted(got.items(), key=lambda item: item[1], reverse=True)[0],
+        "got most reactions on avg": sorted(gotAvg.items(), key=lambda item: item[1], reverse=True)[0],
+        "gave most reactions": sorted(gave.items(), key=lambda item: item[1], reverse=True)[0]
     }
     return stats
 
@@ -241,6 +245,32 @@ def firstMsg(messages):
     msg = messages[0]["content"]
     author = messages[0]["sender_name"]
     print(f"First message was \"{msg}\" sent by {author}")
+
+def emojiStats(messages):
+    emojis = {}
+    sent = {}
+    sentAvg = {}
+    for m in messages:
+        if "content" in m:
+            data = regex.findall(r'\X', m["content"])
+            for g in data:
+                if any(char in emoji.UNICODE_EMOJI for char in g):
+                    emojis[g] = 1 + emojis.get(g, 0)
+                    sent[m["sender_name"]] = 1 + sent.get(m["sender_name"], 0)
+    sortEmojis = sorted(emojis.items(), key=lambda item: item[1], reverse=True)
+
+    for k in sent:
+        sentAvg[k] = round(sent[k]/countFiltered(messages, lambda x: x["sender_name"] == k), 2)
+
+    stats = {
+        "total emojis": sum(emojis.values()),
+        "total different emojis": len(emojis),
+        "top emojis": sortEmojis[0:5],
+        "sent most emojis": sorted(sent.items(), key=lambda item: item[1], reverse=True)[0],
+        "sent most emojis on avg": sorted(sentAvg.items(), key=lambda item: item[1], reverse=True)[0]
+    }
+    print(sentAvg)
+    return stats        
 
 def graphBarMessages(stats, title, x, graphtitle):
     plt.bar(*zip(*stats.items()))
