@@ -6,7 +6,10 @@ from datetime import datetime, date
 from pprint import pprint
 
 def main():
-    path = ""
+    if len(sys.argv) != 2:
+        raise Exception("MISSING FOLDER PATH")
+
+    path = str(sys.argv[1])
 
     if not os.path.isdir(path):
         raise Exception("NOT A FOLDER")
