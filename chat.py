@@ -1,5 +1,6 @@
-#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once 
-#ideas: nicks and groupchat names, lenght of voices (need to be from files not json), emojis
+#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once
+#ideas: 
+#next level complicated: nicks and groupchat names, lenght of voices (need to be from files not json)
 
 import json, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -43,13 +44,15 @@ def main():
     days = dayStats(messages)
     months = monthStats(messages)
     hours = hoursStats(messages)
+    firsts = firstMsg(messages)
+
+    pprint(firsts, indent=2, sort_dicts=False)
 
     topDay(messages)
     topHours(hours)
     topMonth(months)
     topDoW(days)
-    firstMsg(messages)
-
+    
     reacts = reactionStats(messages)
     pprint(reacts, indent=2, sort_dicts=False)  
 
@@ -240,11 +243,19 @@ def reactionStats(messages):
     return stats
 
 def firstMsg(messages):
-    if not "content" in messages[0]:
-        raise Exception("FIRST MESSAGE WASN'T A TEXT")
-    msg = messages[0]["content"]
     author = messages[0]["sender_name"]
-    print(f"First message was \"{msg}\" sent by {author}")
+    texts = {}
+    i = 0
+    while True:
+        if messages[i]["sender_name"] == author:
+            keys = list(messages[i].keys())
+            texts[messages[i]["sender_name"]] = messages[i][keys[2]]
+            i += 1
+        else:
+            keys = list(messages[i].keys())
+            texts[messages[i]["sender_name"]] = messages[i][keys[2]]
+            break
+    return texts
 
 def emojiStats(messages):
     emojis = {}
@@ -269,7 +280,6 @@ def emojiStats(messages):
         "sent most emojis": sorted(sent.items(), key=lambda item: item[1], reverse=True)[0],
         "sent most emojis on avg": sorted(sentAvg.items(), key=lambda item: item[1], reverse=True)[0]
     }
-    print(sentAvg)
     return stats        
 
 def graphBarMessages(stats, title, x, graphtitle):
