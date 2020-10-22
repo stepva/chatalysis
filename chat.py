@@ -1,6 +1,6 @@
-#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once
-#ideas: 
-#next level complicated: nicks and groupchat names, lenght of voices (need to be from files not json)
+#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once - TIMESTATS LEFT, 
+#ideas: filemerger, allchatalysis
+#next level complicated and probs useless: nicks and groupchat names, lenght of voices (need to be from files not json)
 
 import json, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -36,6 +36,7 @@ def main():
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])     
     decodeMsgs(messages)
     
+    """
     result = chatStats(messages, names)
     format(result, title, messages, names)
 
@@ -63,6 +64,87 @@ def main():
 
     emojis = emojiStats(messages)
     pprint(emojis, indent=2, sort_dicts=False)
+    """
+    basicStats, reactions, emojis, timeStats, people = raw(messages, names)
+
+    header(title, messages)
+    pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
+    pprint(reactionStats(reactions, names, people), indent=2, sort_dicts=False)
+    pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
+
+def raw(messages, names):
+    people = {"total": 0}
+    photos = {"total": 0}
+    gifs = {"total": 0}
+    stickers = {"total": 0}
+    videos = {"total": 0}
+    audios = {"total": 0}
+    files = {"total": 0}
+    reactions = {"total": 0, "types": {}, "gave": {}, "got": {}}
+    emojis = {"total": 0, "types": {}, "sent": {}}
+    days = {}
+    months = {}
+    years = {}
+    weekdays = {}
+    hours = {}
+
+    for n in names:
+        reactions["gave"][n] = {"total": 0}
+        reactions["got"][n] = {"total": 0}
+        emojis["sent"][n] = {"total": 0}
+
+    for m in messages:
+        name = m["sender_name"]
+        people["total"] += 1
+        people[name] = 1 + people.get(name, 0)
+        day = date.fromtimestamp(m["timestamp_ms"]//1000)
+        days[day] = 1 + days.get(day, 0)
+        month = f"{day.month}/{day.year}"
+        months[month] = 1 + months.get(month, 0)
+        year = f"{day.year}"
+        years[year] = 1 + years.get(year, 0)
+        weekday = date.fromtimestamp(m["timestamp_ms"]//1000).isoweekday()
+        weekdays[weekday] = 1 + weekdays.get(weekday, 0)
+        hour = datetime.fromtimestamp(m["timestamp_ms"]//1000).hour
+        hours[hour] = 1 + hours.get(hour, 0)
+        if "content" in m:
+            data = regex.findall(r'\X', m["content"])
+            for c in data:
+                if any(char in emoji.UNICODE_EMOJI for char in c):
+                    emojis["total"] += 1
+                    emojis["types"][c] = 1 + emojis["types"].get(c, 0)
+                    emojis["sent"][name]["total"] += 1
+                    emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
+        elif "photos" in m:
+            photos["total"] += 1
+            photos[name] = 1 + photos.get(name, 0)
+        elif "gifs" in m:
+            gifs["total"] += 1
+            gifs[name] = 1 + gifs.get(name, 0)
+        elif "sticker" in m:
+            stickers["total"] += 1
+            stickers[name] = 1 + stickers.get(name, 0)
+        elif "videos" in m:
+            videos["total"] += 1
+            videos[name] = 1 + videos.get(name, 0)
+        elif "audio_files" in m:
+            audios["total"] += 1
+            audios[name] = 1 + audios.get(name, 0)
+        elif "files" in m:
+            files["total"] += 1
+            files[name] = 1 + files.get(name, 0)
+        if "reactions" in m:
+            for r in m["reactions"]:
+                reactions["total"] += 1
+                reactions["types"][r["reaction"]] = 1 + reactions["types"].get(r["reaction"], 0)
+                reactions["gave"][r["actor"]]["total"] += 1
+                reactions["gave"][r["actor"]][r["reaction"]] = 1 + reactions["gave"][r["actor"]].get(r["reaction"], 0)
+                reactions["got"][name]["total"] += 1
+                reactions["got"][name][r["reaction"]] = 1 + reactions["got"][name].get(r["reaction"], 0)
+    
+    basicStats = [people, photos, gifs, stickers, videos, audios, files]
+    timeStats = [hours, days, months, years]
+    return basicStats, reactions, emojis, timeStats, people
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
@@ -87,71 +169,34 @@ def getNames(data):
 def countFiltered(iterable, predicate):
     return len(list(filter(predicate, iterable)))
 
-def chatStats(ms, names):
-    total = len(ms)
-
+def chatStats(basicStats, names):
+    #basicStats = [people, photos, gifs, stickers, videos, audios, files]
     info = {
-        "1) Total messages": total
+        "1) Total messages": basicStats[0]["total"],
+        "2) Total audios": basicStats[5]["total"],
+        "3) Total files": basicStats[6]["total"],
+        "4) Total gifs": basicStats[2]["total"],
+        "5) Total images": basicStats[1]["total"],
+        "6) Total stickers": basicStats[3]["total"],
+        "7) Total videos": basicStats[4]["total"]
     }
-
-    sum_con = countFiltered(ms, lambda x: "content" in x)
-    sum_img = countFiltered(ms, lambda x: "photos" in x)
-    sum_gif = countFiltered(ms, lambda x: "gifs" in x)
-    sum_sti = countFiltered(ms, lambda x: "sticker" in x)
-    sum_vid = countFiltered(ms, lambda x: "videos" in x)
-    sum_aud = countFiltered(ms, lambda x: "audio_files" in x)
-    sum_fil = countFiltered(ms, lambda x: "files" in x)
-    sumsum = sum_con + sum_img + sum_gif + sum_vid + sum_aud + sum_fil + sum_sti
-
-    info["2) Total audios"] = sum_aud
-    info["3) Total files"] = sum_fil
-    info["4) Total gifs"] = sum_gif
-    info["5) Total images"] = sum_img
-    info["6) Total stickers"] = sum_sti
-    info["7) Total videos"] = sum_vid
-    info["8) Deleted messages"] = total-sumsum
-
     for n in names:
-        info[n] = countFiltered(ms, lambda x: x["sender_name"]==n)
-
-    if sum_img > 0:
-        for n in names:
-            info[n + " images"] = countFiltered(ms, lambda x: "photos" in x and x["sender_name"]==n)
-
-    if sum_gif > 0:
-        for n in names:
-            info[n + " gifs"] = countFiltered(ms, lambda x: "gifs" in x and x["sender_name"]==n)
-
-    if sum_vid > 0:
-        for n in names:
-            info[n + " videos"] = countFiltered(ms, lambda x: "videos" in x and x["sender_name"]==n)
-
-    if sum_sti > 0:
-        for n in names:
-            info[n + " stickers"] = countFiltered(ms, lambda x: "sticker" in x and x["sender_name"]==n)
-
-    if sum_aud > 0:
-        for n in names:
-            info[n + " audio"] = countFiltered(ms, lambda x: "audio_files" in x and x["sender_name"]==n)
-
-    if sum_fil > 0:
-        for n in names:
-            info[n + " files"] = countFiltered(ms, lambda x: "files" in x and x["sender_name"]==n)
-
-    #vibecheck
-    #if sumsum != total:
-        #print(f"something’s wrong: {str(sumsum)}")
-        #print(list(filter(lambda x: not any(y in ["content", "photos", "gifs", "sticker", "videos", "audio_files", "files"] for y in x), ms)))
-    
+        if n in basicStats[0]: 
+            info[n] = basicStats[0][n]
+            info[f"{n} %"] = round(basicStats[0][n]/basicStats[0]["total"]*100, 2)
+        if n in basicStats[1]: info[n + " images"] = basicStats[1][n]
+        if n in basicStats[2]: info[n + " gifs"] = basicStats[2][n]
+        if n in basicStats[4]: info[n + " videos"] = basicStats[4][n]
+        if n in basicStats[3]: info[n + " stickers"] = basicStats[3][n]
+        if n in basicStats[5]: info[n + " audio"] = basicStats[5][n]
+        if n in basicStats[6]: info[n + " files"] = basicStats[6][n]
+        
     return info
 
-def format(result, title, messages, names):
+def header(title, messages):
     fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
     toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
-    result[f"0) Chat: {title}"] = fromDay + " to " + toDay
-    for n in names:
-        result[f"{n} %"] = round(result[n]/result["1) Total messages"]*100, 2)
-    return result
+    print(f"Chat: {title}, from {fromDay} to {toDay}")
 
 def topDay(messages):
     days = {}
@@ -217,29 +262,37 @@ def topHours(hours):
     countH = hours[hoursH]
     print(f"Most messages were sent between {hoursH[:5]} and {hoursH[-5:]}.")
 
-def reactionStats(messages):
-    reaccs = {}
-    gave = {}
-    got = {}
-    gotAvg = {}
-    for m in messages:
-        if "reactions" in m:
-            for r in m["reactions"]:
-                reaccs[r["reaction"]] = 1 + reaccs.get(r["reaction"], 0)
-                gave[r["actor"]] = 1 + gave.get(r["actor"], 0)
-                got[m["sender_name"]] = 1 + got.get(m["sender_name"], 0)
+def reactionStats(reactions, names, people):
+    #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+    gaves = {}
+    gots = {}
+    gotsAvg = {}
 
-    for k in got:
-        gotAvg[k] = round(got[k]/countFiltered(messages, lambda x: x["sender_name"] == k), 2)
+    for n in names:
+        gaves[n] = reactions["gave"][n]["total"]
+        gots[n] = reactions["got"][n]["total"]
+        gotsAvg[n] = round(reactions["got"][n]["total"]/people[n], 2)
 
     stats = {
-        "total reactions": sum(reaccs.values()),
-        "total different reactions": len(reaccs),
-        "top reactions": sorted(reaccs.items(), key=lambda item: item[1], reverse=True)[0:5],
-        "got most reactions": sorted(got.items(), key=lambda item: item[1], reverse=True)[0],
-        "got most reactions on avg": sorted(gotAvg.items(), key=lambda item: item[1], reverse=True)[0],
-        "gave most reactions": sorted(gave.items(), key=lambda item: item[1], reverse=True)[0]
+        "1) total reactions": reactions["total"],
+        "2) total different reactions": len(reactions["types"]),
+        "3) top reactions": sorted(reactions["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
+        "4) got most reactions": sorted(gots.items(), key=lambda item: item[1], reverse=True)[0],
+        "5) got most reactions on avg": sorted(gotsAvg.items(), key=lambda item: item[1], reverse=True)[0],
+        "6) gave most reactions": sorted(gaves.items(), key=lambda item: item[1], reverse=True)[0]
     }
+
+    for n in names:
+        stats[n] = {
+            "total got": gots[n], 
+            "avg got": gotsAvg[n], 
+            "dif got": len(reactions["got"][n])-1, 
+            "top got": sorted(reactions["got"][n].items(), key=lambda item: item[1], reverse=True)[1:4],
+            "total gave": gaves[n],
+            "dif gave": len(reactions["gave"][n])-1,
+            "top gave": sorted(reactions["gave"][n].items(), key=lambda item: item[1], reverse=True)[1:4]
+        }   
+
     return stats
 
 def firstMsg(messages):
@@ -257,30 +310,32 @@ def firstMsg(messages):
             break
     return texts
 
-def emojiStats(messages):
-    emojis = {}
-    sent = {}
-    sentAvg = {}
-    for m in messages:
-        if "content" in m:
-            data = regex.findall(r'\X', m["content"])
-            for g in data:
-                if any(char in emoji.UNICODE_EMOJI for char in g):
-                    emojis[g] = 1 + emojis.get(g, 0)
-                    sent[m["sender_name"]] = 1 + sent.get(m["sender_name"], 0)
-    sortEmojis = sorted(emojis.items(), key=lambda item: item[1], reverse=True)
+def emojiStats(emojis, names, people):
+    #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+    sents = {}
+    sentsAvg = {}
 
-    for k in sent:
-        sentAvg[k] = round(sent[k]/countFiltered(messages, lambda x: x["sender_name"] == k), 2)
+    for n in names:
+        sents[n] = emojis["sent"][n]["total"]
+        sentsAvg[n] = round(emojis["sent"][n]["total"]/people[n], 2)
 
     stats = {
-        "total emojis": sum(emojis.values()),
-        "total different emojis": len(emojis),
-        "top emojis": sortEmojis[0:5],
-        "sent most emojis": sorted(sent.items(), key=lambda item: item[1], reverse=True)[0],
-        "sent most emojis on avg": sorted(sentAvg.items(), key=lambda item: item[1], reverse=True)[0]
+        "1) total emojis": emojis["total"],
+        "2) total different emojis": len(emojis["types"]),
+        "3) top emojis": sorted(emojis["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
+        "4) sent most emojis": sorted(sents.items(), key=lambda item: item[1], reverse=True)[0],
+        "5) sent most emojis on avg": sorted(sentsAvg.items(), key=lambda item: item[1], reverse=True)[0]
     }
-    return stats        
+
+    for n in names:
+        stats[n] = {
+            "total": sents[n], 
+            "avg": sentsAvg[n], 
+            "dif": len(emojis["sent"][n])-1, 
+            "top": sorted(emojis["sent"][n].items(), key=lambda item: item[1], reverse=True)[1:6]
+        }
+
+    return stats     
 
 def graphBarMessages(stats, title, x, graphtitle):
     plt.bar(*zip(*stats.items()))
