@@ -1,6 +1,5 @@
-#TODO: argparse, WORK ON GRAPHS, return more than one thing so that i can iterate through messages just once - TIMESTATS LEFT, 
+#TODO: argparse, WORK ON GRAPHS, 
 #ideas: filemerger, allchatalysis
-#next level complicated and probs useless: nicks and groupchat names, lenght of voices (need to be from files not json)
 
 import json, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
@@ -37,40 +36,20 @@ def main():
     decodeMsgs(messages)
     
     """
-    result = chatStats(messages, names)
-    format(result, title, messages, names)
-
-    pprint(result, indent=2, sort_dicts=True)
-
-    days = dayStats(messages)
-    months = monthStats(messages)
-    hours = hoursStats(messages)
-    firsts = firstMsg(messages)
-
-    pprint(firsts, indent=2, sort_dicts=False)
-
-    topDay(messages)
-    topHours(hours)
-    topMonth(months)
-    topDoW(days)
-    
-    reacts = reactionStats(messages)
-    pprint(reacts, indent=2, sort_dicts=False)  
-
     #graphBarMessages(days, title, "Days", "Messages per day of the week")
     #graphBarMessages(months, title, "Months", "Messages per month")
     #graphBarMessages(hours, title, "Hours", "Messages per hours of the day")
     #graphPieMessages(result, names, title, "Messages per person")
-
-    emojis = emojiStats(messages)
-    pprint(emojis, indent=2, sort_dicts=False)
     """
-    basicStats, reactions, emojis, timeStats, people = raw(messages, names)
+
+    basicStats, reactions, emojis, times, people = raw(messages, names)
 
     header(title, messages)
     pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
     pprint(reactionStats(reactions, names, people), indent=2, sort_dicts=False)
     pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
+    pprint(timeStats(times), indent=2, sort_dicts=False)
+    pprint(firstMsg(messages), indent=2, sort_dicts=False)   
 
 def raw(messages, names):
     people = {"total": 0}
@@ -143,8 +122,8 @@ def raw(messages, names):
                 reactions["got"][name][r["reaction"]] = 1 + reactions["got"][name].get(r["reaction"], 0)
     
     basicStats = [people, photos, gifs, stickers, videos, audios, files]
-    timeStats = [hours, days, months, years]
-    return basicStats, reactions, emojis, timeStats, people
+    times = [hours, days, weekdays, months, years]
+    return basicStats, reactions, emojis, times, people
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
@@ -198,69 +177,23 @@ def header(title, messages):
     toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     print(f"Chat: {title}, from {fromDay} to {toDay}")
 
-def topDay(messages):
-    days = {}
-    for i in messages:
-        day = date.fromtimestamp(i["timestamp_ms"]//1000)
-        if day in days:
-            days[day] += 1
-        else:
-            days[day] = 1
-    topD = sorted(days.items(), key=lambda item: item[1])[-1]
-    print(f"The top day was {str(topD[0])} with {str(topD[1])} messages.")
+def timeStats(times):
+    #times = [hours, days, weekdays, months, years]
+    wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
 
-def dayStats(messages):
-    weekdays = {"Monday": 0, "Tuesday": 0, "Wednesday": 0, "Thursday": 0, "Friday": 0, "Saturday": 0, "Sunday": 0}
-    dNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
-    for d in range(1,8):
-        msgD = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).isoweekday() == d)
-        weekdays[dNames[d]] = msgD
-    return weekdays
+    topDay = sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0]
+    topWd = sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0]
+    topMonth = sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0]
+    topYear = sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0]
 
-def topDoW(days):
-    dayDay = max(days.items(), key=lambda item: item[1])[0]
-    print(f"Most messages were sent on {dayDay}s.")
-
-def monthStats(messages):
-    first = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
-    last = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
-    months = {}
-    for y in range(first, last+1):
-        for m in range(1,13):
-            msgM = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).month == m and date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
-            if msgM > 0:
-                months[f"{m}/{y}"] = msgM
-    return months
-
-def topMonth(months):
-    monthMonth = max(months.items(), key=lambda item: item[1])[0]
-    monthMonthC = months[monthMonth]
-    print(f"The top month was {monthMonth} with {str(monthMonthC)} messages.")
-
-def yearStats(messages):
-    first = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000).year
-    last = date.fromtimestamp(messages[0]["timestamp_ms"]//1000).year
-    years = {}
-    for y in range(first, last+1):
-        msgY = countFiltered(messages, lambda x: date.fromtimestamp(x["timestamp_ms"]//1000).year == y)
-        years[f"{y}"] = msgY
-    return years
-
-def hoursStats(messages):
-    hours = {
-        "00:00 - 03:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 4),
-        "04:00 - 07:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 4 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 8),
-        "08:00 - 11:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 8 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 12),
-        "12:00 - 15:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 12 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 16),
-        "16:00 - 19:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 16 and datetime.fromtimestamp(x["timestamp_ms"]//1000).hour < 20),
-        "20:00 - 23:59": countFiltered(messages, lambda x: datetime.fromtimestamp(x["timestamp_ms"]//1000).hour >= 20)
+    stats = {
+        "1) The top day": [str(topDay[0]), f"{topDay[1]} messages"],
+        "2) Top hours of day": sorted(times[0].items(), key=lambda item: item[1], reverse=True)[0:3],
+        "3) Top weekday": [wdNames[topWd[0]], topWd[1]],
+        "4) Top month": topMonth,
+        "5) Top year": topYear
     }
-    return hours
-
-def topHours(hours):
-    hoursH = max(hours.items(), key=lambda item: item[1])[0]
-    countH = hours[hoursH]
-    print(f"Most messages were sent between {hoursH[:5]} and {hoursH[-5:]}.")
+    return stats
 
 def reactionStats(reactions, names, people):
     #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
