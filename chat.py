@@ -1,47 +1,49 @@
 #TODO: argparse, WORK ON GRAPHS, 
-#ideas: filemerger, allchatalysis
+#ideas: allchatalysis
 
 import json, argparse, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
 from pprint import pprint
 
 def main(argv=None):
-
-    # Build arg parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('-V', '-version', '--version', help='Version', action='version', version='Unknown')
-    parser.add_argument('-v', '--verbose', help='Verbose', action='store_true')
-    parser.add_argument('path', help='Message Folder', type=isDirPath)
+    parser.add_argument('-V', '-version', '--version', help='Version', action='version', version='v0.69')
+    parser.add_argument("chat", help="Chat Name")
     args = parser.parse_args(argv)
 
-    files = []
-    for file in os.listdir(args.path):
-        if file.startswith("message") and file.endswith(".json"):
-            files.append(args.path + "/" + file)
+    home = os.getcwd()
+    chats = []
+    for d in os.listdir(home):
+        if d.startswith("messages") and os.path.isdir(f"{home}/{d}"):
+            for f in os.listdir(d + "/inbox"):
+                if f.startswith(args.chat + "_"):
+                    chats.append(f"{d}/inbox/{f}")
 
-    if not files:
-        raise Exception("NO JSON FILES")
+    if not chats:
+        raise Exception("NO CHATS NAMED " + args.chat)
 
-    with open(files[0]) as chat:
+    jsons = []
+    for ch in chats:
+        for file in os.listdir(ch):
+            if file.startswith("message") and file.endswith(".json"):
+                jsons.append(f"{ch}/{file}")
+
+    if not jsons:
+        raise Exception("NO JSON FILES IN THIS CHAT")
+
+    with open(jsons[0]) as chat:
         data = json.load(chat)
         title = decode(data["title"])
         names = getNames(data)
     
     messages = []
-    for f in files:
-        with open(f) as data:
+    for j in jsons:
+        with open(j) as data:
             data = json.load(data)
             messages.extend(data["messages"])
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])     
     decodeMsgs(messages)
-    
-    """
-    #graphBarMessages(days, title, "Days", "Messages per day of the week")
-    #graphBarMessages(months, title, "Months", "Messages per month")
-    #graphBarMessages(hours, title, "Hours", "Messages per hours of the day")
-    #graphPieMessages(result, names, title, "Messages per person")
-    """
-
+        
     basicStats, reactions, emojis, times, people = raw(messages, names)
 
     header(title, messages)
@@ -50,6 +52,7 @@ def main(argv=None):
     pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
     pprint(timeStats(times), indent=2, sort_dicts=False)
     pprint(firstMsg(messages), indent=2, sort_dicts=False)   
+    
 
 def isDirPath(path):
   if os.path.isdir(path):
