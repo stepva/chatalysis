@@ -1,3 +1,4 @@
 emoji
 regex
 matplotlib
+jinja2

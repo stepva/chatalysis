@@ -20,11 +20,15 @@
         }
         .people-table {
             display: grid;
-            grid-template-columns: auto auto;
+            grid-template-columns: auto auto auto auto;
         }
         .people-table-item {
             padding: 20px;
             text-align: center;
+        }
+        .people-item-table {
+            display: grid;
+            grid-template-rows: auto auto auto auto auto auto auto;
         }
     </style>
     <meta charset="utf-8">
@@ -65,11 +69,57 @@
             </div>
         </section>
         <section class="people-table">
-            <div class="people-table-item">
-
+            <div class="people-table-item" style="text-align: right;">
+                {{ name1 }}
             </div>
-            <div class="people-table-item">
-                
+            <div class="people-table-item" style="display: grid; grid-template-columns: auto; text-align: left;">
+                <div>
+                    {{ messages1 }} messages
+                </div>
+                <div>
+                    {{ images1 }} {{ "images" if images1 != 1 else "image"}}
+                </div>
+                <div>
+                    {{ gifs1 }} {{ "gifs" if gifs1 != 1 else "gif"}}
+                </div>
+                <div>
+                    {{ stickers1 }} {{ "stickers" if stickers1 != 1 else "sticker"}}
+                </div>
+                <div>
+                    {{ videos1 }} {{ "videos" if videos1 != 1 else "video"}}
+                </div>
+                <div>
+                    {{ audios1 }} {{ "audios" if audios1 != 1 else "audio"}}
+                </div>
+                <div>
+                    {{ files1 }} {{ "files" if files1 != 1 else "file"}}
+                </div>
+            </div>
+            <div class="people-table-item" style="text-align: right; vertical-align: middle;">
+                {{ name2 }}
+            </div>
+            <div class="people-table-item" style="display: grid; grid-template-columns: auto; text-align: left;">
+                <div>
+                    {{ messages2 }} messages
+                </div>
+                <div>
+                    {{ images2 }} {{ "images" if images2 != 1 else "image"}}
+                </div>
+                <div>
+                    {{ gifs2 }} {{ "gifs" if gifs2 != 1 else "gif"}}
+                </div>
+                <div>
+                    {{ stickers2 }} {{ "stickers" if stickers2 != 1 else "sticker"}}
+                </div>
+                <div>
+                    {{ videos2 }} {{ "videos" if videos2 != 1 else "video"}}
+                </div>
+                <div>
+                    {{ audios2 }} {{ "audios" if audios2 != 1 else "audio"}}
+                </div>
+                <div>
+                    {{ files2 }} {{ "files" if files2 != 1 else "file"}}
+                </div>
             </div>
         </section>
     </div>   
