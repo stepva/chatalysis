@@ -1,0 +1,79 @@
+<html lang="en">
+
+<head>
+    <title>Chatalysis</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif
+        }
+        div.route {
+            text-align: center;
+        }
+        .stats-table {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto;
+
+        }
+        .stats-table-item {
+            padding: 20px;
+            text-align: center
+        }
+        .people-table {
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+        .people-table-item {
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div class="route">
+        <section>
+            <h1>{{ name1 }} and {{ name2 }}</h1>
+            {{ fromDay }} - {{ toDay }}
+            <h2>{{ totalMessages }}</h2>
+            total messages
+        </section>
+        <section class="stats-table">
+            <div class="stats-table-item">
+                <h3>{{ totalImages }}</h3>
+                {{ "images" if totalImages != 1 else "image"}}
+            </div>
+            <div class="stats-table-item">
+                <h3>{{ totalGifs }}</h3>
+                {{ "gifs" if totalGifs != 1 else "gif"}}
+            </div>
+            <div class="stats-table-item">
+                <h3>{{ totalStickers }}</h3>
+                {{ "stickers" if totalStickers != 1 else "sticker"}}
+            </div>
+            <div class="stats-table-item">
+                <h3>{{ totalVideos }}</h3>
+                {{ "videos" if totalVideos != 1 else "video"}}
+            </div>
+            <div class="stats-table-item">
+                <h3>{{ totalAudios }}</h3>
+                {{ "audios" if totalAudios != 1 else "audio"}}
+            </div>
+            <div class="stats-table-item">
+                <h3>{{ totalFiles }}</h3>
+                {{ "files" if totalFiles != 1 else "file"}}
+            </div>
+        </section>
+        <section class="people-table">
+            <div class="people-table-item">
+
+            </div>
+            <div class="people-table-item">
+                
+            </div>
+        </section>
+    </div>   
+
+</body>
+
+</html>

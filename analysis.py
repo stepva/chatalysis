@@ -8,6 +8,8 @@ from datetime import datetime, date
 
 
 def raw(messages, names):
+    fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
+    toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     people = {"total": 0}
     photos = {"total": 0}
     gifs = {"total": 0}
@@ -79,7 +81,7 @@ def raw(messages, names):
     
     basicStats = [people, photos, gifs, stickers, videos, audios, files]
     times = [hours, days, weekdays, months, years]
-    return basicStats, reactions, emojis, times, people
+    return basicStats, reactions, emojis, times, people, fromDay, toDay
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')

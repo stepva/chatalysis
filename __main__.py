@@ -10,14 +10,16 @@ import regex
 import matplotlib.pyplot as plt
 #local imports:
 from analysis import *
+from output import mrHtml
 
 version = "0.69"
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-V', '-version', '--version',
-                        help='Version', action='version', version=version)
+    parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)
     parser.add_argument("chat", help="Chat Name")
+    parser.add_argument("-t", "--terminal", action="store_true")
+    parser.add_argument("-o", "--output", action="store_true")
     args = parser.parse_args(argv)
 
     home = os.getcwd()
@@ -53,14 +55,21 @@ def main(argv=None):
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])
     decodeMsgs(messages)
 
-    basicStats, reactions, emojis, times, people = raw(messages, names)
+    basicStats, reactions, emojis, times, people, fromDay, toDay = raw(messages, names)
+    
+    if args.terminal:
+        header(title, messages)
+        pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
+        pprint(reactionStats(reactions, names, people), indent=2, sort_dicts=False)
+        pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
+        pprint(timeStats(times), indent=2, sort_dicts=False)
+        pprint(firstMsg(messages), indent=2, sort_dicts=False)
 
-    header(title, messages)
-    pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
-    pprint(reactionStats(reactions, names, people), indent=2, sort_dicts=False)
-    pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
-    pprint(timeStats(times), indent=2, sort_dicts=False)
-    pprint(firstMsg(messages), indent=2, sort_dicts=False)
+    if args.output:
+        final = mrHtml(names, basicStats, fromDay, toDay)
+        with open(f"output/{args.chat}.html", "w") as data:
+            data.write(final)
+
 
 if __name__ == "__main__":
     main()
