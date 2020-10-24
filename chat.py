@@ -1,23 +1,23 @@
 #TODO: argparse, WORK ON GRAPHS, 
 #ideas: filemerger, allchatalysis
 
-import json, sys, os, emoji, regex, matplotlib.pyplot as plt
+import json, argparse, sys, os, emoji, regex, matplotlib.pyplot as plt
 from datetime import datetime, date
 from pprint import pprint
 
-def main():
-    if len(sys.argv) != 2:
-        raise Exception("MISSING FOLDER PATH")
+def main(argv=None):
 
-    path = str(sys.argv[1])
-
-    if not os.path.isdir(path):
-        raise Exception("NOT A FOLDER")
+    # Build arg parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-V', '-version', '--version', help='Version', action='version', version='Unknown')
+    parser.add_argument('-v', '--verbose', help='Verbose', action='store_true')
+    parser.add_argument('path', help='Message Folder', type=isDirPath)
+    args = parser.parse_args(argv)
 
     files = []
-    for file in os.listdir(path):
+    for file in os.listdir(args.path):
         if file.startswith("message") and file.endswith(".json"):
-            files.append(path + "/" + file)
+            files.append(args.path + "/" + file)
 
     if not files:
         raise Exception("NO JSON FILES")
@@ -50,6 +50,12 @@ def main():
     pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
     pprint(timeStats(times), indent=2, sort_dicts=False)
     pprint(firstMsg(messages), indent=2, sort_dicts=False)   
+
+def isDirPath(path):
+  if os.path.isdir(path):
+    return path
+  else:
+    raise argparse.ArgumentTypeError(f"invalid dir path: {path}")
 
 def raw(messages, names):
     people = {"total": 0}
