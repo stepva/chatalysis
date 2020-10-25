@@ -8,27 +8,25 @@
         }
         div.route {
             text-align: center;
-        }
-        .stats-table {
-            display: grid;
-            grid-template-columns: auto auto auto auto auto auto;
-
-        }
-        .stats-table-item {
-            padding: 20px;
-            text-align: center
-        }
-        .people-table {
-            display: grid;
-            grid-template-columns: auto auto auto auto;
-        }
-        .people-table-item {
-            padding: 20px;
-            text-align: center;
+            padding: 10;
         }
         .people-item-table {
             display: grid;
             grid-template-rows: auto auto auto auto auto auto auto;
+        }
+        .profile-picture {
+            border-radius: 50%;
+            object-fit: cover;
+            width: 100px;
+            height: 100px;
+            border: 10px double black;
+        }
+        .profile-picture-small {
+            border-radius: 50%;
+            object-fit: cover;
+            width: 75px;
+            height: 75px;
+            border: 5px double black;
         }
     </style>
     <meta charset="utf-8">
@@ -37,42 +35,62 @@
 <body>
     <div class="route">
         <section>
-            <h1>{{ name1 }} and {{ name2 }}</h1>
-            {{ fromDay }} - {{ toDay }}
+            <i>Chatalysis {{ version }}</i>
+        </section>
+        <section style="display: grid; grid-template-columns: auto auto auto;">
+            <div style="text-align: right;">
+                <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture">
+            </div>
+            <div>
+                <h1>{{ name1 }} and {{ name2 }}</h1>
+                {{ fromDay }} - {{ toDay }}
+            </div> 
+            <div style="text-align: left;">
+                <img src="{{ picture2 }}" alt="Profile picture 2" class="profile-picture">
+            </div>
+        </section>
+        <section>
             <h2>{{ totalMessages }}</h2>
             total messages
         </section>
-        <section class="stats-table">
-            <div class="stats-table-item">
+        <section style="display: grid; grid-template-columns: auto auto auto auto auto auto; padding-top: 10;">
+            <div>
                 <h3>{{ totalImages }}</h3>
                 {{ "images" if totalImages != 1 else "image"}}
             </div>
-            <div class="stats-table-item">
+            <div>
                 <h3>{{ totalGifs }}</h3>
                 {{ "gifs" if totalGifs != 1 else "gif"}}
             </div>
-            <div class="stats-table-item">
+            <div>
                 <h3>{{ totalStickers }}</h3>
                 {{ "stickers" if totalStickers != 1 else "sticker"}}
             </div>
-            <div class="stats-table-item">
+            <div>
                 <h3>{{ totalVideos }}</h3>
                 {{ "videos" if totalVideos != 1 else "video"}}
             </div>
-            <div class="stats-table-item">
+            <div>
                 <h3>{{ totalAudios }}</h3>
                 {{ "audios" if totalAudios != 1 else "audio"}}
             </div>
-            <div class="stats-table-item">
+            <div>
                 <h3>{{ totalFiles }}</h3>
                 {{ "files" if totalFiles != 1 else "file"}}
             </div>
         </section>
-        <section class="people-table">
-            <div class="people-table-item" style="text-align: right;">
-                {{ name1 }}
+        <section style="display: grid; grid-template-columns: auto auto auto auto auto; padding-top: 20px; grid-gap: 2px;">
+            <div style="display: flex; align-items: center; justify-self: end;">
+                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                    <div>
+                    <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture-small">
+                    </div>
+                    <div>
+                    {{ name1 }}
+                    </div>
+                </div>
             </div>
-            <div class="people-table-item" style="display: grid; grid-template-columns: auto; text-align: left;">
+            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                 <div>
                     <b>{{ messages1 }}</b> messages
                 </div>
@@ -95,10 +113,20 @@
                     {{ files1 }} {{ "files" if files1 != 1 else "file"}}
                 </div>
             </div>
-            <div class="people-table-item" style="text-align: right; vertical-align: middle;">
-                {{ name2 }}
+            <div>
+                GRAPH
             </div>
-            <div class="people-table-item" style="display: grid; grid-template-columns: auto; text-align: left;">
+            <div style="display: flex; align-items: center; justify-self: end;">
+                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                    <div>   
+                    <img src="{{ picture2 }}" alt="Profile picture 1" class="profile-picture-small">
+                    </div>
+                    <div>
+                    {{ name2 }}
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                 <div>
                     {{ messages2 }} messages
                 </div>

@@ -4,3 +4,5 @@
 *.png
 *.pyc
 /output
+*.jpg
+!placeholder.jpg

@@ -3,7 +3,6 @@
 
 import emoji
 import regex
-import matplotlib.pyplot as plt
 from datetime import datetime, date
 
 
@@ -228,36 +227,4 @@ def emojiStats(emojis, names, people):
 
     return stats     
 
-def graphBarMessages(stats, title, x, graphtitle):
-    plt.bar(*zip(*stats.items()))
-    plt.suptitle(f"Chat {title}: {graphtitle}")
-    plt.ylabel("Messages")
-    plt.xlabel(x)
-    plt.savefig(graphtitle)
-    plt.show()
 
-def graphPieMessages(result, names, title, graphtitle):
-    sizes = []
-    for n in names:
-        sizes.append(result[n])
-    def func(pct, allvalues):
-        absolute = int(pct / 100.*sum(allvalues))
-        return "{:d}\n({:.1f} %)".format(absolute, pct)
-    fig, ax = plt.subplots()
-    ax.pie(sizes, labels=names, autopct=lambda pct: func(pct, sizes))
-    ax.axis("equal")
-    plt.suptitle(f"Chat {title}: {graphtitle}")
-    plt.savefig(graphtitle)
-    plt.show()
-
-def graphBarhReacts(stats):
-    reacts = stats["top reactions"]
-    types = []
-    values = []
-    for r in reacts:
-        types.append(r[0])
-        values.append(r[1])
-    #y_pos = arrange(len(bars))
-    plt.barh(types, values)
-    #plt.yticks(types)
-    plt.show()
