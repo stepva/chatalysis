@@ -4,8 +4,9 @@ import os
 locale.setlocale(locale.LC_ALL, '')
 
 #basicStats = [0: people, 1: photos, 2: gifs, 3: stickers, 4: videos, 5: audios, 6: files]
+#times = [0: hours, 1: days, 2: weekdays, 3: months, 4: years]
 
-def mrHtml(version, names, basicStats, fromDay, toDay):
+def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
     file_loader = FileSystemLoader("resources")
     env = Environment(loader=file_loader)
 
@@ -21,10 +22,15 @@ def mrHtml(version, names, basicStats, fromDay, toDay):
     picture1 = pictures.get(newNames[0], False) or f"{path}/resources/placeholder.jpg"
     picture2 = pictures.get(newNames[1], False) or f"{path}/resources/placeholder.jpg"
 
-    final = template.render(
+    wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+
+    return template.render(
+        title=chat,
         version=version,
-        name1=name1,
-        name2=name2,
+        fullname1=name1,
+        name1=name1.split()[0],
+        fullname2=name2,
+        name2=name2.split()[0],
         fromDay=fromDay,
         toDay=toDay,
         picture1=picture1,
@@ -50,12 +56,21 @@ def mrHtml(version, names, basicStats, fromDay, toDay):
         audios2=s(basicStats[5].get(name2, 0)),
         videos2=s(basicStats[4].get(name2, 0)),
         files2=s(basicStats[6].get(name2, 0)),
-        graphMessages=f"{path}/resources/jordanfisher_messages.png"
-        )
-    return final
+        topDay=str(sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0][0]),
+        topDayMsgs=s(sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topWeekday=wdNames[sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0][0]],
+        topWeekdayMsgs=s(sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topMonth=sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0][0],
+        topMonthMsgs=s(sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topYear=sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0][0],
+        topYearMsgs=s(sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0][1])
+    )
 
 def s(n):
-    return "{0:n}".format(n)
+    if n != 1:
+        return "{0:n}".format(n)
+    else:
+        return n
 
 def changeNames(names):
     no = 'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝßàáâãäåçèéêëìíîïñòóôõöùúûüýÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ'

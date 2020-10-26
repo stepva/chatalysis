@@ -1,18 +1,14 @@
 <html lang="en">
 
 <head>
-    <title>Chatalysis</title>
+    <title>Chatalysis - {{ title }}</title>
     <style>
         body {
-            font-family: Georgia, 'Times New Roman', Times, serif
+            font-family: "Georgia", 'Times New Roman', Times, serif
         }
         div.route {
             text-align: center;
-            padding: 10;
-        }
-        .people-item-table {
-            display: grid;
-            grid-template-rows: auto auto auto auto auto auto auto;
+            padding: 10px;
         }
         .profile-picture {
             border-radius: 50%;
@@ -28,90 +24,103 @@
             height: 75px;
             border: 5px double black;
         }
+        .stats {
+            margin-top: 1px;
+            margin-bottom: 1px;
+        }
+        .stats-num {
+            margin: 0;
+            font-size: 30;
+            font-weight: 200;
+        }
+        .stats-text {
+            margin: 0;
+
+        }
     </style>
     <meta charset="utf-8">
 </head>
 
 <body>
     <div class="route">
-        <section>
+        <section id="header">
             <i>Chatalysis {{ version }}</i>
         </section>
-        <section style="display: grid; grid-template-columns: auto auto auto;">
+        <section id="names" style="display: grid; grid-template-columns: repeat(3, auto);">
             <div style="text-align: right;">
                 <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture">
             </div>
             <div>
-                <h1>{{ name1 }} and {{ name2 }}</h1>
+                <h1>{{ fullname1 }} and {{ fullname2 }}</h1>
                 {{ fromDay }} - {{ toDay }}
             </div> 
             <div style="text-align: left;">
                 <img src="{{ picture2 }}" alt="Profile picture 2" class="profile-picture">
             </div>
         </section>
-        <section>
-            <h2>{{ totalMessages }}</h2>
-            total messages
+        <section id="total messages" style="padding-top: 10px;">
+            <p style="margin: 0; font-size: 50; font-weight: 500;">{{ totalMessages }}</p>
+            <p style="margin: 0;">total messages</p>
         </section>
-        <section style="display: grid; grid-template-columns: auto auto auto auto auto auto; padding-top: 10;">
+        <section id="total stats" style="display: grid; grid-template-columns: repeat(6, 1fr); padding-top: 10px; padding-bottom: 10px;">
             <div>
-                <h3>{{ totalImages }}</h3>
-                {{ "images" if totalImages != 1 else "image"}}
+                <p class="stats-num">{{ totalImages }}</p>
+                <p class="stats-text">{{ "images" if totalImages != 1 else "image"}}</p>
             </div>
             <div>
-                <h3>{{ totalGifs }}</h3>
-                {{ "gifs" if totalGifs != 1 else "gif"}}
+                <p class="stats-num">{{ totalGifs }}</p>
+                <p class="stats-text">{{ "gifs" if totalGifs != 1 else "gif"}}</p>
             </div>
             <div>
-                <h3>{{ totalStickers }}</h3>
-                {{ "stickers" if totalStickers != 1 else "sticker"}}
+                <p class="stats-num">{{ totalStickers }}</p>
+                <p class="stats-text">{{ "stickers" if totalStickers != 1 else "sticker"}}</p>
             </div>
             <div>
-                <h3>{{ totalVideos }}</h3>
-                {{ "videos" if totalVideos != 1 else "video"}}
+                <p class="stats-num">{{ totalVideos }}</p>
+                <p class="stats-text">{{ "videos" if totalVideos != 1 else "video"}}</p>
             </div>
             <div>
-                <h3>{{ totalAudios }}</h3>
-                {{ "audios" if totalAudios != 1 else "audio"}}
+                <p class="stats-num">{{ totalAudios }}</p>
+                <p class="stats-text">{{ "audios" if totalAudios != 1 else "audio"}}</p>
             </div>
             <div>
-                <h3>{{ totalFiles }}</h3>
-                {{ "files" if totalFiles != 1 else "file"}}
+                <p class="stats-num">{{ totalFiles }}</p>
+                <p class="stats-text">{{ "files" if totalFiles != 1 else "file"}}</p>
             </div>
         </section>
-        <section style="display: grid; grid-template-columns: auto auto auto auto auto; padding-top: 20px; grid-gap: 2px;">
+        <section id="personal stats" style="display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: 20px; padding-top: 30px; grid-gap: 2px;">
             <div style="display: flex; align-items: center; justify-self: end;">
                 <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                     <div>
                     <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture-small">
                     </div>
-                    <div>
-                    {{ name1 }}
-                    </div>
+                    <p>
+                    <b>{{ name1 }}</b>
+                    </p>
                 </div>
             </div>
             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                <div>
+                <p class="stats">
                     <b>{{ messages1 }}</b> messages
-                </div>
-                <div>
-                    {{ images1 }} {{ "images" if images1 != 1 else "image"}}
-                </div>
-                <div>
-                    {{ gifs1 }} {{ "gifs" if gifs1 != 1 else "gif"}}
-                </div>
-                <div>
-                    {{ stickers1 }} {{ "stickers" if stickers1 != 1 else "sticker"}}
-                </div>
-                <div>
-                    {{ videos1 }} {{ "videos" if videos1 != 1 else "video"}}
-                </div>
-                <div>
-                    {{ audios1 }} {{ "audios" if audios1 != 1 else "audio"}}
-                </div>
-                <div>
-                    {{ files1 }} {{ "files" if files1 != 1 else "file"}}
-                </div>
+                </p>
+                <p class="stats">
+                    <b>{{ images1 }}</b> {{ "images" if images1 != 1 else "image"}}
+                </p>
+                <p class="stats">
+                    <b>{{ gifs1 }}</b> {{ "gifs" if gifs1 != 1 else "gif"}}
+                </p>
+                <p class="stats">
+                    <b>{{ stickers1 }}</b> {{ "stickers" if stickers1 != 1 else "sticker"}}
+                </p>
+                <p class="stats">
+                    <b>{{ videos1 }}</b> {{ "videos" if videos1 != 1 else "video"}}
+                </p>
+                <p class="stats">
+                    <b>{{ audios1 }}</b> {{ "audios" if audios1 != 1 else "audio"}}
+                </p>
+                <p class="stats">
+                    <b>{{ files1 }}</b> {{ "files" if files1 != 1 else "file"}}
+                </p>
             </div>
             <div>
                 GRAPH
@@ -121,37 +130,66 @@
                     <div>   
                     <img src="{{ picture2 }}" alt="Profile picture 1" class="profile-picture-small">
                     </div>
-                    <div>
-                    {{ name2 }}
-                    </div>
+                    <p>
+                    <b>{{ name2 }}</b>
+                    </p>
                 </div>
             </div>
             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                <div>
-                    {{ messages2 }} messages
-                </div>
-                <div>
-                    {{ images2 }} {{ "images" if images2 != 1 else "image"}}
-                </div>
-                <div>
-                    {{ gifs2 }} {{ "gifs" if gifs2 != 1 else "gif"}}
-                </div>
-                <div>
-                    {{ stickers2 }} {{ "stickers" if stickers2 != 1 else "sticker"}}
-                </div>
-                <div>
-                    {{ videos2 }} {{ "videos" if videos2 != 1 else "video"}}
-                </div>
-                <div>
-                    {{ audios2 }} {{ "audios" if audios2 != 1 else "audio"}}
-                </div>
-                <div>
-                    {{ files2 }} {{ "files" if files2 != 1 else "file"}}
-                </div>
+                <p class="stats">
+                    <b>{{ messages2 }}</b> messages
+                </p>
+                <p class="stats">
+                    <b>{{ images2 }}</b> {{ "images" if images2 != 1 else "image"}}
+                </p>
+                <p class="stats">
+                    <b>{{ gifs2 }}</b> {{ "gifs" if gifs2 != 1 else "gif"}}
+                </p>
+                <p class="stats">
+                    <b>{{ stickers2 }}</b> {{ "stickers" if stickers2 != 1 else "sticker"}}
+                </p>
+                <p class="stats">
+                    <b>{{ videos2 }}</b> {{ "videos" if videos2 != 1 else "video"}}
+                </p>
+                <p class="stats">
+                    <b>{{ audios2 }}</b> {{ "audios" if audios2 != 1 else "audio"}}
+                </p>
+                <p class="stats">
+                    <b>{{ files2 }}</b> {{ "files" if files2 != 1 else "file"}}
+                </p>
             </div>
         </section>
+        <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; padding-top: 10px;">
+            <div>
+                <p class="stats-num">{{ topDay }}</p>
+                <p class="stats-text">top day<br>
+                ({{ topDayMsgs }} messages)</p>
+            </div>
+            <div>
+                <p class="stats-num">{{ topWeekday }}</p>
+                <p class="stats-text">top weekday<br>
+                ({{ topWeekdayMsgs }})</p>
+            </div>
+            <div>
+                <p class="stats-num">{{ topMonth }}</p>
+                <p class="stats-text">top month<br>
+                ({{ topMonthMsgs }})</p>
+            </div>
+            <div>
+                <p class="stats-num">{{ topYear }}</p>
+                <p class="stats-text"></p>top year<br>
+                ({{ topYearMsgs }})</p>
+            </div>
+        </section>
+        <section id="time graph">
+            <div>
+                LONG BOI GRAPH
+            </div>
+        </section>
+        <section id="footer">
+            <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
+        </section>
     </div>   
-
 </body>
 
 </html>

@@ -66,7 +66,7 @@ def main(argv=None):
         pprint(firstMsg(messages), indent=2, sort_dicts=False)
 
     if args.output:
-        final = mrHtml(version, names, basicStats, fromDay, toDay)
+        final = mrHtml(version, names, basicStats, fromDay, toDay, times, args.chat)
         with open(f"output/{args.chat}.html", "w") as data:
             data.write(final)
 
