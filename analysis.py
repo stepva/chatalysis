@@ -3,12 +3,12 @@
 
 import emoji
 import regex
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 def raw(messages, names):
-    fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
-    toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
+    fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
+    toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
     people = {"total": 0}
     photos = {"total": 0}
     gifs = {"total": 0}
@@ -18,7 +18,7 @@ def raw(messages, names):
     files = {"total": 0}
     reactions = {"total": 0, "types": {}, "gave": {}, "got": {}}
     emojis = {"total": 0, "types": {}, "sent": {}}
-    days = {}
+    days = daysList(messages)
     months = {}
     years = {}
     weekdays = {}
@@ -34,7 +34,7 @@ def raw(messages, names):
         people["total"] += 1
         people[name] = 1 + people.get(name, 0)
         day = date.fromtimestamp(m["timestamp_ms"]//1000)
-        days[day] = 1 + days.get(day, 0)
+        days[str(day)] += 1
         month = f"{day.month}/{day.year}"
         months[month] = 1 + months.get(month, 0)
         year = f"{day.year}"
@@ -78,9 +78,19 @@ def raw(messages, names):
                 reactions["got"][name]["total"] += 1
                 reactions["got"][name][r["reaction"]] = 1 + reactions["got"][name].get(r["reaction"], 0)
     
-    basicStats = [people, photos, gifs, stickers, videos, audios, files]
-    times = [hours, days, weekdays, months, years]
+    basicStats = (people, photos, gifs, stickers, videos, audios, files)
+    times = (hours, days, weekdays, months, years)
     return basicStats, reactions, emojis, times, people, fromDay, toDay
+
+def daysList(messages):
+    fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
+    toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
+    delta = toDay - fromDay
+    days = {}
+    for i in range(delta.days + 1):
+        day = fromDay + timedelta(days=i)
+        days[str(day)] = 0
+    return days
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
@@ -144,7 +154,7 @@ def timeStats(times):
     topYear = sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0]
 
     stats = {
-        "1) The top day": [str(topDay[0]), f"{topDay[1]} messages"],
+        "1) The top day": [topDay[0], f"{topDay[1]} messages"],
         "2) Top hours of day": sorted(times[0].items(), key=lambda item: item[1], reverse=True)[0:3],
         "3) Top weekday": [wdNames[topWd[0]], topWd[1]],
         "4) Top month": topMonth,

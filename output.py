@@ -3,12 +3,12 @@ import locale
 import os
 locale.setlocale(locale.LC_ALL, '')
 
-#basicStats = [0: people, 1: photos, 2: gifs, 3: stickers, 4: videos, 5: audios, 6: files]
-#times = [0: hours, 1: days, 2: weekdays, 3: months, 4: years]
-
 def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
     file_loader = FileSystemLoader("resources")
     env = Environment(loader=file_loader)
+
+    (people, photos, gifs, stickers, videos, audios, files) = basicStats
+    (hours, days, weekdays, months, years) = times
 
     template = env.get_template('index.html')
 
@@ -35,35 +35,39 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
         toDay=toDay,
         picture1=picture1,
         picture2=picture2,
-        totalMessages=s(basicStats[0]["total"]),
-        totalImages=s(basicStats[1]["total"]),
-        totalGifs=s(basicStats[2]["total"]),
-        totalVideos=s(basicStats[4]["total"]),
-        totalStickers=s(basicStats[3]["total"]),
-        totalAudios=s(basicStats[5]["total"]),
-        totalFiles=s(basicStats[6]["total"]),
-        messages1=s(basicStats[0].get(name1, 0)),
-        images1=s(basicStats[1].get(name1, 0)),
-        gifs1=s(basicStats[2].get(name1, 0)),
-        stickers1=s(basicStats[3].get(name1, 0)),
-        audios1=s(basicStats[5].get(name1, 0)),
-        videos1=s(basicStats[4].get(name1, 0)),
-        files1=s(basicStats[6].get(name1, 0)),
-        messages2=s(basicStats[0].get(name2, 0)),
-        images2=s(basicStats[1].get(name2, 0)),
-        gifs2=s(basicStats[2].get(name2, 0)),
-        stickers2=s(basicStats[3].get(name2, 0)),
-        audios2=s(basicStats[5].get(name2, 0)),
-        videos2=s(basicStats[4].get(name2, 0)),
-        files2=s(basicStats[6].get(name2, 0)),
-        topDay=str(sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0][0]),
-        topDayMsgs=s(sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0][1]),
-        topWeekday=wdNames[sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0][0]],
-        topWeekdayMsgs=s(sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0][1]),
-        topMonth=sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0][0],
-        topMonthMsgs=s(sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0][1]),
-        topYear=sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0][0],
-        topYearMsgs=s(sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0][1])
+        totalMessages=s(people["total"]),
+        totalImages=s(photos["total"]),
+        totalGifs=s(gifs["total"]),
+        totalVideos=s(videos["total"]),
+        totalStickers=s(stickers["total"]),
+        totalAudios=s(audios["total"]),
+        totalFiles=s(files["total"]),
+        messages1=s(people.get(name1, 0)),
+        images1=s(photos.get(name1, 0)),
+        gifs1=s(gifs.get(name1, 0)),
+        stickers1=s(stickers.get(name1, 0)),
+        audios1=s(audios.get(name1, 0)),
+        videos1=s(videos.get(name1, 0)),
+        files1=s(files.get(name1, 0)),
+        messages2=s(people.get(name2, 0)),
+        images2=s(photos.get(name2, 0)),
+        gifs2=s(gifs.get(name2, 0)),
+        stickers2=s(stickers.get(name2, 0)),
+        audios2=s(audios.get(name2, 0)),
+        videos2=s(videos.get(name2, 0)),
+        files2=s(files.get(name2, 0)),
+        names=[name2, name1],
+        msgsPeople=[people[names[1]], people[names[0]]],
+        topDay=sorted(days.items(), key=lambda item: item[1], reverse=True)[0][0],
+        topDayMsgs=s(sorted(days.items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topWeekday=wdNames[sorted(weekdays.items(), key=lambda item: item[1], reverse=True)[0][0]],
+        topWeekdayMsgs=s(sorted(weekdays.items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topMonth=sorted(months.items(), key=lambda item: item[1], reverse=True)[0][0],
+        topMonthMsgs=s(sorted(months.items(), key=lambda item: item[1], reverse=True)[0][1]),
+        topYear=sorted(years.items(), key=lambda item: item[1], reverse=True)[0][0],
+        topYearMsgs=s(sorted(years.items(), key=lambda item: item[1], reverse=True)[0][1]),
+        days=list(days.values()),
+        daysLab=list(days.keys())        
     )
 
 def s(n):

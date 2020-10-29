@@ -56,6 +56,7 @@ def main(argv=None):
     decodeMsgs(messages)
 
     basicStats, reactions, emojis, times, people, fromDay, toDay = raw(messages, names)
+    daysList(messages)
     
     if args.terminal:
         header(title, messages)

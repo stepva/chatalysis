@@ -38,6 +38,7 @@
 
         }
     </style>
+    <script src="/Users/stepan/node_modules/chart.js/dist/Chart.js"></script>
     <meta charset="utf-8">
 </head>
 
@@ -88,87 +89,62 @@
                 <p class="stats-text">{{ "files" if totalFiles != 1 else "file"}}</p>
             </div>
         </section>
-        <section id="personal stats" style="display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: 20px; padding-top: 30px; grid-gap: 2px;">
+        <section id="personal stats" style="display: grid; grid-template-columns: 1fr 1fr 200px 1fr 1fr; padding-bottom: 20px; padding-top: 30px; grid-gap: 2px;">
             <div style="display: flex; align-items: center; justify-self: end;">
                 <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                     <div>
                     <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture-small">
                     </div>
-                    <p>
+                    <p style="margin-top: 5px; margin-bottom: 0;">
                     <b>{{ name1 }}</b>
                     </p>
                 </div>
             </div>
-            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                <p class="stats">
-                    <b>{{ messages1 }}</b> messages
-                </p>
-                <p class="stats">
-                    <b>{{ images1 }}</b> {{ "images" if images1 != 1 else "image"}}
-                </p>
-                <p class="stats">
-                    <b>{{ gifs1 }}</b> {{ "gifs" if gifs1 != 1 else "gif"}}
-                </p>
-                <p class="stats">
-                    <b>{{ stickers1 }}</b> {{ "stickers" if stickers1 != 1 else "sticker"}}
-                </p>
-                <p class="stats">
-                    <b>{{ videos1 }}</b> {{ "videos" if videos1 != 1 else "video"}}
-                </p>
-                <p class="stats">
-                    <b>{{ audios1 }}</b> {{ "audios" if audios1 != 1 else "audio"}}
-                </p>
-                <p class="stats">
-                    <b>{{ files1 }}</b> {{ "files" if files1 != 1 else "file"}}
-                </p>
+            <div style="display: flex; align-items: center; justify-self: start;">
+                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                    <p class="stats">
+                        <b>{{ messages1 }}</b> messages<br>
+                        <b>{{ images1 }}</b> {{ "images" if images1 != 1 else "image"}}<br>
+                        <b>{{ gifs1 }}</b> {{ "gifs" if gifs1 != 1 else "gif"}}<br>
+                        <b>{{ stickers1 }}</b> {{ "stickers" if stickers1 != 1 else "sticker"}}<br>
+                        <b>{{ videos1 }}</b> {{ "videos" if videos1 != 1 else "video"}}<br>
+                        <b>{{ audios1 }}</b> {{ "audios" if audios1 != 1 else "audio"}}<br>
+                        <b>{{ files1 }}</b> {{ "files" if files1 != 1 else "file"}}
+                    </p>
+                </div>
             </div>
             <div>
-                GRAPH
+                <canvas id="pieMessages" width="200" height="200"></canvas>
             </div>
             <div style="display: flex; align-items: center; justify-self: end;">
                 <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                     <div>   
                     <img src="{{ picture2 }}" alt="Profile picture 1" class="profile-picture-small">
                     </div>
-                    <p>
+                    <p style="margin-bottom: 0; margin-top: 5px;">
                     <b>{{ name2 }}</b>
                     </p>
                 </div>
             </div>
-            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                <p class="stats">
-                    <b>{{ messages2 }}</b> messages
-                </p>
-                <p class="stats">
-                    <b>{{ images2 }}</b> {{ "images" if images2 != 1 else "image"}}
-                </p>
-                <p class="stats">
-                    <b>{{ gifs2 }}</b> {{ "gifs" if gifs2 != 1 else "gif"}}
-                </p>
-                <p class="stats">
-                    <b>{{ stickers2 }}</b> {{ "stickers" if stickers2 != 1 else "sticker"}}
-                </p>
-                <p class="stats">
-                    <b>{{ videos2 }}</b> {{ "videos" if videos2 != 1 else "video"}}
-                </p>
-                <p class="stats">
-                    <b>{{ audios2 }}</b> {{ "audios" if audios2 != 1 else "audio"}}
-                </p>
-                <p class="stats">
-                    <b>{{ files2 }}</b> {{ "files" if files2 != 1 else "file"}}
-                </p>
+            <div style="display: flex; align-items: center; justify-self: start;">
+                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                    <p class="stats">
+                        <b>{{ messages2 }}</b> messages<br>
+                        <b>{{ images2 }}</b> {{ "images" if images2 != 1 else "image"}}<br>
+                        <b>{{ gifs2 }}</b> {{ "gifs" if gifs2 != 1 else "gif"}}<br>
+                        <b>{{ stickers2 }}</b> {{ "stickers" if stickers2 != 1 else "sticker"}}<br>
+                        <b>{{ videos2 }}</b> {{ "videos" if videos2 != 1 else "video"}}<br>
+                        <b>{{ audios2 }}</b> {{ "audios" if audios2 != 1 else "audio"}}<br>
+                        <b>{{ files2 }}</b> {{ "files" if files2 != 1 else "file"}}
+                    </p>
+                </div>
             </div>
         </section>
-        <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; padding-top: 10px;">
+        <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; padding-top: 20px;">
             <div>
                 <p class="stats-num">{{ topDay }}</p>
                 <p class="stats-text">top day<br>
                 ({{ topDayMsgs }} messages)</p>
-            </div>
-            <div>
-                <p class="stats-num">{{ topWeekday }}</p>
-                <p class="stats-text">top weekday<br>
-                ({{ topWeekdayMsgs }})</p>
             </div>
             <div>
                 <p class="stats-num">{{ topMonth }}</p>
@@ -180,16 +156,60 @@
                 <p class="stats-text"></p>top year<br>
                 ({{ topYearMsgs }})</p>
             </div>
+            <div>
+                <p class="stats-num">{{ topWeekday }}</p>
+                <p class="stats-text">top weekday<br>
+                    ({{ topWeekdayMsgs }})</p>
+            </div>
         </section>
         <section id="time graph">
             <div>
-                LONG BOI GRAPH
+                <canvas id="timeGraph" height="200px"></canvas>
             </div>
         </section>
         <section id="footer">
             <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
         </section>
-    </div>   
+    </div>
+    <script>
+        var myChart = new Chart("pieMessages", {
+            type: 'doughnut',
+            data: {
+                labels: {{ names|safe }},
+                datasets: [{
+                    data: {{ msgsPeople|safe }},
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Messages distribution'
+                }
+            }    
+        })
+    </script>
+    <script>
+        var myChart2 = new Chart("timeGraph", {
+                type: "bar",
+                data: {
+                    labels: {{ daysLab|safe }},
+                    datasets: [{
+                        data: {{ days|safe }}
+                    }]               
+                }
+            })
+    </script>   
 </body>
 
 </html>
+
