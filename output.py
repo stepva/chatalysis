@@ -67,7 +67,8 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
         topYear=sorted(years.items(), key=lambda item: item[1], reverse=True)[0][0],
         topYearMsgs=s(sorted(years.items(), key=lambda item: item[1], reverse=True)[0][1]),
         days=list(days.values()),
-        daysLab=list(days.keys())        
+        daysLab=monthLabel(days),
+        stepSizeY=stepSize(days),
     )
 
 def s(n):
@@ -98,3 +99,17 @@ def getPics(newNames, path):
             if p.startswith(n):
                 pics[n] = f"{path}/resources/{p}"
     return pics
+
+def stepSize(days):
+    x = sorted(days.items(), key=lambda item: item[1], reverse=True)[0][1]
+    if x < 100:
+        y = x if x % 10 == 0 else x + 10 - x % 10
+    elif x > 100:
+        y = x if x % 100 == 0 else x + 100 - x % 100
+    return y/2
+
+def monthLabel(days):
+    l = list(days.keys())
+    for i in range(len(l)):
+        l[i] = l[i][:7]
+    return l

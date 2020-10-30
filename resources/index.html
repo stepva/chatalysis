@@ -163,13 +163,17 @@
             </div>
         </section>
         <section id="time graph">
-            <div>
-                <canvas id="timeGraph" height="200px"></canvas>
+            <div style="height: 50px;">
+                <canvas id="timeGraph" height="50px"></canvas>
             </div>
         </section>
+        <!--
         <section id="footer">
-            <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
+            <div>
+            <p><i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i></p>
+            </div>
         </section>
+        -->
     </div>
     <script>
         var myChart = new Chart("pieMessages", {
@@ -204,8 +208,39 @@
                 data: {
                     labels: {{ daysLab|safe }},
                     datasets: [{
-                        data: {{ days|safe }}
+                        label: "All messages",
+                        data: {{ days|safe }},
+                        backgroundColor: "rgba(0, 0, 0, 1)",
+                        borderColor: "rgba(0, 0, 0, 1)",
+                        hoverBackgroundColor: "rgba(0, 0, 0, 1)",
+                        hoverBorderColor: "rgba(0, 0, 0, 1)" 
                     }]               
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                autoSkipPadding: 50,
+                                maxRotation: 0
+                            }
+                        }],
+                            yAxes: [{
+                                gridLines: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    stepSize: {{ stepSizeY }}
+                                }
+                            }]
+                    },
+                    legend: {display: false},
+                    title: {
+                        display: true,
+                        text: "Daily messages over time"
+                    }
                 }
             })
     </script>   
