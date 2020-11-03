@@ -3,7 +3,9 @@ import locale
 import os
 locale.setlocale(locale.LC_ALL, '')
 
-def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
+#emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+
+def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis):
     file_loader = FileSystemLoader("resources")
     env = Environment(loader=file_loader)
 
@@ -69,6 +71,14 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat):
         days=list(days.values()),
         daysLab=monthLabel(days),
         stepSizeY=stepSize(days),
+        hours=list(hours.values()),
+        hoursLab=list(hours.keys()),
+        stepSizeYh=stepSize(hours),
+        totalEms=s(emojis["total"]),
+        diffEms=len(emojis["types"]),
+        emojis=topEmojis(emojis)[0],
+        emojisN=topEmojis(emojis)[1],
+        emojisL=len(topEmojis(emojis)[0])
     )
 
 def s(n):
@@ -113,3 +123,13 @@ def monthLabel(days):
     for i in range(len(l)):
         l[i] = l[i][:7]
     return l
+
+def topEmojis(emojis):
+    l = sorted(emojis["types"].items(), key=lambda item: item[1], reverse=True)
+    types = []
+    counts = []
+    for e in l:
+        types.append(e[0])
+        counts.append(s(e[1]))
+    return [types[:10], counts[:10]]
+

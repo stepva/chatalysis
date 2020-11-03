@@ -6,7 +6,7 @@
         body {
             font-family: "Georgia", 'Times New Roman', Times, serif
         }
-        div.route {
+        div.root {
             text-align: center;
             padding: 10px;
         }
@@ -35,7 +35,10 @@
         }
         .stats-text {
             margin: 0;
-
+        }
+        .emojis {
+            margin: 0;
+            align-self: flex-end;
         }
     </style>
     <script src="/Users/stepan/node_modules/chart.js/dist/Chart.js"></script>
@@ -43,7 +46,7 @@
 </head>
 
 <body>
-    <div class="route">
+    <div class="root">
         <section id="header">
             <i>Chatalysis {{ version }}</i>
         </section>
@@ -53,7 +56,7 @@
             </div>
             <div>
                 <h1>{{ fullname1 }} and {{ fullname2 }}</h1>
-                {{ fromDay }} - {{ toDay }}
+                <b>{{ fromDay }}</b>   -   <b>{{ toDay }}</b>
             </div> 
             <div style="text-align: left;">
                 <img src="{{ picture2 }}" alt="Profile picture 2" class="profile-picture">
@@ -162,18 +165,75 @@
                     ({{ topWeekdayMsgs }})</p>
             </div>
         </section>
-        <section id="time graph">
-            <div style="height: 50px;">
-                <canvas id="timeGraph" height="50px"></canvas>
+        <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 20px; padding-top: 20px;" >
+            <div style="height: 225px;">
+                <canvas id="timeGraph"></canvas>
+            </div>
+            <div style="height: 225px;">
+                <canvas id="hours"></canvas>
             </div>
         </section>
-        <!--
+        <section id="emoji stats" style="display: grid; grid-template-columns: 25% 25% 50%; padding-bottom: 20px; padding-top: 30px;">
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <div>    
+                    <p class="stats-num">{{ totalEms }}</p>
+                    <p class="stats-text">total emojis<br>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <div>
+                    <p class="stats-num">{{ diffEms }}</p>
+                    <p class="stats-text">different emojis<br>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat({{emojisL}}, auto);">
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 300%">{{ emojis[0] }}</span><br>
+                    {{ "(" if emojisL>0 }}{{ emojisN[0] }}{{ ")" if emojisL>0}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 275%">{{ emojis[1] }}</span><br>
+                    {{ "(" if emojisL>1 }}{{ emojisN[1] }}{{ ")" if emojisL>1}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 250%">{{ emojis[2] }}</span><br>
+                    {{ "(" if emojisL>2 }}{{ emojisN[2] }}{{ ")" if emojisL>2}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 225%">{{ emojis[3] }}</span><br>
+                    {{ "(" if emojisL>3 }}{{ emojisN[3] }}{{ ")" if emojisL>3}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 200%">{{ emojis[4] }}</span><br>
+                    {{ "(" if emojisL>4 }}{{ emojisN[4] }}{{ ")" if emojisL>4}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 180%">{{ emojis[5] }}</span><br>
+                    {{ "(" if emojisL>5 }}{{ emojisN[5] }}{{ ")" if emojisL>5}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 160%">{{ emojis[6] }}</span><br>
+                    {{ "(" if emojisL>6 }}{{ emojisN[6] }}{{ ")" if emojisL>6}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 140%">{{ emojis[7] }}</span><br>
+                    {{ "(" if emojisL>7 }}{{ emojisN[7] }}{{ ")" if emojisL>7}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 120%">{{ emojis[8] }}</span><br>
+                    {{ "(" if emojisL>8 }}{{ emojisN[8] }}{{ ")" if emojisL>8}}</span></p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: 100%">{{ emojis[9] }}</span><br>
+                    {{ "(" if emojisL>9 }}{{ emojisN[9] }}{{ ")" if emojisL>9}}</span></p>
+                </div>
+            </div>
+        </section>
+        <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-bottom: 20px; padding-top: 10px;">
+        </section>
         <section id="footer">
-            <div>
-            <p><i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i></p>
-            </div>
+            <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
         </section>
-        -->
     </div>
     <script>
         var myChart = new Chart("pieMessages", {
@@ -203,12 +263,12 @@
         })
     </script>
     <script>
-        var myChart2 = new Chart("timeGraph", {
+        var myChart = new Chart("timeGraph", {
                 type: "bar",
                 data: {
                     labels: {{ daysLab|safe }},
                     datasets: [{
-                        label: "All messages",
+                        maxBarThickness: 2,
                         data: {{ days|safe }},
                         backgroundColor: "rgba(0, 0, 0, 1)",
                         borderColor: "rgba(0, 0, 0, 1)",
@@ -240,10 +300,63 @@
                     title: {
                         display: true,
                         text: "Daily messages over time"
+                    },
+                    maintainAspectRatio: false,
+                    tooltips: {enabled: false},
+                    hover: {mode: null}
+            }
+        })
+    </script> 
+    <script>
+        var myChart = new Chart("hours", {
+                type: "line",
+                data: {
+                    labels: {{ hoursLab| safe }},
+                    datasets: [{
+                        data: {{ hours| safe }},
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(0, 0, 0, 0.8)",
+                        hoverBackgroundColor: "rgba(0, 0, 0, 0.2)",
+                        hoverBorderColor: "rgba(0, 0, 0, 0.8)",
+                        borderWidth: 2 
+                        }]               
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                autoSkipPadding: 50,
+                                maxRotation: 0
+                            }
+                        }],
+                            yAxes: [{
+                                gridLines: {
+                                    drawOnChartArea: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                    stepSize: {{ stepSizeYh }}
+                                }
+                            }]
+                        },
+                    elements: {
+                        point: {
+                            radius: 0
+                        }
+                    },        
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: "Messages throughout the day"
+                        },
+                    maintainAspectRatio: false
                     }
-                }
-            })
-    </script>   
+                })
+    </script>
+      
 </body>
 
 </html>

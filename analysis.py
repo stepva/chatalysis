@@ -1,6 +1,3 @@
-#TODO: WORK ON GRAPHS, infographic, INTERFACE
-#ideas: allchatalysis
-
 import emoji
 import regex
 from datetime import datetime, date, timedelta
@@ -22,7 +19,7 @@ def raw(messages, names):
     months = {}
     years = {}
     weekdays = {}
-    hours = {}
+    hours = hoursList()
 
     for n in names:
         reactions["gave"][n] = {"total": 0}
@@ -42,7 +39,7 @@ def raw(messages, names):
         weekday = date.fromtimestamp(m["timestamp_ms"]//1000).isoweekday()
         weekdays[weekday] = 1 + weekdays.get(weekday, 0)
         hour = datetime.fromtimestamp(m["timestamp_ms"]//1000).hour
-        hours[hour] = 1 + hours.get(hour, 0)
+        hours[hour] += 1
         if "content" in m:
             data = regex.findall(r'\X', m["content"])
             for c in data:
@@ -91,6 +88,12 @@ def daysList(messages):
         day = fromDay + timedelta(days=i)
         days[str(day)] = 0
     return days
+
+def hoursList():
+    hours = {}
+    for i in range(24):
+        hours[i] = 0
+    return hours
 
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
