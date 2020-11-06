@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from analysis import *
 from output import mrHtml
 
-version = "0.69"
+version = "v0.69"
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
@@ -67,7 +67,7 @@ def main(argv=None):
         pprint(firstMsg(messages), indent=2, sort_dicts=False)
 
     if args.output:
-        final = mrHtml(version, names, basicStats, fromDay, toDay, times, args.chat, emojis)
+        final = mrHtml(version, names, basicStats, fromDay, toDay, times, args.chat, emojis, reactions)
         with open(f"output/{args.chat}.html", "w") as data:
             data.write(final)
 

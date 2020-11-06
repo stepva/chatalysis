@@ -4,11 +4,12 @@
     <title>Chatalysis - {{ title }}</title>
     <style>
         body {
-            font-family: "Georgia", 'Times New Roman', Times, serif
+            font-family: "Helvetica Neue", Tahoma, Verdana, Arial, sans-serif;
+            margin: 0;
+            padding: 0
         }
         div.root {
             text-align: center;
-            padding: 10px;
         }
         .profile-picture {
             border-radius: 50%;
@@ -41,58 +42,72 @@
             align-self: flex-end;
         }
     </style>
-    <script src="/Users/stepan/node_modules/chart.js/dist/Chart.js"></script>
+    <script src="{{path}}/node_modules/chart.js/dist/Chart.js"></script>
     <meta charset="utf-8">
 </head>
 
 <body>
     <div class="root">
-        <section id="header">
+        <section id="header" style="background-clip: padding-box; padding-top: 5px; padding-bottom: 5px; background-color: #F2F2F2;">
             <i>Chatalysis {{ version }}</i>
         </section>
-        <section id="names" style="display: grid; grid-template-columns: repeat(3, auto);">
+        <section id="names" style="display: grid; grid-template-columns: repeat(3, auto); padding-top: 30px; padding-bottom: 30px;">
             <div style="text-align: right;">
                 <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture">
             </div>
             <div>
-                <h1>{{ fullname1 }} and {{ fullname2 }}</h1>
+                <h1 style="font-size: 30; margin-bottom: 5;">{{ fullname1 }} and {{ fullname2 }}</h1>
                 <b>{{ fromDay }}</b>   -   <b>{{ toDay }}</b>
             </div> 
             <div style="text-align: left;">
                 <img src="{{ picture2 }}" alt="Profile picture 2" class="profile-picture">
             </div>
         </section>
-        <section id="total messages" style="padding-top: 10px;">
-            <p style="margin: 0; font-size: 50; font-weight: 500;">{{ totalMessages }}</p>
-            <p style="margin: 0;">total messages</p>
-        </section>
-        <section id="total stats" style="display: grid; grid-template-columns: repeat(6, 1fr); padding-top: 10px; padding-bottom: 10px;">
-            <div>
-                <p class="stats-num">{{ totalImages }}</p>
-                <p class="stats-text">{{ "images" if totalImages != 1 else "image"}}</p>
+        <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; background-color: #F2F2F2;">
+            <div style="display: flex; justify-content: center;">
+                <div style="align-self: center">
+                    <p class="stats-num">{{ totalImages }}</p>
+                    <p class="stats-text">{{ "images" if totalImages != 1 else "image"}}</p>
+                </div>
             </div>
-            <div>
-                <p class="stats-num">{{ totalGifs }}</p>
-                <p class="stats-text">{{ "gifs" if totalGifs != 1 else "gif"}}</p>
+            <div style="display: flex; justify-content: center;">
+                <div style="align-self: center">
+                    <p class="stats-num">{{ totalGifs }}</p>
+                    <p class="stats-text">{{ "gifs" if totalGifs != 1 else "gif"}}</p>
+                </div>
             </div>
-            <div>
-                <p class="stats-num">{{ totalStickers }}</p>
-                <p class="stats-text">{{ "stickers" if totalStickers != 1 else "sticker"}}</p>
+            <div style="display: flex; justify-content: center;">
+                <div style="align-self: center">
+                    <p class="stats-num">{{ totalStickers }}</p>
+                    <p class="stats-text">{{ "stickers" if totalStickers != 1 else "sticker"}}</p>
+                </div>
             </div>
-            <div>
+            <div style="display: flex; justify-content: center;">
+                <div style="align-self: center; padding-bottom: 8px;">
+                    <p style="margin: 0; font-size: 55; font-weight: 250;">{{ totalMessages }}</p>
+                    <p style="margin: 0; font-weight: 450;">total messages</p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center;">
+            <div style="align-self: center">
                 <p class="stats-num">{{ totalVideos }}</p>
                 <p class="stats-text">{{ "videos" if totalVideos != 1 else "video"}}</p>
             </div>
-            <div>
+            </div>
+            <div style="display: flex; justify-content: center;">
+            <div style="align-self: center">
                 <p class="stats-num">{{ totalAudios }}</p>
                 <p class="stats-text">{{ "audios" if totalAudios != 1 else "audio"}}</p>
             </div>
-            <div>
+            </div>
+            <div style="display: flex; justify-content: center;">
+            <div style="align-self: center">
                 <p class="stats-num">{{ totalFiles }}</p>
                 <p class="stats-text">{{ "files" if totalFiles != 1 else "file"}}</p>
             </div>
+            </div>
         </section>
-        <section id="personal stats" style="display: grid; grid-template-columns: 1fr 1fr 200px 1fr 1fr; padding-bottom: 20px; padding-top: 30px; grid-gap: 2px;">
+        <section id="personal stats" style="display: grid; grid-template-columns: 1fr 1fr 200px 1fr 1fr; padding-bottom: 30px; padding-top: 20px; grid-gap: 2px;">
             <div style="display: flex; align-items: center; justify-self: end;">
                 <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                     <div>
@@ -143,7 +158,7 @@
                 </div>
             </div>
         </section>
-        <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; padding-top: 20px;">
+        <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
             <div>
                 <p class="stats-num">{{ topDay }}</p>
                 <p class="stats-text">top day<br>
@@ -165,7 +180,7 @@
                     ({{ topWeekdayMsgs }})</p>
             </div>
         </section>
-        <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 20px; padding-top: 20px;" >
+        <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 40px; padding-top: 20px; padding-right: 75px; padding-left: 75px;">
             <div style="height: 225px;">
                 <canvas id="timeGraph"></canvas>
             </div>
@@ -173,65 +188,193 @@
                 <canvas id="hours"></canvas>
             </div>
         </section>
-        <section id="emoji stats" style="display: grid; grid-template-columns: 25% 25% 50%; padding-bottom: 20px; padding-top: 30px;">
-            <div style="display: flex; align-items: center; justify-content: center;">
+        <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
+            <div style="display: flex; align-items: center; justify-self: end;">
                 <div>    
                     <p class="stats-num">{{ totalEms }}</p>
-                    <p class="stats-text">total emojis<br>
+                    <p class="stats-text">total emojis</p>
                 </div>
             </div>
-            <div style="display: flex; align-items: center; justify-content: center;">
+            <div style="display: flex; justify-content: center;">
+            <div style="display: grid; grid-template-columns: repeat({{emojisL}}, 60px);">
+                {% for emoji, n, f in emojis %}
+                <div style="display: flex; justify-content: center;">
+                    <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                    ({{ n }})</p>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-self: start;">
                 <div>
                     <p class="stats-num">{{ diffEms }}</p>
-                    <p class="stats-text">different emojis<br>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat({{emojisL}}, auto);">
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 300%">{{ emojis[0] }}</span><br>
-                    {{ "(" if emojisL>0 }}{{ emojisN[0] }}{{ ")" if emojisL>0}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 275%">{{ emojis[1] }}</span><br>
-                    {{ "(" if emojisL>1 }}{{ emojisN[1] }}{{ ")" if emojisL>1}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 250%">{{ emojis[2] }}</span><br>
-                    {{ "(" if emojisL>2 }}{{ emojisN[2] }}{{ ")" if emojisL>2}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 225%">{{ emojis[3] }}</span><br>
-                    {{ "(" if emojisL>3 }}{{ emojisN[3] }}{{ ")" if emojisL>3}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 200%">{{ emojis[4] }}</span><br>
-                    {{ "(" if emojisL>4 }}{{ emojisN[4] }}{{ ")" if emojisL>4}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 180%">{{ emojis[5] }}</span><br>
-                    {{ "(" if emojisL>5 }}{{ emojisN[5] }}{{ ")" if emojisL>5}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 160%">{{ emojis[6] }}</span><br>
-                    {{ "(" if emojisL>6 }}{{ emojisN[6] }}{{ ")" if emojisL>6}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 140%">{{ emojis[7] }}</span><br>
-                    {{ "(" if emojisL>7 }}{{ emojisN[7] }}{{ ")" if emojisL>7}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 120%">{{ emojis[8] }}</span><br>
-                    {{ "(" if emojisL>8 }}{{ emojisN[8] }}{{ ")" if emojisL>8}}</span></p>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: 100%">{{ emojis[9] }}</span><br>
-                    {{ "(" if emojisL>9 }}{{ emojisN[9] }}{{ ")" if emojisL>9}}</span></p>
+                    <p class="stats-text">different emojis</p>
                 </div>
             </div>
         </section>
-        <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-bottom: 20px; padding-top: 10px;">
+        <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-bottom: 40px; padding-top: 25px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                        <div>
+                            <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture-small">
+                        </div>
+                        <p style="margin-top: 5px; margin-bottom: 0;">
+                            <b>{{ name1 }}</b>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                        <p class="stats">
+                            <b>{{ totalEms1 }}</b> total emojis<br>
+                            <b>{{ diffEms1 }}</b> different emojis<br>
+                            <b>{{ emojisAvg1 }}</b> emojis per message<br>
+                            <br>
+                            top emojis:
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                        <div>
+                            <img src="{{ picture2 }}" alt="Profile picture 1" class="profile-picture-small">
+                        </div>
+                        <p style="margin-top: 5px; margin-bottom: 0;">
+                            <b>{{ name2 }}</b>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                        <p class="stats">
+                            <b>{{ totalEms2 }}</b> total emojis<br>
+                            <b>{{ diffEms2 }}</b> different emojis<br>
+                            <b>{{ emojisAvg2 }}</b> emojis per message<br>
+                            <br>
+                            top emojis:
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                <div style="display: grid; grid-template-columns: repeat({{emojisL1}}, 50px);">
+                    {% for emoji, n, f in emojis1 %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                            ({{ n }})</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                <div style="display: grid; grid-template-columns: repeat({{emojisL2}}, 50px);">
+                    {% for emoji, n, f in emojis2 %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                            ({{ n }})</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </section>
-        <section id="footer">
+        <section id="reacts stats" style="display: grid; grid-template-columns: 1fr 58.5% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
+            <div style="display: flex; align-items: center; justify-self: end;">
+                <div>
+                    <p class="stats-num">{{ totalRs }}</p>
+                    <p class="stats-text">total reactions</p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <div style="display: grid; grid-template-columns: repeat({{reacsL}}, 60px);">
+                    {% for reac, n, f in reacs %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
+                            ({{ n }})</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-self: start;">
+                <div>
+                    <p class="stats-num">{{ diffRs }}</p>
+                    <p class="stats-text">different reactions</p>
+                </div>
+            </div>
+        </section>
+        <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-bottom: 20px; padding-top: 25px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div
+                        style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                        <div>
+                            <img src="{{ picture1 }}" alt="Profile picture 1" class="profile-picture-small">
+                        </div>
+                        <p style="margin-top: 5px; margin-bottom: 0;">
+                            <b>{{ name1 }}</b>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                        <p class="stats">
+                            <b>{{ reacsGave1 }}</b> reactions given<br>
+                            <b>{{ reacsGot1 }}</b> reactions received<br>
+                            <b>{{ reacsGotAvg1 }}</b> reactions per message<br>
+                            <br>
+                            top reactions received:
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div
+                        style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                        <div>
+                            <img src="{{ picture2 }}" alt="Profile picture 1" class="profile-picture-small">
+                        </div>
+                        <p style="margin-top: 5px; margin-bottom: 0;">
+                            <b>{{ name2 }}</b>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                        <p class="stats">
+                            <b>{{ reacsGave2 }}</b> reactions given<br>
+                            <b>{{ reacsGot2 }}</b> reactions received<br>
+                            <b>{{ reacsGotAvg2 }}</b> reactions per message<br>
+                            <br>
+                            top reactions received:
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                <div style="display: grid; grid-template-columns: repeat({{reacsL1}}, 50px);">
+                    {% for reac, n, f in reacs1 %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
+                            ({{ n }})</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                <div style="display: grid; grid-template-columns: repeat({{reacsL2}}, 50px);">
+                    {% for reac, n, f in reacs2 %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
+                            ({{ n }})</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <section id="footer" style="background-clip: padding-box; padding-top: 5px; padding-bottom: 5px; background-color: #F2F2F2;">
             <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
         </section>
     </div>
@@ -243,26 +386,26 @@
                 datasets: [{
                     data: {{ msgsPeople|safe }},
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(54, 162, 235, 0.5)'
+                        'rgba(231, 177, 46, 0.4)',
+                        'rgba(253, 213, 88, 0.2)'
                     ],
                     borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)'
+                        'rgba(231, 177, 46, 0.8)',
+                        'rgba(253, 213, 88, 1)'
                     ],
-                    borderWidth: 1
+                    borderWidth: 2
                 }]
             },
             options: {
                 legend: {display: false},
                 title: {
                     display: true,
-                    text: 'Messages distribution'
+                    text: 'Messages distribution',
+                    fontStyle: "normal",
+                    fontSize: 15
                 }
             }    
         })
-    </script>
-    <script>
         var myChart = new Chart("timeGraph", {
                 type: "bar",
                 data: {
@@ -299,15 +442,16 @@
                     legend: {display: false},
                     title: {
                         display: true,
-                        text: "Daily messages over time"
+                        text: "Daily messages over time",
+                        fontStyle: "normal",
+                        fontSize: 15
+
                     },
                     maintainAspectRatio: false,
                     tooltips: {enabled: false},
                     hover: {mode: null}
             }
         })
-    </script> 
-    <script>
         var myChart = new Chart("hours", {
                 type: "line",
                 data: {
@@ -350,7 +494,9 @@
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: "Messages throughout the day"
+                        text: "Messages throught the day",
+                        fontStyle: "normal",
+                        fontSize: 15
                         },
                     maintainAspectRatio: false
                     }

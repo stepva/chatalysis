@@ -1,9 +1,9 @@
 HIGH PRIORITY:
-    - Finish HTML file
-    - Path ChartJS
-    - Groupchats possibility for HTML
-    - Font (both in ChartJS and HTML)
+    - Groupchats possibility for HTML (LISTS FOR OUTPUT RETURN AND FOR LOOPS IN JINJA)
     - Function which orders top chats
+    - terminal interface
+    - terminal output more first messages
+
 
 IN THE FUTURE:
     - Better hours graph

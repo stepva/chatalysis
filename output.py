@@ -4,8 +4,10 @@ import os
 locale.setlocale(locale.LC_ALL, '')
 
 #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+#reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
 
-def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis):
+
+def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis, reactions):
     file_loader = FileSystemLoader("resources")
     env = Environment(loader=file_loader)
 
@@ -19,14 +21,17 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis):
     name1 = names[0]
     name2 = names[1]
     newNames = changeNames(names)
-    
+
     pictures = getPics(newNames, path)
     picture1 = pictures.get(newNames[0], False) or f"{path}/resources/placeholder.jpg"
     picture2 = pictures.get(newNames[1], False) or f"{path}/resources/placeholder.jpg"
 
     wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+    fontSizes = ["300", "275", "250", "225", "200", "180", "160", "140", "120", "100"]
+    fontSizesP = ["180", "170", "160", "150", "140", "130", "120", "110", "100", "90"]
 
     return template.render(
+        path=path,
         title=chat,
         version=version,
         fullname1=name1,
@@ -74,11 +79,36 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis):
         hours=list(hours.values()),
         hoursLab=list(hours.keys()),
         stepSizeYh=stepSize(hours),
+
         totalEms=s(emojis["total"]),
         diffEms=len(emojis["types"]),
-        emojis=topEmojis(emojis)[0],
-        emojisN=topEmojis(emojis)[1],
-        emojisL=len(topEmojis(emojis)[0])
+        emojis=zip(topEmojis(emojis)[0], topEmojis(emojis)[1], fontSizes),
+        emojisL=len(topEmojis(emojis)[0]),
+        totalEms1=s(emojis["sent"][name1]["total"]),
+        diffEms1=s(len(emojis["sent"][name1])-1),
+        emojisAvg1=round(emojis["sent"][name1]["total"]/people[name1], 2),
+        totalEms2=s(emojis["sent"][name2]["total"]),
+        diffEms2=s(len(emojis["sent"][name2])-1),
+        emojisAvg2=round(emojis["sent"][name2]["total"]/people[name2], 2),
+        emojisL1=len(topEmojisP(emojis, name1)[0]),
+        emojis1=zip(topEmojisP(emojis, name1)[0], topEmojisP(emojis, name1)[1], fontSizesP),
+        emojisL2=len(topEmojisP(emojis, name2)[0]),
+        emojis2=zip(topEmojisP(emojis, name2)[0], topEmojisP(emojis, name2)[1], fontSizesP),
+
+        totalRs=s(reactions["total"]),
+        diffRs=len(reactions["types"]),
+        reacsGave1=s(reactions["gave"][name1]["total"]),
+        reacsGave2=s(reactions["gave"][name2]["total"]),
+        reacsGot1=s(reactions["got"][name1]["total"]),
+        reacsGot2=s(reactions["got"][name2]["total"]),
+        reacsGotAvg1=round(reactions["got"][name1]["total"]/people[name1], 2),
+        reacsGotAvg2=round(reactions["got"][name2]["total"]/people[name2], 2),
+        reacs=zip(topEmojis(reactions)[0], topEmojis(reactions)[1], fontSizes),
+        reacsL=len(topEmojis(reactions)[0]),
+        reacs1=zip(topReacsP(reactions, name1)[0], topReacsP(reactions, name1)[1], fontSizesP),
+        reacs2=zip(topReacsP(reactions, name2)[0], topReacsP(reactions, name2)[1], fontSizesP),
+        reacsL1=len(topReacsP(reactions, name1)[0]),
+        reacsL2=len(topReacsP(reactions, name2)[0]),
     )
 
 def s(n):
@@ -133,3 +163,20 @@ def topEmojis(emojis):
         counts.append(s(e[1]))
     return [types[:10], counts[:10]]
 
+def topEmojisP(emojis, name):
+    l = sorted(emojis["sent"][name].items(), key=lambda item: item[1], reverse=True)
+    types = []
+    counts = []
+    for e in l:
+        types.append(e[0])
+        counts.append(s(e[1]))
+    return [types[1:11], counts[1:11]]
+
+def topReacsP(reactions, name):
+    l = sorted(reactions["got"][name].items(), key=lambda item: item[1], reverse=True)
+    types = []
+    counts = []
+    for e in l:
+        types.append(e[0])
+        counts.append(s(e[1]))
+    return [types[1:11], counts[1:11]]

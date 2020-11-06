@@ -6,4 +6,5 @@
 /output
 *.jpg
 !placeholder.jpg
-TODO
+/node_modules
+!package.json
