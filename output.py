@@ -98,6 +98,8 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, chat, emojis, reac
         totalRs=s(reactions["total"]),
         diffRs=len(reactions["types"]),
         reacsGave1=s(reactions["gave"][name1]["total"]),
+        diffRs1=s(len(reactions["gave"][name1])-1),
+        diffRs2=s(len(reactions["gave"][name2])-1),
         reacsGave2=s(reactions["gave"][name2]["total"]),
         reacsGot1=s(reactions["got"][name1]["total"]),
         reacsGot2=s(reactions["got"][name2]["total"]),

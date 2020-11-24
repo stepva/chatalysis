@@ -63,7 +63,7 @@
                 <img src="{{ picture2 }}" alt="Profile picture 2" class="profile-picture">
             </div>
         </section>
-        <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; background-color: #F2F2F2;">
+        <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
             <div style="display: flex; justify-content: center;">
                 <div style="align-self: center">
                     <p class="stats-num">{{ totalImages }}</p>
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <div style="display: flex; justify-content: center;">
-                <div style="align-self: center; padding-bottom: 8px;">
+                <div style="align-self: center; padding-bottom: 8px; min-width: 200px;">
                     <p style="margin: 0; font-size: 55; font-weight: 250;">{{ totalMessages }}</p>
                     <p style="margin: 0; font-weight: 450;">total messages</p>
                 </div>
@@ -321,6 +321,7 @@
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
                             <b>{{ reacsGave1 }}</b> reactions given<br>
+                            <b>{{ diffRs1 }}</b> different reactions given<br>
                             <b>{{ reacsGot1 }}</b> reactions received<br>
                             <b>{{ reacsGotAvg1 }}</b> reactions per message<br>
                             <br>
@@ -345,6 +346,7 @@
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
                             <b>{{ reacsGave2 }}</b> reactions given<br>
+                            <b>{{ diffRs2 }}</b> different reactions given<br>
                             <b>{{ reacsGot2 }}</b> reactions received<br>
                             <b>{{ reacsGotAvg2 }}</b> reactions per message<br>
                             <br>

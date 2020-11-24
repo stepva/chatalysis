@@ -1,9 +1,5 @@
-HIGH PRIORITY:
-    - Groupchats possibility for HTML (LISTS FOR OUTPUT RETURN AND FOR LOOPS IN JINJA)
-    - Function which orders top chats
-    - terminal interface
-    - terminal output more first messages
+Groupchats in the html
+Interface
+Pack it into a full program
 
-
-IN THE FUTURE:
-    - Better hours graph
+clean code

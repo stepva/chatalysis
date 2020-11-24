@@ -1,5 +1,8 @@
 import emoji
 import regex
+import re
+import os
+import json
 from datetime import datetime, date, timedelta
 
 
@@ -240,4 +243,35 @@ def emojiStats(emojis, names, people):
 
     return stats     
 
+def topTen():
+    home = os.getcwd()
+    chats = {}
+    groups = {}
+    inboxs = [m+"/inbox/" for m in os.listdir(home) if m.startswith("messages")]     
+    names = [i+n for i in inboxs for n in os.listdir(i) if os.path.isdir(i+n)]
+    ts = 0
 
+    for n in names:
+        m = n.split("inbox/")[1]
+        for file in os.listdir(n):
+            if file.startswith("message") and file.endswith(".json"):
+                with open(n + "/" + file) as data:
+                    data = json.load(data)
+                    if data["thread_type"] == "Regular":
+                        chats[m] = len(data["messages"]) + chats.get(m, 0)
+                    else:
+                        groups[m] = len(data["messages"]) + groups.get(m, 0)
+                    if data["messages"][0]["timestamp_ms"] > ts:
+                        ts = data["messages"][0]["timestamp_ms"]
+
+    topChats = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
+    for key in list(topChats.keys()):
+        name = key.split("_")[0]
+        topChats[name] = topChats.pop(key)
+    
+    lastMsgDate = date.fromtimestamp(ts//1000)
+    return topChats
+
+
+
+    
