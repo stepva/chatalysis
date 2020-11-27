@@ -21,7 +21,7 @@ def main(argv=None):
     parser.add_argument("-t", "--terminal", action="store_true")
     parser.add_argument("-o", "--output", action="store_true")
     args = parser.parse_args(argv)
-    
+    """
     pprint(topTen(), indent=2, sort_dicts=False)
     """
     home = os.getcwd()
@@ -69,10 +69,10 @@ def main(argv=None):
         pprint(firstMsg(messages), indent=2, sort_dicts=False)
 
     if args.output:
-        final = mrHtml(version, names, basicStats, fromDay, toDay, times, args.chat, emojis, reactions)
+        final = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
         with open(f"output/{args.chat}.html", "w") as data:
             data.write(final)
-    """
+    
 
 
 if __name__ == "__main__":

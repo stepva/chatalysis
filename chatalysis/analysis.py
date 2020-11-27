@@ -1,6 +1,5 @@
 import emoji
 import regex
-import re
 import os
 import json
 from datetime import datetime, date, timedelta
@@ -271,7 +270,3 @@ def topTen():
     
     lastMsgDate = date.fromtimestamp(ts//1000)
     return topChats
-
-
-
-    

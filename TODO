@@ -1,5 +1,8 @@
+Decode force normal heart in reactions
 Groupchats in the html
 Interface
 Pack it into a full program
 
 clean code
+
+will probably need to rework functions once start with pyinstaller packing
