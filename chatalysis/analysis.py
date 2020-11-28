@@ -1,8 +1,11 @@
+
+# Standard library imports
+from datetime import datetime, date, timedelta
+import json
+import os
+# Third party imports
 import emoji
 import regex
-import os
-import json
-from datetime import datetime, date, timedelta
 
 
 def raw(messages, names):

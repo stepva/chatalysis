@@ -1,12 +1,15 @@
-from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+
+# Standard library imports
 import locale
 import os
-locale.setlocale(locale.LC_ALL, '')
+# Third party imports
+from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+
 
 #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+locale.setlocale(locale.LC_ALL, '')
 
-path = os.getcwd()
 
 def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title):
     file_loader = FileSystemLoader("resources")
@@ -22,7 +25,7 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     return template.render(
         #utility
-        path=path,
+        path=os.getcwd(),
         participants=len(names),
         version=version,
         fromDay=fromDay,

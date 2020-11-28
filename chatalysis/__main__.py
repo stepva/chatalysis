@@ -1,18 +1,19 @@
-#standard imports:
+
+# Standard library imports
 import json
 import argparse
 import os
 from datetime import datetime, date
 from pprint import pprint
-#pakcage imports:
+# Third party imports
 import emoji
 import regex
 import matplotlib.pyplot as plt
-#local imports:
+# Application imports
+from __init__ import version
 from analysis import *
 from output import mrHtml
 
-version = "v0.69"
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
