@@ -1,8 +1,14 @@
-Decode force normal heart in reactions
-Groupchats in the html
+Groupchats in the html - also fix for a single chat with just one participant
 Interface
 Pack it into a full program
 
-clean code
+Clean and Comment code
 
 will probably need to rework functions once start with pyinstaller packing
+
+NOW:
+
+
+
+
+GETTING CURRENT DATA FOR NAMES AND TITLE WILL HAVE TO BE LOOKED AT WHEN HAVING MORE THAN ONE MESSAGES FOLDERS
