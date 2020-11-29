@@ -24,7 +24,7 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
     labels, data, background, border = msgGraph(names, people)
-    
+
     return template.render(
         #utility
         path=os.getcwd(),
@@ -53,6 +53,7 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
         #personalstats
         lines=persStatsCount(names)[0],
         left=persStatsCount(names)[1],
+        leftEmojis=emojiStatsCount(names),
 
         #messagesgraph
         labels=labels,
@@ -89,6 +90,7 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
         avgReacs=avgCounts(names, people, reactions, "gave"),
         topReacs=topEmojis(reactions, names, "got"),
         reacsL=topsCount(names, reactions, "got"),
+
     )
 
 def s(n):
@@ -192,6 +194,12 @@ def persStatsCount(names):
     else:
         return [0, 0]
 
+def emojiStatsCount(names):
+    if len(names)%2 == 0:
+        return -len(names)
+    else: 
+        return 1
+
 def msgGraph(names, people):
     labels=[]
     data=[]
@@ -212,8 +220,8 @@ def msgGraph(names, people):
         for n in names:
             labels.append(n)
             data.append(people[n])
-            color = f"{str(random.randint(0, 80))}, {str(random.randint(50, 100))}%, {str(random.randint(50, 70))}%"
-            background.append(f"hsla({color}, 0.3)")
-            border.append(f"hsla({color}, 0.9)")
+            color = f"{str(random.randint(0, 200))}, {str(random.randint(50, 100))}%, {str(random.randint(50, 70))}%"
+            background.append(f"hsla({color}, 0.{random.randint(2, 5)})")
+            border.append(f"hsla({color}, 0.{random.randint(6, 9)})")
     return (labels, data, background, border)
     
