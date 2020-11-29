@@ -7,8 +7,8 @@ import os
 import emoji
 import regex
 
-
 def raw(messages, names):
+    #print(decode("\u00e2\u009d\u00a4"))
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
     people = {"total": 0}
@@ -33,8 +33,6 @@ def raw(messages, names):
 
     for m in messages:
         name = m["sender_name"]
-        people["total"] += 1
-        people[name] = 1 + people.get(name, 0)
         day = date.fromtimestamp(m["timestamp_ms"]//1000)
         days[str(day)] += 1
         month = f"{day.month}/{day.year}"
@@ -45,44 +43,60 @@ def raw(messages, names):
         weekdays[weekday] = 1 + weekdays.get(weekday, 0)
         hour = datetime.fromtimestamp(m["timestamp_ms"]//1000).hour
         hours[hour] += 1
+        people["total"] += 1
+        if name in names: 
+            people[name] = 1 + people.get(name, 0)
         if "content" in m:
-            data = regex.findall(r'\X', m["content"])
-            for c in data:
-                if any(char in emoji.UNICODE_EMOJI for char in c):
-                    emojis["total"] += 1
-                    emojis["types"][c] = 1 + emojis["types"].get(c, 0)
-                    emojis["sent"][name]["total"] += 1
-                    emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
+            if name in names:
+                data = regex.findall(r'\X', m["content"])
+                for c in data:
+                    if any(char in emoji.UNICODE_EMOJI for char in c):
+                        emojis["total"] += 1
+                        emojis["types"][c] = 1 + emojis["types"].get(c, 0)
+                        emojis["sent"][name]["total"] += 1
+                        emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
         elif "photos" in m:
             photos["total"] += 1
-            photos[name] = 1 + photos.get(name, 0)
+            if name in names:
+                photos[name] = 1 + photos.get(name, 0)
         elif "gifs" in m:
             gifs["total"] += 1
-            gifs[name] = 1 + gifs.get(name, 0)
+            if name in names:
+                gifs[name] = 1 + gifs.get(name, 0)
         elif "sticker" in m:
             stickers["total"] += 1
-            stickers[name] = 1 + stickers.get(name, 0)
+            if name in names:
+                stickers[name] = 1 + stickers.get(name, 0)
         elif "videos" in m:
             videos["total"] += 1
-            videos[name] = 1 + videos.get(name, 0)
+            if name in names:
+                videos[name] = 1 + videos.get(name, 0)
         elif "audio_files" in m:
             audios["total"] += 1
-            audios[name] = 1 + audios.get(name, 0)
+            if name in names:
+                audios[name] = 1 + audios.get(name, 0)
         elif "files" in m:
             files["total"] += 1
-            files[name] = 1 + files.get(name, 0)
+            if name in names:
+                files[name] = 1 + files.get(name, 0)
         if "reactions" in m:
             for r in m["reactions"]:
+                if r["reaction"] == decode("\u00e2\u009d\u00a4"):
+                    reaction = "❤️"
+                else:
+                    reaction = r["reaction"]
                 reactions["total"] += 1
-                reactions["types"][r["reaction"]] = 1 + reactions["types"].get(r["reaction"], 0)
-                reactions["gave"][r["actor"]]["total"] += 1
-                reactions["gave"][r["actor"]][r["reaction"]] = 1 + reactions["gave"][r["actor"]].get(r["reaction"], 0)
-                reactions["got"][name]["total"] += 1
-                reactions["got"][name][r["reaction"]] = 1 + reactions["got"][name].get(r["reaction"], 0)
+                reactions["types"][reaction] = 1 + reactions["types"].get(reaction, 0)
+                if name in names:
+                    reactions["got"][name]["total"] += 1
+                    reactions["got"][name][reaction] = 1 + reactions["got"][name].get(reaction, 0)
+                    if r["actor"] in names:
+                        reactions["gave"][r["actor"]]["total"] += 1
+                        reactions["gave"][r["actor"]][reaction] = 1 + reactions["gave"][r["actor"]].get(reaction, 0)
     
     basicStats = (people, photos, gifs, stickers, videos, audios, files)
     times = (hours, days, weekdays, months, years)
-    return basicStats, reactions, emojis, times, people, fromDay, toDay
+    return basicStats, reactions, emojis, times, people, fromDay, toDay, names
 
 def daysList(messages):
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)

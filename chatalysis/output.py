@@ -2,6 +2,7 @@
 # Standard library imports
 import locale
 import os
+import math, random
 # Third party imports
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
 
@@ -22,7 +23,8 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
     template = env.get_template('index.html.j2')
 
     wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
-
+    labels, data, background, border = msgGraph(names, people)
+    
     return template.render(
         #utility
         path=os.getcwd(),
@@ -47,6 +49,16 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
         stickers=stickers,
         audios=audios,
         files=files,
+
+        #personalstats
+        lines=persStatsCount(names)[0],
+        left=persStatsCount(names)[1],
+
+        #messagesgraph
+        labels=labels,
+        data=data,
+        background=background,
+        border=border,
 
         #timestats
         topDay=topTimes(days),
@@ -95,17 +107,18 @@ def changeName(name):
     return "".join(l).lower()
 
 def splitNames(names):
-    splits = []
+    splits = {}
     for n in names:
-        splits.append(n.split()[0])
+        splits[n] = n.split()[0]
     return splits
 
 def getPics(names):
+    path=os.getcwd()
     pics = {}
     for n in names:
-        nn = changeName(n)
+        pics[n] = f"{path}/resources/placeholder.jpg" 
         for p in os.listdir(f"{path}/resources"):
-            if p.startswith(nn):
+            if p.startswith(changeName(n)):
                 pics[n] = f"{path}/resources/{p}"
     return pics
 
@@ -142,7 +155,7 @@ def topEmojisPersonal(emojis, name, sent):
     return [types[1:11], counts[1:11]]
 
 def topEmojis(emojis, names, sent):
-    fontSizesT = ["300", "275", "250", "225", "200", "180", "160", "140", "120", "100"]
+    fontSizesT = list(map(str, range(300, 100, -20)))
     fontSizesP = list(map(str, range(180, 80, -10)))
     tops = {"total": zip(topEmojisTotal(emojis)[0], topEmojisTotal(emojis)[1], fontSizesT)}
     for n in names:
@@ -169,3 +182,38 @@ def topsCount(names, emojis, sent):
     for n in names:
         count[n] = len(topEmojisPersonal(emojis, n, sent)[0])
     return count
+
+def persStatsCount(names):
+    if len(names) > 2:
+        lines = math.floor((len(names)-2)/3)
+        left = (len(names)-2)-(lines*3)
+        x = -len(names) if left == 0 else left
+        return [lines, x]
+    else:
+        return [0, 0]
+
+def msgGraph(names, people):
+    labels=[]
+    data=[]
+    background=[]
+    border=[]
+    if len(names)==2:
+        labels=[names[1], names[0]]
+        data=[people[names[1]], people[names[0]]]
+        background = [
+            "hsla(42, 79%, 54%, 0.4)",
+            "hsla(45, 98%, 67%, 0.2)"
+        ]
+        border = [
+            "hsla(42, 79%, 54%, 0.8)",
+            "hsla(45, 98%, 67%, 1)"
+        ]
+    else:
+        for n in names:
+            labels.append(n)
+            data.append(people[n])
+            color = f"{str(random.randint(0, 80))}, {str(random.randint(50, 100))}%, {str(random.randint(50, 70))}%"
+            background.append(f"hsla({color}, 0.3)")
+            border.append(f"hsla({color}, 0.9)")
+    return (labels, data, background, border)
+    

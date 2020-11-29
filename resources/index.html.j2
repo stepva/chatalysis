@@ -124,7 +124,7 @@
                         <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-top: 5px; margin-bottom: 0;">
-                        <b>{{ splits[0] }}</b>
+                        <b>{{ splits[names[0]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                         <img src="{{ pictures[names[1]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-bottom: 0; margin-top: 5px;">
-                        <b>{{ splits[1] }}</b>
+                        <b>{{ splits[names[1]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -170,7 +170,71 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section>    
+        {% if participants > 2 %}
+            {% if lines > 0 %}     
+                <section id="more personal stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 2px;">
+                    {% for n in names[2:-left] %}
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px; padding-bottom: 20px;">  
+                            <div style="display: flex; align-items: center; justify-self: end;">
+                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                                    <div>
+                                    <img src="{{ pictures[n] }}" alt="Profile picture 1" class="profile-picture-small">
+                                    </div>
+                                    <p style="margin-top: 5px; margin-bottom: 0;">
+                                    <b>{{ splits[n] }}</b>
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-self: start;">
+                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                                    <p class="stats">
+                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
+                                        <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
+                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
+                                        <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
+                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
+                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+            {% if left > 0 %}
+                <section id="extra personal stats" style="display: grid; grid-template-columns: repeat({{left}}, 1fr); padding-bottom: 30px; grid-gap: 2px; padding-right: 150px; padding-left: 150px">
+                    {% for n in names[-left:] %}           
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px; margin: auto;">  
+                            <div style="display: flex; align-items: center; justify-self: end;">
+                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                                    <div>
+                                    <img src="{{ pictures[n] }}" alt="Profile picture 1" class="profile-picture-small">
+                                    </div>
+                                    <p style="margin-top: 5px; margin-bottom: 0;">
+                                    <b>{{ splits[n] }}</b>
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-self: start;">
+                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                                    <p class="stats">
+                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
+                                        <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
+                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
+                                        <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
+                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
+                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endif %}
         <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
             <div>
                 <p class="stats-num">{{ topDay[0] }}</p>
@@ -233,7 +297,7 @@
                             <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-top: 5px; margin-bottom: 0;">
-                            <b>{{ splits[0] }}</b>
+                            <b>{{ splits[names[0]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -256,7 +320,7 @@
                             <img src="{{ pictures[names[1]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-top: 5px; margin-bottom: 0;">
-                            <b>{{ splits[1] }}</b>
+                            <b>{{ splits[names[1]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -326,7 +390,7 @@
                             <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-top: 5px; margin-bottom: 0;">
-                            <b>{{ splits[0] }}</b>
+                            <b>{{ splits[names[0]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -351,7 +415,7 @@
                             <img src="{{ pictures[names[1]] }}" alt="Profile picture 1" class="profile-picture-small">
                         </div>
                         <p style="margin-top: 5px; margin-bottom: 0;">
-                            <b>{{ splits[1] }}</b>
+                            <b>{{ splits[names[1]] }}</b>
                         </p>
                     </div>
                 </div>
@@ -397,17 +461,11 @@
         var myChart = new Chart("pieMessages", {
             type: 'doughnut',
             data: {
-                labels: {{ [names[1], names[0]] }},
+                labels: {{ labels }},
                 datasets: [{
-                    data: {{ [messages[names[1]], messages[names[0]]] }},
-                    backgroundColor: [
-                        'rgba(231, 177, 46, 0.4)',
-                        'rgba(253, 213, 88, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(231, 177, 46, 0.8)',
-                        'rgba(253, 213, 88, 1)'
-                    ],
+                    data: {{ data }},
+                    backgroundColor: {{ background }},
+                    borderColor: {{ border }},
                     borderWidth: 2
                 }]
             },

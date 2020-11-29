@@ -41,24 +41,24 @@ def main(argv=None):
         for file in os.listdir(ch):
             if file.startswith("message") and file.endswith(".json"):
                 jsons.append(f"{ch}/{file}")
+            if file == "message_1.json":
+                with open(f"{ch}/{file}") as last:
+                    data = json.load(last)
+                    title = decode(data["title"])
+                    names = getNames(data)
 
     if not jsons:
         raise Exception("NO JSON FILES IN THIS CHAT")
 
-    with open(jsons[0]) as chat:
-        data = json.load(chat)
-        title = decode(data["title"])
-        names = getNames(data)
-
     messages = []
-    for j in jsons:
+    for j in jsons:    
         with open(j) as data:
             data = json.load(data)
             messages.extend(data["messages"])
     messages = sorted(messages, key=lambda k: k["timestamp_ms"])
     decodeMsgs(messages)
 
-    basicStats, reactions, emojis, times, people, fromDay, toDay = raw(messages, names)
+    basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(messages, names)
     daysList(messages)
     
     if args.terminal:
