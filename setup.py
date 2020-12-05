@@ -17,7 +17,7 @@ with open('requirements.txt') as file:
 setup(
     name="chatalysis",
     version=version,
-    description="Chatalysis ...",
+    description="Chatalysis analysises your Facebook Messenger chats and visualises your stats in a nice, clean way.",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/stepva/chatalysis",

@@ -1,16 +1,14 @@
 {
   "name": "chatalysis",
   "version": "1.0.0",
-  "description": "",
+  "description": "Chatalysis analysises your Facebook Messenger chats and visualises your stats in a nice, clean way.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stepva/chatalysis.git"
+    "url": "https://github.com/stepva/chatalysis.git"
   },
-  "author": "",
+  "author": "Štěpán Vácha",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/stepva/chatalysis/issues"

@@ -13,7 +13,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 
 def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title):
-    file_loader = FileSystemLoader("resources")
+    file_loader = FileSystemLoader("resources/templates")
     env = Environment(loader=file_loader)
     env.filters['space'] = s
 
@@ -118,10 +118,10 @@ def getPics(names):
     path=os.getcwd()
     pics = {}
     for n in names:
-        pics[n] = f"{path}/resources/placeholder.jpg" 
-        for p in os.listdir(f"{path}/resources"):
+        pics[n] = f"{path}/resources/images/placeholder.jpg" 
+        for p in os.listdir(f"{path}/resources/images"):
             if p.startswith(changeName(n)):
-                pics[n] = f"{path}/resources/{p}"
+                pics[n] = f"{path}/resources/images/{p}"
     return pics
 
 def stepSize(days):
@@ -203,25 +203,46 @@ def emojiStatsCount(names):
 def msgGraph(names, people):
     labels=[]
     data=[]
-    background=[]
-    border=[]
+    background = [
+        "hsla(42, 79%, 54%, 0.4)",
+        "hsla(45, 98%, 67%, 0.2)",
+        "hsla(42, 79%, 54%, 0.6)",
+        "hsla(45, 98%, 67%, 0.4)",
+        "hsla(42, 79%, 54%, 0.8)",
+        "hsla(45, 98%, 67%, 0.6)",
+        "hsla(42, 79%, 54%, 1)",
+        "hsla(45, 98%, 67%, 0.8)",
+        "hsla(69, 100%, 66%, 0.6)",
+        "hsla(17, 80%, 66%, 0.5)"
+    ]
+    border = [
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)",
+        "hsla(53, 0%, 0%, 0.5)"
+    ]
     if len(names)==2:
         labels=[names[1], names[0]]
         data=[people[names[1]], people[names[0]]]
-        background = [
-            "hsla(42, 79%, 54%, 0.4)",
-            "hsla(45, 98%, 67%, 0.2)"
-        ]
-        border = [
-            "hsla(42, 79%, 54%, 0.8)",
-            "hsla(45, 98%, 67%, 1)"
-        ]
+        bg=background[0:2]
+        bo=border[0:2] 
     else:
-        for n in names:
-            labels.append(n)
-            data.append(people[n])
-            color = f"{str(random.randint(0, 200))}, {str(random.randint(50, 100))}%, {str(random.randint(50, 70))}%"
-            background.append(f"hsla({color}, 0.{random.randint(2, 5)})")
-            border.append(f"hsla({color}, 0.{random.randint(6, 9)})")
+        for n in sorted(people.items(), key=lambda item: item[1], reverse=True)[1:10]:
+            labels.append(n[0])
+            data.append(n[1])
+            bg=background[0:9]
+            bo=border[0:9]
+        if len(names) > 9:
+            labels.append("Others")
+            sofar=sum(data)
+            data.append(people["total"]-sofar)
+            bg.append(background[9])
+            bo.append(border[9])        
     return (labels, data, background, border)
     

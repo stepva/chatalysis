@@ -6,9 +6,9 @@ import os
 # Third party imports
 import emoji
 import regex
+from utility import decode
 
 def raw(messages, names):
-    #print(decode("\u00e2\u009d\u00a4"))
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
     people = {"total": 0}
@@ -114,26 +114,6 @@ def hoursList():
         hours[i] = 0
     return hours
 
-def decode(word):
-    return word.encode('iso-8859-1').decode('utf-8')
-
-def decodeMsgs(messages):
-    for m in messages:
-        m["sender_name"] = m["sender_name"].encode('iso-8859-1').decode('utf-8')
-        if "content" in m:
-            m["content"] = m["content"].encode('iso-8859-1').decode('utf-8')
-        if "reactions" in m:
-            for r in m["reactions"]:
-                r["reaction"] = r["reaction"].encode('iso-8859-1').decode('utf-8')
-                r["actor"] = r["actor"].encode('iso-8859-1').decode('utf-8')
-    return messages
-
-def getNames(data):
-    ns = []
-    for i in data["participants"]:
-        ns.append(i["name"].encode('iso-8859-1').decode('utf-8'))
-    return ns
-
 def countFiltered(iterable, predicate):
     return len(list(filter(predicate, iterable)))
 
@@ -161,7 +141,7 @@ def chatStats(basicStats, names):
         
     return info
 
-def header(title, messages):
+def firstRow(title, messages):
     fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
     toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
     print(f"Chat: {title}, from {fromDay} to {toDay}")
@@ -259,8 +239,7 @@ def emojiStats(emojis, names, people):
 
     return stats     
 
-def topTen():
-    home = os.getcwd()
+def topTen(home):
     chats = {}
     groups = {}
     inboxs = [m+"/inbox/" for m in os.listdir(home) if m.startswith("messages")]     

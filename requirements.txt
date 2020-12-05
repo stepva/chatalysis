@@ -1,4 +1,3 @@
-pyinstaller
 emoji
 regex
 jinja2

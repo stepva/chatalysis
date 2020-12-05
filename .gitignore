@@ -1,5 +1,6 @@
 *.zip
 /messages
+*.mp4
 *.json
 *.png
 *.pyc
