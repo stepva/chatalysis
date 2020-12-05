@@ -1,7 +1,7 @@
 {
   "name": "chatalysis",
   "version": "1.0.0",
-  "description": "Chatalysis analysises your Facebook Messenger chats and visualises your stats in a nice, clean way.",
+  "description": "Chatalysis visualises stats from your Facebook Messenger chats",
   "main": "index.js",
 
   "repository": {
