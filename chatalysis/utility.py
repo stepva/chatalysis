@@ -1,15 +1,18 @@
 # Standard library imports
 import os
 import json
+import pathlib
+
+home = pathlib.Path(__file__).parent.absolute()
 
 # Gets the desired chat(s)
-def getChats(home, name):
+def getChats(name):
     chats = []
-    for d in os.listdir(home):
-        if d.startswith("messages") and os.path.isdir(f"{home}/{d}"):
-            for f in os.listdir(d + "/inbox"):
+    for d in os.listdir(f"{home}/.."):
+        if d.startswith("messages") and os.path.isdir(f"{home}/../{d}"):
+            for f in os.listdir(f"{home}/../{d}/inbox"):
                 if f.startswith(name + "_"):
-                    chats.append(f"{d}/inbox/{f}")
+                    chats.append(f"{home}/../{d}/inbox/{f}")
                     break
     if not chats:
         raise Exception("NO CHATS NAMED " + name)

@@ -2,11 +2,14 @@
 from datetime import datetime, date, timedelta
 import json
 import os
+import pathlib
 # Third party imports
 import emoji
 import regex
 # Application imports
 from utility import decode
+
+home = pathlib.Path(__file__).parent.absolute()
 
 # Go through all the messages and return the stats in a "raw" form
 def raw(messages, names):
@@ -240,10 +243,10 @@ def emojiStats(emojis, names, people):
     return stats     
 
 # Goes through conversations and returns the top 10 chats based on messages number
-def topTen(home):
+def topTen():
     chats = {}
     groups = {}
-    inboxs = [m+"/inbox/" for m in os.listdir(home) if m.startswith("messages")]     
+    inboxs = [f"{home}/../{m}/inbox/" for m in os.listdir(f"{home}/..") if m.startswith("messages")]
     names = [i+n for i in inboxs for n in os.listdir(i) if os.path.isdir(i+n)]
     ts = 0
 

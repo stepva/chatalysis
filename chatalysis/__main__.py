@@ -1,18 +1,18 @@
 # Standard library imports
 import argparse
 import os
+import pathlib
 from pprint import pprint
 # Application imports
 from __init__ import version
 from analysis import *
-from output import mrHtml
+from infographic import mrHtml
 from utility import *
 from interface import *
 
+home = pathlib.Path(__file__).parent.absolute()
 
 def main(argv=None):
-    home = os.getcwd()
-    
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)
     parser.add_argument("-t", "--terminal", action="store_true")
@@ -20,7 +20,7 @@ def main(argv=None):
     
     if args.terminal:
         name = input()
-        terminalyse(name, home)
+        terminalyse(name)
     else:    
         header()
         tops=0
@@ -29,21 +29,19 @@ def main(argv=None):
 
             if inp == "top":
                 if tops==0:
-                    tops=topTen(home)
+                    tops=topTen()
                 pprint(tops, indent=2, sort_dicts=False)
-            elif inp == "help":
-                print("soon")
             elif inp == "exit":
                 break
             else:
-                chatalyse(inp, home)
+                chatalyse(inp)
 
             if inp == "exit":
                 break
 
             print("\nDone!\n")
             again = input("Again? Type \"no\" to close this, hit enter to go again: ")
-            
+
             if again == "no":
                 break
 

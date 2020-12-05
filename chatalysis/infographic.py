@@ -2,9 +2,11 @@
 import locale
 import os
 import math, random
+import pathlib
 # Third party imports
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
 
+home = pathlib.Path(__file__).parent.absolute()
 
 #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
@@ -12,7 +14,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 # Imports stats and other variables into the HTML
 def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title):
-    file_loader = FileSystemLoader("resources/templates")
+    file_loader = FileSystemLoader(f"{home}/../resources/templates")
     env = Environment(loader=file_loader)
     env.filters['space'] = s
 
@@ -118,13 +120,12 @@ def splitNames(names):
 
 # Collects the available profile pics or uses a placeholder picture instead
 def getPics(names):
-    path=os.getcwd()
     pics = {}
     for n in names:
-        pics[n] = f"{path}/resources/images/placeholder.jpg" 
-        for p in os.listdir(f"{path}/resources/images"):
+        pics[n] = f"{home}/../resources/images/placeholder.jpg" 
+        for p in os.listdir(f"{home}/../resources/images"):
             if p.startswith(changeName(n)):
-                pics[n] = f"{path}/resources/images/{p}"
+                pics[n] = f"{home}/../resources/images/{p}"
     return pics
 
 # Calculates the desired step size for the time chart
