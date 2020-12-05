@@ -1,4 +1,3 @@
-
 # Standard library imports
 import locale
 import os
@@ -11,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
 #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
 locale.setlocale(locale.LC_ALL, '')
 
-
+# Imports stats and other variables into the HTML
 def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title):
     file_loader = FileSystemLoader("resources/templates")
     env = Environment(loader=file_loader)
@@ -93,9 +92,11 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     )
 
+# Splits number by thousands with a space
 def s(n):
     return "{0:n}".format(n) if n != 1 else n
 
+# Removes non-english characters from a name
 def changeName(name):
     no = 'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝßàáâãäåçèéêëìíîïñòóôõöùúûüýÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ'
     yes = 'AAAAAACEEEEIIIINOOOOOUUUUYsaaaaaaceeeeiiiinooooouuuuyyAaAaAaCcCcCcCcDdDdEeEeEeEeEeGgGgGgGgHhHhIiIiIiIiIiKkkLlLlLlLlLlNnNnNnNnNOoOoOoRrRrRrSsSsSsSsTtTtTtUuUuUuUuUuUuWwYyYZzZzZzs'
@@ -108,12 +109,14 @@ def changeName(name):
             l[ind] = yes[old]
     return "".join(l).lower()
 
+# Splits names and takes just the first name
 def splitNames(names):
     splits = {}
     for n in names:
         splits[n] = n.split()[0]
     return splits
 
+# Collects the available profile pics or uses a placeholder picture instead
 def getPics(names):
     path=os.getcwd()
     pics = {}
@@ -124,6 +127,7 @@ def getPics(names):
                 pics[n] = f"{path}/resources/images/{p}"
     return pics
 
+# Calculates the desired step size for the time chart
 def stepSize(days):
     x = sorted(days.items(), key=lambda item: item[1], reverse=True)[0][1]
     if x < 100:
@@ -132,12 +136,14 @@ def stepSize(days):
         y = x if x % 100 == 0 else x + 100 - x % 100
     return y/2
 
+# Creates labels for the time chart
 def monthLabel(days):
     l = list(days.keys())
     for i in range(len(l)):
         l[i] = l[i][:7]
     return l
 
+# Prepares top emojis for the HTML 
 def topEmojisTotal(emojis):
     l = sorted(emojis["types"].items(), key=lambda item: item[1], reverse=True)
     types = []
@@ -147,6 +153,7 @@ def topEmojisTotal(emojis):
         counts.append(e[1])
     return [types[:10], counts[:10]]
 
+# Prepares personal top emojis for the HTML 
 def topEmojisPersonal(emojis, name, sent):
     l = sorted(emojis[sent][name].items(), key=lambda item: item[1], reverse=True)
     types = []
@@ -156,6 +163,7 @@ def topEmojisPersonal(emojis, name, sent):
         counts.append(e[1])
     return [types[1:11], counts[1:11]]
 
+# Packs the overall and top emojis for the HTML 
 def topEmojis(emojis, names, sent):
     fontSizesT = list(map(str, range(300, 100, -20)))
     fontSizesP = list(map(str, range(180, 80, -10)))
@@ -164,27 +172,32 @@ def topEmojis(emojis, names, sent):
         tops[n] = zip(topEmojisPersonal(emojis, n, sent)[0], topEmojisPersonal(emojis, n, sent)[1], fontSizesP)
     return tops
 
+# Gets the top time (year, month...) and messages in there
 def topTimes(time):
     return [sorted(time.items(), key=lambda item: item[1], reverse=True)[0][0], sorted(time.items(), key=lambda item: item[1], reverse=True)[0][1]]
 
+# Gets the count of different emojis or reactions
 def countTypes(names, emojis, sent):
     lens = {"total": len(emojis["types"])}
     for n in names:
         lens[n] = len(emojis[sent][n])-1
     return lens
 
+# Gets the average of sent emojis or reactions
 def avgCounts(names, people, emojis, sent):
     avgs = {}
     for n in names:
         avgs[n] = round(emojis[sent][n]["total"]/people[n], 2)
     return avgs
 
+# Gets the number of top emojis or reactions up to 10
 def topsCount(names, emojis, sent):
     count = {"total": len(topEmojisTotal(emojis)[0])}
     for n in names:
         count[n] = len(topEmojisPersonal(emojis, n, sent)[0])
     return count
 
+# Calculates how many lines of personal stats are needed in the HTML
 def persStatsCount(names):
     if len(names) > 2:
         lines = math.floor((len(names)-2)/3)
@@ -194,12 +207,14 @@ def persStatsCount(names):
     else:
         return [0, 0]
 
+# Calculates how many lines of emojis and reactions stats are needed in the HTML
 def emojiStatsCount(names):
     if len(names)%2 == 0:
         return -len(names)
     else: 
         return 1
 
+# Prepares labels and data for the messages graph
 def msgGraph(names, people):
     labels=[]
     data=[]

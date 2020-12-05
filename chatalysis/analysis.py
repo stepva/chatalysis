@@ -1,4 +1,3 @@
-
 # Standard library imports
 from datetime import datetime, date, timedelta
 import json
@@ -6,8 +5,10 @@ import os
 # Third party imports
 import emoji
 import regex
+# Application imports
 from utility import decode
 
+# Go through all the messages and return the stats in a "raw" form
 def raw(messages, names):
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
@@ -98,6 +99,7 @@ def raw(messages, names):
     times = (hours, days, weekdays, months, years)
     return basicStats, reactions, emojis, times, people, fromDay, toDay, names
 
+# Prepares a dictionary with all days from the first message up to the last one
 def daysList(messages):
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
@@ -108,15 +110,14 @@ def daysList(messages):
         days[str(day)] = 0
     return days
 
+# Prepares a dictionary with hours in the day
 def hoursList():
     hours = {}
     for i in range(24):
         hours[i] = 0
     return hours
 
-def countFiltered(iterable, predicate):
-    return len(list(filter(predicate, iterable)))
-
+# Prepares basic chat stats for a terminal output
 def chatStats(basicStats, names):
     #basicStats = [people, photos, gifs, stickers, videos, audios, files]
     info = {
@@ -141,11 +142,7 @@ def chatStats(basicStats, names):
         
     return info
 
-def firstRow(title, messages):
-    fromDay = str(date.fromtimestamp(messages[0]["timestamp_ms"]//1000))
-    toDay = str(date.fromtimestamp(messages[-1]["timestamp_ms"]//1000))
-    print(f"Chat: {title}, from {fromDay} to {toDay}")
-
+# Prepares time stats for a terminal output
 def timeStats(times):
     #times = [hours, days, weekdays, months, years]
     wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
@@ -164,6 +161,7 @@ def timeStats(times):
     }
     return stats
 
+# Prepares reaction stats for a terminal output
 def reactionStats(reactions, names, people):
     #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
     gaves = {}
@@ -197,6 +195,7 @@ def reactionStats(reactions, names, people):
 
     return stats
 
+# Returns the first conversation ever
 def firstMsg(messages):
     author = messages[0]["sender_name"]
     texts = {}
@@ -212,6 +211,7 @@ def firstMsg(messages):
             break
     return texts
 
+# Prepares emoji stats for a terminal output
 def emojiStats(emojis, names, people):
     #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
     sents = {}
@@ -239,6 +239,7 @@ def emojiStats(emojis, names, people):
 
     return stats     
 
+# Goes through conversations and returns the top 10 chats based on messages number
 def topTen(home):
     chats = {}
     groups = {}

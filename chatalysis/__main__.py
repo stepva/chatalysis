@@ -42,8 +42,8 @@ def main(argv=None):
                 break
 
             print("\nDone!\n")
-            #rework this again thingy:
             again = input("Again? Type \"no\" to close this, hit enter to go again: ")
+            
             if again == "no":
                 break
 

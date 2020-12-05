@@ -1,6 +1,8 @@
+# Standard library imports
 import os
 import json
 
+# Gets the desired chat(s)
 def getChats(home, name):
     chats = []
     for d in os.listdir(home):
@@ -13,6 +15,7 @@ def getChats(home, name):
         raise Exception("NO CHATS NAMED " + name)
     return chats
 
+# Gets the json(s) with desired messages
 def getJsons(chats):
     jsons = []
     for ch in chats:
@@ -28,6 +31,7 @@ def getJsons(chats):
         raise Exception("NO JSON FILES IN THIS CHAT")
     return (jsons, title, names)
 
+# Gets the desired messages
 def getMsgs(jsons):
     messages = []
     for j in jsons:
@@ -38,6 +42,7 @@ def getMsgs(jsons):
     decodeMsgs(messages)
     return messages
 
+# Gets names of the participants in the chat
 def getNames(data):
     ns = []
     for i in data["participants"]:
@@ -46,9 +51,11 @@ def getNames(data):
         ns.append(ns[0])
     return ns
 
+# Decodes a string from the Facebook encoding
 def decode(word):
     return word.encode('iso-8859-1').decode('utf-8')
 
+# Decodes all messages from the Facebook encoding
 def decodeMsgs(messages):
     for m in messages:
         m["sender_name"] = m["sender_name"].encode(
