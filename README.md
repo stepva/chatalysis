@@ -2,6 +2,8 @@
 
 Chatalysis lets you analyse and, more importantly, visualise stats from your own Facebook Messenger chats in a nice and clean way, which is easily shareable with your friends. It works for group chats, too, and includes emojis and reactions as well.
 
+![Preview](output/preview.jpg)
+
 ## Installation
 
 1. Download your messages from <https://www.facebook.com/dyi/>. You only need to select **Messages** and make sure to choose **JSON** as the *Format* and **Low** for *Media Quality*. It will take Facebook some time (several hours) to prepare your file and you can expect to be few gigabytes large.
