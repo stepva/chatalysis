@@ -4,7 +4,7 @@
 *.json
 *.png
 *.pyc
-/output
+*.html
 *.jpg
 !placeholder.jpg
 /node_modules
