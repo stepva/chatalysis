@@ -2,7 +2,11 @@
 
 Chatalysis lets you analyse and, more importantly, visualise stats from your own Facebook Messenger chats in a nice and clean way, which is easily shareable with your friends. It works for group chats, too, and includes emojis and reactions as well.
 
-![Preview](output/preview.jpg)
+<p align="center">
+<img src="output/preview.jpg"
+     alt="Preview"
+     style="height: 350px;" />
+</p>
 
 ## Installation
 
