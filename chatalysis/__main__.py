@@ -10,8 +10,6 @@ from infographic import mrHtml
 from utility import *
 from interface import *
 
-home = pathlib.Path(__file__).parent.absolute()
-
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)
@@ -39,11 +37,7 @@ def main(argv=None):
             if inp == "exit":
                 break
 
-            print("\nDone!\n")
-            again = input("Again? Type \"no\" to close this, hit enter to go again: ")
-
-            if again == "no":
-                break
+            print("\nDone!\n\nAgain?")
 
     
 if __name__ == "__main__":

@@ -7,11 +7,9 @@ import pathlib
 import emoji
 import regex
 # Application imports
-from utility import decode
+from utility import decode, home
 
-home = pathlib.Path(__file__).parent.absolute()
-
-# Go through all the messages and return the stats in a "raw" form
+# Goes through all the messages and returns the stats in a "raw" form
 def raw(messages, names):
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)

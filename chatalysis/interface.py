@@ -1,14 +1,13 @@
 # Standard library imports
 import webbrowser
 import pathlib
+import io
 from pprint import pprint
 # Application imports
 from __init__ import version
 from analysis import *
 from infographic import mrHtml
 from utility import *
-
-home = pathlib.Path(__file__).parent.absolute()
 
 # Interface header
 def header():
@@ -18,7 +17,7 @@ def header():
 # Main interface, asks for an input
 def getInput():
     print(
-        "\nWhat do you want to do?\n"
+        "What do you want to do?\n"
         "To see your Top 10 chats, just type \"top\"\n"
         "To chatalyse a specific conversation, just say which one - \"namesurname\"\n"
         "If you need help, read the README\n"
@@ -36,7 +35,7 @@ def chatalyse(name):
     messages = getMsgs(jsons)
     basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(messages, names)
     final = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
-    with open(f"{home}/../output/{name}.html", "w") as data:
+    with io.open(f"{home}/../output/{name}.html", "w", encoding="utf-8") as data:
         data.write(final)
     webbrowser.open(f"file:///{home}/../output/{name}.html")
 

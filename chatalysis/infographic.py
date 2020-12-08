@@ -5,8 +5,9 @@ import math, random
 import pathlib
 # Third party imports
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+# Application imports
+from utility import home
 
-home = pathlib.Path(__file__).parent.absolute()
 
 #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
