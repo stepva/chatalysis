@@ -2,6 +2,7 @@
 import webbrowser
 import pathlib
 import io
+import platform
 from pprint import pprint
 # Application imports
 from __init__ import version
@@ -37,7 +38,14 @@ def chatalyse(name):
     final = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
     with io.open(f"{home}/../output/{name}.html", "w", encoding="utf-8") as data:
         data.write(final)
-    webbrowser.open(f"file:///{home}/../output/{name}.html")
+    if platform.system() == "Windows":
+        chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
+        webbrowser.get(chrome_path).open_new_tab(f"file:///{home}/../output/{name}.html")
+    elif platform.system() == "Darwin":
+        webbrowser.open_new_tab(f"file:///{home}/../output/{name}.html")
+    else:
+        print("Could’t open the file, but you can find it in the folder /output/ and open it in your favourite browser!")
+
 
 # Chatalyses the chat and prints it to terminal
 def terminalyse(name):
