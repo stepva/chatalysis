@@ -11,7 +11,8 @@ def getChats(name):
     for d in os.listdir(f"{home}/.."):
         if d.startswith("messages") and os.path.isdir(f"{home}/../{d}"):
             for f in os.listdir(f"{home}/../{d}/inbox"):
-                if f.startswith(name + "_"):
+                lf = f.lower()
+                if lf.startswith(name + "_"):
                     chats.append(f"{home}/../{d}/inbox/{f}")
                     break
     if not chats:
