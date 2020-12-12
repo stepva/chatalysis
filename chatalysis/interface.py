@@ -3,6 +3,7 @@ import webbrowser
 import pathlib
 import io
 import platform
+import threading
 from pprint import pprint
 # Application imports
 from __init__ import version
@@ -14,11 +15,11 @@ from utility import *
 def header():
     print("************************************")
     print(f"Welcome to Chatalysis {version}!\n")
+    print("What do you want to do?\n")
 
 # Main interface, asks for an input
 def getInput():
     print(
-        "What do you want to do?\n"
         "To see your Top 10 chats, just type \"top\"\n"
         "To chatalyse a specific conversation, just say which one - \"namesurname\"\n"
         "If you need help, read the README\n"
@@ -40,11 +41,14 @@ def chatalyse(name):
         data.write(final)
     if platform.system() == "Windows":
         chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
-        webbrowser.get(chrome_path).open_new_tab(f"file:///{home}/../output/{name}.html")
+        def x(): return webbrowser.get(chrome_path).open_new(f"file:///{home}/../output/{name}.html")
+        t = threading.Thread(target=x)
+        t.start()
+        print("You can find it in the output folder and open it in your favourite browser!")
     elif platform.system() == "Darwin":
-        webbrowser.open_new_tab(f"file:///{home}/../output/{name}.html")
+        webbrowser.open(f"file:///{home}/../output/{name}.html")
     else:
-        print("Could’t open the file, but you can find it in the folder /output/ and open it in your favourite browser!")
+        print("Could’t open the file, but you can find it in the output folder and open it in your favourite browser!")
 
 
 # Chatalyses the chat and prints it to terminal

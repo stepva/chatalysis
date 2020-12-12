@@ -18,7 +18,10 @@ def main(argv=None):
     
     if args.terminal:
         name = input()
-        terminalyse(name)
+        try:
+            terminalyse(name)
+        except:
+            print("NO CHATS NAMED " + name)
     else:    
         header()
         tops=0
@@ -32,7 +35,10 @@ def main(argv=None):
             elif inp == "exit":
                 break
             else:
-                chatalyse(inp)
+                try:
+                    chatalyse(inp)
+                except:
+                    print("NO CHATS NAMED " + inp)
 
             if inp == "exit":
                 break
