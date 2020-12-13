@@ -24,7 +24,8 @@ def identifyChats():
                     if chat_path.split("_")[-1] == chats[name][0].split("_")[-1]:
                         chats[name].append(chat_path)
                     else:
-                        print(f"There are two chats or conversations with the same name ({name}) and Chatalysis might not work properly. I’m working on a fix, sorry O:)")
+                        if name != "facebookuser":
+                            print(f"There are two chats with the same name ({name}) and Chatalysis might not work properly for that chat. I’m working on a fix, sorry O:)")
              
     return chats
 
