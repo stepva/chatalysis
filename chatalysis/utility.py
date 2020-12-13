@@ -14,16 +14,19 @@ def identifyChats():
     for d in os.listdir(path):
         if d.startswith("messages") and os.path.isdir(f'{path}/{d}'):
             for f in os.listdir(f'{path}/{d}/inbox'):
-                name = f.lower().split('_')[0]
-                hefe = f'{path}/{d}/inbox/{f}'
+                name = f.split('_')[0].lower()
+                
+                chat_path = f'{path}/{d}/inbox/{f}'
 
                 if name not in chats:
-                    chats[name] = [hefe]
+                    chats[name] = [chat_path]
                 else:
-                    chats[name].append(hefe)
-                
+                    if chat_path.split("_")[-1] == chats[name][0].split("_")[-1]:
+                        chats[name].append(chat_path)
+                    else:
+                        print(f"There are two chats or conversations with the same name ({name}) and Chatalysis might not work properly. I’m working on a fix, sorry O:)")
+             
     return chats
-
 
 # Gets the json(s) with desired messages
 def getJsons(chats):
