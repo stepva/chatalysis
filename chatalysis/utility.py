@@ -14,7 +14,7 @@ def identifyChats():
     for d in os.listdir(path):
         if d.startswith("messages") and os.path.isdir(f'{path}/{d}'):
             for f in os.listdir(f'{path}/{d}/inbox'):
-                name = f.split('_')[0]
+                name = f.lower().split('_')[0]
                 hefe = f'{path}/{d}/inbox/{f}'
 
                 if name not in chats:

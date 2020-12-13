@@ -9,6 +9,7 @@ from __init__ import version
 from infographic import mrHtml
 from utility import identifyChats
 from chatalysis import printlyse, htmllyse
+from analysis import topTen
 
 
 def main(argv=None):
@@ -27,26 +28,26 @@ def main(argv=None):
     i = ''
 
     print("************************************")
-    print(f"Welcome to Chatalysis {version}!\n")
-    print("What do you want to do?\n")
-    print("To see your Top 10 chats, just type \"top\"\n", \
-            "To chatalyse a specific conversation, just say which one - \"namesurname\"\n", \
-            "If you need help, read the README\n", \
-            "To exit, just type \"exit\":\n")
+    print(f"Welcome to Chatalysis {version}!\n\n",
+        "To see your Top 10 chats, just type \"top\"\n", \
+        "To chatalyse a specific conversation, just say which one - \"namesurname\"\n", \
+        "If you need help, read the README\n", \
+        "To exit, just type \"exit\":\n")
 
     while i != 'exit':
+        print("What do you want to do?")
         i = input()
         chat = chats.get(i)
 
         if i == "top":
-            print("Loading...\n")
+            print("\nLoading...\n")
             if not tops:
                 tops = topTen()
 
             pprint(tops, indent=2, sort_dicts=False)
 
         elif chat is not None:
-            print("Loading...")
+            print("\nLoading...\n")
             htmllyse(chat)
 
         elif i != 'exit':
