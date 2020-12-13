@@ -18,7 +18,7 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 4. Download and install [Python](https://www.python.org/downloads/) (remember to add it to PATH when installing it) and [Node.js](https://nodejs.org/en/download/) if you do not have them.
 5. In your terminal, navigate to the chatalysis folder, for example:
 ```
-    cd ~/Desktop/chatalysis-master
+    cd Desktop/chatalysis-master
 ```
 6. Install required packages:
 ```
@@ -31,7 +31,7 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 ```
 or, for example,
 ```
-    python ~/Desktop/chatalysis-master/chatalysis
+    python Desktop/chatalysis-master/chatalysis
 ```
 *(Note, that you’ll probably have to call `python3` instead of `python` on MacOS)*
 
