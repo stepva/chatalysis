@@ -16,13 +16,13 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 2. Download chatalysis in a zip folder and extract it wherever you want to. 
 3. Move the "messages" folder which you downloaded from Facebook into the extracted (chatalysis-master) folder.
 4. Download and install [Python](https://www.python.org/downloads/) and [Node.js](https://nodejs.org/en/download/) if you do not have them.
-5. In your command line, locate the downloaded chatalysis folder, for example:
+5. In your terminal, navigate to the chatalysis folder, for example:
 ```
-    cd Desktop/chatalysis-master
+    cd ~/Desktop/chatalysis-master
 ```
 6. Install required packages:
 ```
-    python install -r requirements.txt
+    pip install -r requirements.txt
     npm install
 ```
 7. Now you can finally run chatalysis!
@@ -31,7 +31,7 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 ```
 or, for example,
 ```
-    python Desktop/chatalysis-master/chatalysis
+    python ~/Desktop/chatalysis-master/chatalysis
 ```
 *(Note, that you’ll probably have to call `python3` instead of `python` on MacOS)*
 
