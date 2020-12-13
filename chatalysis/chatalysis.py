@@ -1,0 +1,45 @@
+# Standard library imports
+import webbrowser
+import pathlib
+import io
+import sys
+import threading
+from pprint import pprint
+# Application imports
+from __init__ import version
+from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
+from infographic import mrHtml
+from utility import getJsons, getMsgs, home
+
+
+# Chatalyses the chat and produces an HTML output
+def htmllyse(chats):
+    jsons, title, names = getJsons(chats)
+    messages = getMsgs(jsons)
+    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
+
+    source = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
+
+    with io.open(f"{home}/../output/{title}.html", "w", encoding="utf-8") as data:
+        data.write(source)
+
+    if sys.platform == 'darwin':
+        webbrowser.open(f"file:///{home}/../output/{title}.html")
+        print('Done')
+    else:
+        print("Done. You can find it in the output folder and open it in your favourite browser!\n")
+
+
+
+# Chatalyses the chat and prints it to terminal
+def printlyse(chats):
+    jsons, title, names = getJsons(chats)
+    messages = getMsgs(jsons)
+    basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(messages, names)
+
+    print(f"Chat: {title}, from {fromDay} to {toDay}")
+    pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
+    pprint(reactionStats(reactions, names, people), indent=2, sort_dicts=False)
+    pprint(emojiStats(emojis, names, people), indent=2, sort_dicts=False)
+    pprint(timeStats(times), indent=2, sort_dicts=False)
+    pprint(firstMsg(messages), indent=2, sort_dicts=False)

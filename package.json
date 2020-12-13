@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Chatalysis visualises stats from your Facebook Messenger chats",
   "main": "index.js",
-
   "repository": {
     "type": "git",
     "url": "https://github.com/stepva/chatalysis.git"

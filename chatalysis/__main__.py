@@ -3,47 +3,55 @@ import argparse
 import os
 import pathlib
 from pprint import pprint
+
 # Application imports
 from __init__ import version
-from analysis import *
 from infographic import mrHtml
-from utility import *
-from interface import *
+from utility import identifyChats
+from chatalysis import printlyse, htmllyse
+
 
 def main(argv=None):
+    chats = identifyChats()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)
-    parser.add_argument("-t", "--terminal", action="store_true")
+    parser.add_argument('chat', nargs='?', type=str, choices=chats.keys())
     args = parser.parse_args(argv)
+
+    if args.chat:
+        printlyse(chats[args.chat])
+        exit()
     
-    if args.terminal:
-        name = input()
-        try:
-            terminalyse(name)
-        except:
-            print("NO CHATS NAMED " + name)
-    else:    
-        header()
-        tops=0
-        while True:
-            inp = getInput()
+    tops = None
+    i = ''
 
-            if inp == "top":
-                if tops==0:
-                    tops=topTen()
-                pprint(tops, indent=2, sort_dicts=False)
-            elif inp == "exit":
-                break
-            else:
-                try:
-                    chatalyse(inp)
-                except:
-                    print("NO CHATS NAMED " + inp)
+    print("************************************")
+    print(f"Welcome to Chatalysis {version}!\n")
+    print("What do you want to do?\n")
+    print("To see your Top 10 chats, just type \"top\"\n", \
+            "To chatalyse a specific conversation, just say which one - \"namesurname\"\n", \
+            "If you need help, read the README\n", \
+            "To exit, just type \"exit\":\n")
 
-            if inp == "exit":
-                break
+    while i != 'exit':
+        i = input()
+        chat = chats.get(i)
 
-            print("\nDone!\n\nAgain?")
+        if i == "top":
+            print("Loading...\n")
+            if not tops:
+                tops = topTen()
+
+            pprint(tops, indent=2, sort_dicts=False)
+
+        elif chat is not None:
+            print("Loading...")
+            htmllyse(chat)
+
+        elif i != 'exit':
+            print(f'No chats named {i}. Try again.')
+
 
     
 if __name__ == "__main__":
