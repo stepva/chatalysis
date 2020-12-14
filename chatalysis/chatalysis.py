@@ -9,12 +9,13 @@ from pprint import pprint
 from __init__ import version
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
 from infographic import mrHtml
-from utility import getJsons, getMsgs, home
+from utility import getPaths, getJsons, getMsgs, home
 
 
 # Chatalyses the chat and produces an HTML output
 def htmllyse(chats):
-    jsons, title, names = getJsons(chats)
+    chat_paths = getPaths(chats)
+    jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
     basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
 
@@ -33,7 +34,8 @@ def htmllyse(chats):
 
 # Chatalyses the chat and prints it to terminal
 def printlyse(chats):
-    jsons, title, names = getJsons(chats)
+    chat_paths = getPaths(chats)
+    jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
     basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(messages, names)
 

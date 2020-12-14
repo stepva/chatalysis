@@ -8,31 +8,61 @@ home = pathlib.Path(__file__).parent.absolute()
 
 def identifyChats():
     chats = {}
+    
+    for folder in getMessageFolders():
+        for chat_id in os.listdir(f'{folder}/inbox'):
+            name = chat_id.split('_')[0].lower()
+            
+            if name not in chats:
+                chats[name] = [chat_id]
+            else:
+                previous_id = chats[name][0]
+                if chat_id != previous_id:
+                    chats[name].append(chat_id)
+    return chats
 
+def getMessageFolders():
+    folders = []
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
     for d in os.listdir(path):
         if d.startswith("messages") and os.path.isdir(f'{path}/{d}'):
-            for f in os.listdir(f'{path}/{d}/inbox'):
-                name = f.split('_')[0].lower()
-                
-                chat_path = f'{path}/{d}/inbox/{f}'
+            folders.append(f'{path}/{d}')
 
-                if name not in chats:
-                    chats[name] = [chat_path]
-                else:
-                    if chat_path.split("_")[-1] == chats[name][0].split("_")[-1]:
-                        chats[name].append(chat_path)
-                    else:
-                        if name != "facebookuser":
-                            print(f"There are two chats with the same name ({name}) and Chatalysis might not work properly for that chat. I’m working on a fix, sorry O:)")
-             
-    return chats
+    return folders
+
+def getPaths(chat_ids):
+    chat_paths = []
+
+    if len(chat_ids) == 1:
+        i = 0
+    else:
+        print(f"There are {len(chat_ids)} different chats with this name:")
+        multipleChats(chat_ids)
+        i = int(input("Which one do you want? "))-1
+
+    for folder in getMessageFolders():
+        for chat in os.listdir(f'{folder}/inbox'):
+            if chat == chat_ids[i]:
+                chat_paths.append(f'{folder}/inbox/{chat}')
+    return chat_paths
+
+def multipleChats(chat_ids):
+    chat_paths = {}
+    jsons = {}
+    names = {}
+    lengths = {}
+
+    for chat_id in chat_ids:
+        chat_paths[chat_id] = getPaths([chat_id])
+        jsons[chat_id], _, names[chat_id] = getJsons(chat_paths[chat_id])
+        lengths[chat_id] = [(len(jsons[chat_id])-1)*10000, len(jsons[chat_id])*10000]
+        print(f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages")
 
 # Gets the json(s) with desired messages
-def getJsons(chats):
+def getJsons(chat_paths):
     jsons = []
-    for ch in chats:
+    for ch in chat_paths:
         for file in os.listdir(ch):
             if file.startswith("message") and file.endswith(".json"):
                 jsons.append(f"{ch}/{file}")
