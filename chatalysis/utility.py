@@ -14,11 +14,11 @@ def identifyChats():
             name = chat_id.split('_')[0].lower()
             
             if name not in chats:
-                chats[name] = [chat_id]
+                chats[name] = [chat_id.lower()]
             else:
                 previous_id = chats[name][0]
                 if chat_id != previous_id:
-                    chats[name].append(chat_id)
+                    chats[name].append(chat_id.lower())
     return chats
 
 def getMessageFolders():
@@ -43,7 +43,7 @@ def getPaths(chat_ids):
 
     for folder in getMessageFolders():
         for chat in os.listdir(f'{folder}/inbox'):
-            if chat == chat_ids[i]:
+            if chat.lower() == chat_ids[i]:
                 chat_paths.append(f'{folder}/inbox/{chat}')
     return chat_paths
 
