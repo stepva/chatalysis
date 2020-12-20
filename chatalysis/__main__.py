@@ -28,11 +28,12 @@ def main(argv=None):
     i = ''
 
     print("************************************")
-    print(f"Welcome to Chatalysis {version}!\n\n",
-        "To see your Top 10 chats, just type \"top\"\n", \
-        "To chatalyse a specific conversation, just say which one - \"namesurname\"\n", \
-        "If you need help, read the README\n", \
-        "To exit, just type \"exit\":\n")
+    print(f"Welcome to Chatalysis {version}!\n")
+    print("""To see your Top 10 chats, just type \"top\"
+To chatalyse a specific conversation, just say which one - \"namesurname\"
+If you need help, read the README
+To exit, just type \"exit\":
+        """)
 
     while i != 'exit':
         print("What do you want to do?")
