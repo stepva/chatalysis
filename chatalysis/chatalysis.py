@@ -26,7 +26,7 @@ def htmllyse(chats):
 
     if sys.platform == 'darwin':
         webbrowser.open(f"file:///{home}/../output/{title}.html")
-        print('Done')
+        print('Done!\n')
     else:
         print("Done. You can find it in the output folder and open it in your favourite browser!\n")
 
