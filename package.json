@@ -14,6 +14,7 @@
   },
   "homepage": "https://github.com/stepva/chatalysis#readme",
   "dependencies": {
-    "chart.js": "^2.9.4"
+    "chart.js": "^2.9.4",
+    "chartjs-plugin-labels": "^1.1.0"
   }
 }
