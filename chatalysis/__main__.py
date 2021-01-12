@@ -7,7 +7,7 @@ from pprint import pprint
 # Application imports
 from __init__ import version
 from infographic import mrHtml
-from utility import identifyChats
+from utility import identifyChats, checkMedia
 from chatalysis import printlyse, htmllyse
 from analysis import topTen
 
@@ -29,6 +29,7 @@ def main(argv=None):
 
     print("************************************")
     print(f"Welcome to Chatalysis {version}!\n")
+    checkMedia()
     print("""To see your Top 10 chats, just type \"top\"
 To chatalyse a specific conversation, just say which one - \"namesurname\"
 If you need help, read the README

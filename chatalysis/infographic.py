@@ -92,7 +92,6 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
         avgReacs=avgCounts(names, people, reactions, "gave"),
         topReacs=topEmojis(reactions, names, "got"),
         reacsL=topsCount(names, reactions, "got"),
-
     )
 
 # Splits number by thousands with a space
@@ -104,7 +103,8 @@ def changeName(name):
     no = 'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝßàáâãäåçèéêëìíîïñòóôõöùúûüýÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ'
     yes = 'AAAAAACEEEEIIIINOOOOOUUUUYsaaaaaaceeeeiiiinooooouuuuyyAaAaAaCcCcCcCcDdDdEeEeEeEeEeGgGgGgGgHhHhIiIiIiIiIiKkkLlLlLlLlLlNnNnNnNnNOoOoOoRrRrRrSsSsSsSsTtTtTtUuUuUuUuUuUuWwYyYZzZzZzs'
     l = list(name)
-    l.remove(" ")
+    if " " in l:
+        l.remove(" ")
     for char in l:
         if char in no:
             ind = l.index(char)
@@ -232,18 +232,7 @@ def msgGraph(names, people):
         "hsla(69, 100%, 66%, 0.6)",
         "hsla(17, 80%, 66%, 0.5)"
     ]
-    border = [
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)",
-        "hsla(53, 0%, 0%, 0.5)"
-    ]
+    border = ["hsla(53, 0%, 0%, 0.5)"] * 10
     if len(names)==2:
         labels=[names[1], names[0]]
         data=[people[names[1]], people[names[0]]]

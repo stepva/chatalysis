@@ -11,7 +11,6 @@ from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, first
 from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home
 
-
 # Chatalyses the chat and produces an HTML output
 def htmllyse(chats):
     chat_paths = getPaths(chats)
@@ -29,8 +28,6 @@ def htmllyse(chats):
         print('Done!\n')
     else:
         print("Done. You can find it in the output folder and open it in your favourite browser!\n")
-
-
 
 # Chatalyses the chat and prints it to terminal
 def printlyse(chats):

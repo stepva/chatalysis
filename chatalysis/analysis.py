@@ -266,5 +266,4 @@ def topTen():
         name = key.split("_")[0]
         topChats[name] = topChats.pop(key)
     
-    lastMsgDate = date.fromtimestamp(ts//1000)
     return topChats
