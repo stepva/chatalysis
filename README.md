@@ -8,6 +8,7 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 
 ## Recent Updates
 
+- *v1*: published!
 - *beta*: fixing issues
 
 ## Installation

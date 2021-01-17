@@ -1,2 +1,2 @@
 # Version number
-version = "beta"
+version = "v1"
