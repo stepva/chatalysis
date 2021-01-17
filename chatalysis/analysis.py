@@ -8,6 +8,7 @@ import emoji
 import regex
 # Application imports
 from utility import decode, home
+from infographic import s
 
 # Goes through all the messages and returns the stats in a "raw" form
 def raw(messages, names):
@@ -264,6 +265,6 @@ def topTen():
     topChats = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
     for key in list(topChats.keys()):
         name = key.split("_")[0]
-        topChats[name] = topChats.pop(key)
+        topChats[name] = s(topChats.pop(key))
     
     return topChats
