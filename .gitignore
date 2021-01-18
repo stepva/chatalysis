@@ -7,7 +7,7 @@
 *.html
 *.jpg
 !placeholder.jpg
-!preview.jpg
+!preview_v1.jpg
 /node_modules
 !package.json
 TODO.txt
