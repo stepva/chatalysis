@@ -266,75 +266,183 @@
                 <canvas id="hours"></canvas>
             </div>
         </section>
-        <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
-            <div style="display: flex; align-items: center; justify-self: end;">
-                <div>    
-                    <p class="stats-num">{{ emojisCount["total"]|space }}</p>
-                    <p class="stats-text">total emojis</p>
+        {% if emojisCount["total"] > 0 %}
+            <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div>    
+                        <p class="stats-num">{{ emojisCount["total"]|space }}</p>
+                        <p class="stats-text">total emojis</p>
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
-            <div style="display: grid; grid-template-columns: repeat({{ emojisL["total"] }}, 60px);">
-                {% for emoji, n, f in topEmojis["total"] %}
                 <div style="display: flex; justify-content: center;">
-                    <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                    ({{ n|space }})</p>
+                <div style="display: grid; grid-template-columns: repeat({{ emojisL["total"] }}, 60px);">
+                    {% for emoji, n, f in topEmojis["total"] %}
+                    <div style="display: flex; justify-content: center;">
+                        <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                        ({{ n|space }})</p>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            </div>
-            <div style="display: flex; align-items: center; justify-self: start;">
-                <div>
-                    <p class="stats-num">{{ diffEmojis["total"]|space }}</p>
-                    <p class="stats-text">different emojis</p>
                 </div>
-            </div>
-        </section>
-        <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-        {% for n in names[:-leftEmojis] %}
-            <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
-                    <div style="display: flex; align-items: center; justify-self: end;">
-                        <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                            <div>
-                                <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div>
+                        <p class="stats-num">{{ diffEmojis["total"]|space }}</p>
+                        <p class="stats-text">different emojis</p>
+                    </div>
+                </div>
+            </section>
+            <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
+            {% for n in names[:-leftEmojis] %}
+                <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                        <div style="display: flex; align-items: center; justify-self: end;">
+                            <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                                <div>
+                                    <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
+                                </div>
+                                <p style="margin-top: 5px; margin-bottom: 0;">
+                                    <b>{{ splits[n] }}</b>
+                                </p>
                             </div>
-                            <p style="margin-top: 5px; margin-bottom: 0;">
-                                <b>{{ splits[n] }}</b>
-                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-self: start;">
+                            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                                <p class="stats">
+                                    <b>{{ emojisCount["sent"][n]["total"]|space }}</b> total emojis<br>
+                                    <b>{{ diffEmojis[n]|space }}</b> different emojis<br>
+                                    <b>{{ avgEmojis[n] }}</b> emojis per message<br>
+                                    <br>
+                                    top emojis:
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; justify-self: start;">
-                        <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                            <p class="stats">
-                                <b>{{ emojisCount["sent"][n]["total"]|space }}</b> total emojis<br>
-                                <b>{{ diffEmojis[n]|space }}</b> different emojis<br>
-                                <b>{{ avgEmojis[n] }}</b> emojis per message<br>
-                                <br>
-                                top emojis:
-                            </p>
+                    <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat({{ emojisL[n] }}, 50px);">
+                            {% for emoji, num, f in topEmojis[n] %}
+                            <div style="display: flex; justify-content: center;">
+                                <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                                    ({{ num|space }})</p>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                    <div style="display: grid; grid-template-columns: repeat({{ emojisL[n] }}, 50px);">
-                        {% for emoji, num, f in topEmojis[n] %}
+            {% endfor %}
+            </section>
+            {% if leftEmojis == 1 %}
+                <section id="extra emoji personal" style="padding-bottom: 15px;">
+                    <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                            <div style="display: flex; align-items: center; justify-self: end;">
+                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                                    <div>
+                                        <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
+                                    </div>
+                                    <p style="margin-top: 5px; margin-bottom: 0;">
+                                        <b>{{ splits[names[-1]] }}</b>
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-self: start;">
+                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                                    <p class="stats">
+                                        <b>{{ emojisCount["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
+                                        <b>{{ diffEmojis[names[-1]]|space }}</b> different emojis<br>
+                                        <b>{{ avgEmojis[names[-1]] }}</b> emojis per message<br>
+                                        <br>
+                                        top emojis:
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                            <div style="display: grid; grid-template-columns: repeat({{ emojisL[names[-1]] }}, 50px);">
+                                {% for emoji, num, f in topEmojis[names[-1]] %}
+                                <div style="display: flex; justify-content: center;">
+                                    <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                                        ({{ num|space }})</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        {% endif %}
+        {% if reacsCount["total"] > 0 %}
+            <section id="reacts stats" style="display: grid; grid-template-columns: 1fr 58.5% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
+                <div style="display: flex; align-items: center; justify-self: end;">
+                    <div>
+                        <p class="stats-num">{{ reacsCount["total"]|space }}</p>
+                        <p class="stats-text">total reactions</p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <div style="display: grid; grid-template-columns: repeat({{ reacsL["total"] }}, 60px);">
+                        {% for reac, n, f in topReacs["total"] %}
                         <div style="display: flex; justify-content: center;">
-                            <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                                ({{ num|space }})</p>
+                            <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
+                                ({{ n|space }})</p>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-        </section>
-        {% if leftEmojis == 1 %}
-            <section id="extra emoji personal" style="padding-bottom: 15px;">
-                <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
+                <div style="display: flex; align-items: center; justify-self: start;">
+                    <div>
+                        <p class="stats-num">{{ diffReacsGave["total"]|space }}</p>
+                        <p class="stats-text">different reactions</p>
+                    </div>
+                </div>
+            </section>
+            <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
+            {% for n in names[:-leftEmojis] %}
+                <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                         <div style="display: flex; align-items: center; justify-self: end;">
-                            <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                            <div
+                                style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
+                                <div>
+                                    <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
+                                </div>
+                                <p style="margin-top: 5px; margin-bottom: 0;">
+                                    <b>{{ splits[n] }}</b>
+                                </p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-self: start;">
+                            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
+                                <p class="stats">
+                                    <b>{{ reacsCount["gave"][n]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diffReacsGave[n]|space }}</b> different reactions given<br>
+                                    <b>{{ reacsCount["got"][n]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avgReacs[n] }}</b> reactions per message<br>
+                                    <br>
+                                    top reactions received:
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat({{reacsL[n]}}, 50px);">
+                            {% for reac, num, f in topReacs[n] %}
+                            <div style="display: flex; justify-content: center;">
+                                <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
+                                    ({{ num|space }})</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </section>
+            {% if leftEmojis == 1 %}
+                <section id="extra reacs personal" style="padding-bottom: 15px;">
+                    <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
+                        <div style="display: flex; align-items: center; justify-self: end;">
+                            <div
+                                style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                                 <div>
                                     <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                 </div>
@@ -346,145 +454,31 @@
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ emojisCount["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
-                                    <b>{{ diffEmojis[names[-1]]|space }}</b> different emojis<br>
-                                    <b>{{ avgEmojis[names[-1]] }}</b> emojis per message<br>
+                                    <b>{{ reacsCount["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diffReacsGave[names[-1]]|space }}</b> different reactions given<br>
+                                    <b>{{ reacsCount["got"][names[-1]]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avgReacs[names[-1]] }}</b> reactions per message<br>
                                     <br>
-                                    top emojis:
+                                    top reactions received:
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{ emojisL[names[-1]] }}, 50px);">
-                            {% for emoji, num, f in topEmojis[names[-1]] %}
+                        <div style="display: grid; grid-template-columns: repeat({{reacsL[names[-1]]}}, 50px);">
+                            {% for reac, num, f in topReacs[names[-1]] %}
                             <div style="display: flex; justify-content: center;">
-                                <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
+                                <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                     ({{ num|space }})</p>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
+                </section>
+            {% endif %}
             </section>
-        {% endif %}    
-        <section id="reacts stats" style="display: grid; grid-template-columns: 1fr 58.5% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
-            <div style="display: flex; align-items: center; justify-self: end;">
-                <div>
-                    <p class="stats-num">{{ reacsCount["total"]|space }}</p>
-                    <p class="stats-text">total reactions</p>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
-                <div style="display: grid; grid-template-columns: repeat({{ reacsL["total"] }}, 60px);">
-                    {% for reac, n, f in topReacs["total"] %}
-                    <div style="display: flex; justify-content: center;">
-                        <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                            ({{ n|space }})</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; justify-self: start;">
-                <div>
-                    <p class="stats-num">{{ diffReacsGave["total"]|space }}</p>
-                    <p class="stats-text">different reactions</p>
-                </div>
-            </div>
-        </section>
-        <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-        {% for n in names[:-leftEmojis] %}
-            <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
-                    <div style="display: flex; align-items: center; justify-self: end;">
-                        <div
-                            style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                            <div>
-                                <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
-                            </div>
-                            <p style="margin-top: 5px; margin-bottom: 0;">
-                                <b>{{ splits[n] }}</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-self: start;">
-                        <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                            <p class="stats">
-                                <b>{{ reacsCount["gave"][n]["total"]|space }}</b> reactions given<br>
-                                <b>{{ diffReacsGave[n]|space }}</b> different reactions given<br>
-                                <b>{{ reacsCount["got"][n]["total"]|space }}</b> reactions received<br>
-                                <b>{{ avgReacs[n] }}</b> reactions per message<br>
-                                <br>
-                                top reactions received:
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                    <div style="display: grid; grid-template-columns: repeat({{reacsL[n]}}, 50px);">
-                        {% for reac, num, f in topReacs[n] %}
-                        <div style="display: flex; justify-content: center;">
-                            <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                ({{ num|space }})</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-        </section>
-        {% if leftEmojis == 1 %}
-            <section id="extra reacs personal" style="padding-bottom: 15px;">
-                <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
-                    <div style="display: flex; align-items: center; justify-self: end;">
-                        <div
-                            style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                            <div>
-                                <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
-                            </div>
-                            <p style="margin-top: 5px; margin-bottom: 0;">
-                                <b>{{ splits[names[-1]] }}</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-self: start;">
-                        <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                            <p class="stats">
-                                <b>{{ reacsCount["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
-                                <b>{{ diffReacsGave[names[-1]]|space }}</b> different reactions given<br>
-                                <b>{{ reacsCount["got"][names[-1]]["total"]|space }}</b> reactions received<br>
-                                <b>{{ avgReacs[names[-1]] }}</b> reactions per message<br>
-                                <br>
-                                top reactions received:
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                    <div style="display: grid; grid-template-columns: repeat({{reacsL[names[-1]]}}, 50px);">
-                        {% for reac, num, f in topReacs[names[-1]] %}
-                        <div style="display: flex; justify-content: center;">
-                            <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                ({{ num|space }})</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            </section>
-        {% endif %}
-        </section>
-            <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                <div style="display: grid; grid-template-columns: repeat({{reacsL[names[0]]}}, 50px);">
-                    {% for reac, n, f in topReacs[names[0]] %}
-                    <div style="display: flex; justify-content: center;">
-                        <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                            ({{ n|space }})</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
+        {% endif %}       
         <section id="footer" style="background-clip: padding-box; padding-top: 5px; padding-bottom: 5px; background-color: #F2F2F2;">
             <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
         </section>

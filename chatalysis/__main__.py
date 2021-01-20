@@ -7,13 +7,17 @@ from pprint import pprint
 # Application imports
 from __init__ import version
 from infographic import mrHtml
-from utility import identifyChats, checkMedia
+from utility import identifyChats, checkMedia, getMessageFolders
 from chatalysis import printlyse, htmllyse
 from analysis import topTen
 
 
 def main(argv=None):
     chats = identifyChats()
+    folders = getMessageFolders()
+    if not folders:
+        print("Looks like there is no messages folder here. Make sure to add the \"messages\" folder downloaded from Facebook to the chatalysis parent folder. More info in the README :)")
+        exit()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)

@@ -8,8 +8,8 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 
 ## Recent Updates
 
+- *v1.0.1*: added error message for no messages folder and improved HTML visualization when there are no emojis/reactions
 - *v1*: published!
-- *beta*: fixing issues
 
 ## Installation
 
