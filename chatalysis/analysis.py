@@ -53,7 +53,7 @@ def raw(messages, names):
             if name in names:
                 data = regex.findall(r'\X', m["content"])
                 for c in data:
-                    if any(char in emoji.UNICODE_EMOJI for char in c):
+                    if any(char in emoji.UNICODE_EMOJI['en'] for char in c):
                         emojis["total"] += 1
                         emojis["types"][c] = 1 + emojis["types"].get(c, 0)
                         emojis["sent"][name]["total"] += 1
