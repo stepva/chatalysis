@@ -35,20 +35,17 @@ def getMessageFolders():
 # Checks if all media types are included, as for some users Facebook doesn’t include files or videos
 def checkMedia():
     media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
-    media_types = list(media.keys())
 
     for folder in getMessageFolders():
         everything = []
         for _, dirs, _ in os.walk(folder):
             everything.extend(dirs)
-        for i in media_types:
+        for i in media.keys():
             if i in everything:
                 media[i] = 1
-    
-    no_media = []
-    for i in media:
-        if media[i] == 0:
-            no_media.append(i)
+
+    no_media = [m for m in media.keys() if media[m] == 0]        
+  
     no_media_str = ", ".join(no_media)
     if no_media:
         print(f"These media types are not included in your messages for some reason: {no_media_str}. I can’t do anything about it.\n")
