@@ -10,4 +10,4 @@
 !preview_v1.jpg
 /node_modules
 !package.json
-TODO.txt
+.DS_Store
