@@ -24,10 +24,11 @@ def htmllyse(chats):
         data.write(source)
 
     if sys.platform == 'darwin':
-        webbrowser.open(f"file:///{home}/../output/{title}.html")
-        print('Done!\n')
+        wb = webbrowser.get("safari")
     else:
-        print("Done. You can find it in the output folder and open it in your favourite browser!\n")
+        wb = webbrowser.get()
+    wb.open(f"file:///{home}/../output/{title}.html")
+    print("Done. You can find it in the output folder!\n")
 
 # Chatalyses the chat and prints it to terminal
 def printlyse(chats):
