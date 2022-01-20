@@ -17,7 +17,7 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 1. Download your messages from <https://www.facebook.com/dyi/>. You only need to select **Messages** and make sure to choose **JSON** as the Format and **Low** for Media Quality (you can select higher media quality but it will make the files larger and it is not necessary for Chatalysis). It will take Facebook some time (several hours) to prepare your file and you can expect it to be a few gigabytes large. You will get a notification when it's ready to download.
 2. [Download chatalysis in a zip folder](https://github.com/stepva/chatalysis/archive/master.zip) and extract it wherever you want to.
 3. Move the "messages" folder which you downloaded from Facebook into the extracted (chatalysis-master) folder. It is possible that Facebook splits your data into multiple files. Download all of them then, one of them will probably be called "messages" while you might have to get the "messages" folder out of the other files you downloaded. Move all the "messages" folders into the main chatalysis folder, naming them "messages-2", "messages-3" etc. for example.
-4. Download and install [Python](https://www.python.org/downloads/) (remember to add it to PATH when installing it) and [Node.js](https://nodejs.org/en/download/) if you do not have them.
+4. Download and install [Python](https://www.python.org/downloads/) (remember to add it to PATH when installing it).
 5. In your terminal, navigate to the chatalysis folder, for example:
 
 ```
@@ -28,7 +28,6 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 
 ```
     pip install -r requirements.txt
-    npm install
 ```
 
 7. Now you can finally run chatalysis!

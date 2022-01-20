@@ -29,7 +29,6 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     return template.render(
         #utility
-        path=f"{home}/..",
         participants=len(names),
         version=version,
         fromDay=fromDay,
