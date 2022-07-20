@@ -242,11 +242,11 @@ def emojiStats(emojis, names, people):
     return stats     
 
 # Goes through conversations and returns the top 10 chats based on messages number
-def topTen():
+def topTen(path: str):
     chats = {}
     groups = {}
-    inboxs = [f"{home}/../{m}/inbox/" for m in os.listdir(f"{home}/..") if m.startswith("messages")]
-    names = [i+n for i in inboxs for n in os.listdir(i) if os.path.isdir(i+n)]
+    inboxes = [f"{path}/{m}/inbox/" for m in os.listdir(path) if m.startswith("messages")]
+    names = [i+n for i in inboxes for n in os.listdir(i) if os.path.isdir(i+n)]
     ts = 0
 
     for n in names:
