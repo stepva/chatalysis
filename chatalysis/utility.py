@@ -6,10 +6,10 @@ import pathlib
 home = pathlib.Path(__file__).parent.absolute()
 
 # Gets list of all conversations and their ID
-def identifyChats():
+def identifyChats(folders: list[str]):
     chats = {}
     
-    for folder in getMessageFolders():
+    for folder in folders:
         for chat_id in os.listdir(f'{folder}/inbox'):
             name = chat_id.split('_')[0].lower()
             
@@ -22,21 +22,23 @@ def identifyChats():
     return chats
 
 # Gets the messages folders
-def getMessageFolders():
+def getMessageFolders(path: str) -> list[str]:
     folders = []
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
     for d in os.listdir(path):
         if d.startswith("messages") and os.path.isdir(f'{path}/{d}'):
             folders.append(f'{path}/{d}')
 
+    if len(folders) == 0:
+        raise Exception('Looks like there is no "messages" folder here. Make sure to add the "messages" folder downloaded from Facebook as desribed in the README :)')
+
     return folders
 
 # Checks if all media types are included, as for some users Facebook doesn’t include files or videos
-def checkMedia():
+def checkMedia(folders: list[str]):
     media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
 
-    for folder in getMessageFolders():
+    for folder in folders:
         everything = []
         for _, dirs, _ in os.walk(folder):
             everything.extend(dirs)
@@ -48,10 +50,10 @@ def checkMedia():
   
     no_media_str = ", ".join(no_media)
     if no_media:
-        print(f"These media types are not included in your messages for some reason: {no_media_str}. I can’t do anything about it.\n")
+        raise Exception(f"These media types are not included in your messages for some reason: {no_media_str}. I can’t do anything about it.\n")
 
 # Gets path(s) to the desired chat(s)
-def getPaths(chat_ids):
+def getPaths(chat_ids, folders: list[str]):
     chat_paths = []
 
     if len(chat_ids) == 1:
@@ -61,7 +63,7 @@ def getPaths(chat_ids):
         multipleChats(chat_ids)
         i = int(input("Which one do you want? "))-1
 
-    for folder in getMessageFolders():
+    for folder in folders:
         for chat in os.listdir(f'{folder}/inbox'):
             if chat.lower() == chat_ids[i]:
                 chat_paths.append(f'{folder}/inbox/{chat}')

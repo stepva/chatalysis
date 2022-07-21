@@ -7,7 +7,7 @@ import pathlib
 import emoji
 import regex
 # Application imports
-from utility import decode, home
+from utility import decode, getNames
 from infographic import s
 
 # Goes through all the messages and returns the stats in a "raw" form
@@ -242,11 +242,11 @@ def emojiStats(emojis, names, people):
     return stats     
 
 # Goes through conversations and returns the top 10 chats based on messages number
-def topTen():
+def topTen(path: str):
     chats = {}
     groups = {}
-    inboxs = [f"{home}/../{m}/inbox/" for m in os.listdir(f"{home}/..") if m.startswith("messages")]
-    names = [i+n for i in inboxs for n in os.listdir(i) if os.path.isdir(i+n)]
+    inboxes = [f"{path}/{m}/inbox/" for m in os.listdir(path) if m.startswith("messages")]
+    names = [i+n for i in inboxes for n in os.listdir(i) if os.path.isdir(i+n)]
     ts = 0
 
     for n in names:
@@ -256,7 +256,10 @@ def topTen():
                 with open(n + "/" + file) as data:
                     data = json.load(data)
                     if data["thread_type"] == "Regular":
-                        chats[m] = len(data["messages"]) + chats.get(m, 0)
+                        # get the "real" name of the individual conversation (as opposed to the "condensed"
+                        # format in the folder name (represented here by the variable "m"))
+                        nameIndividual = data["title"].encode('iso-8859-1').decode('utf-8')
+                        chats[nameIndividual] = len(data["messages"]) + chats.get(nameIndividual, 0)
                     else:
                         groups[m] = len(data["messages"]) + groups.get(m, 0)
                     if data["messages"][0]["timestamp_ms"] > ts:

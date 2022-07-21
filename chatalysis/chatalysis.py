@@ -12,8 +12,8 @@ from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home
 
 # Chatalyses the chat and produces an HTML output
-def htmllyse(chats):
-    chat_paths = getPaths(chats)
+def htmllyse(chats, folders: list[str]):
+    chat_paths = getPaths(chats, folders)
     jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
     basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
@@ -28,7 +28,6 @@ def htmllyse(chats):
     else:
         wb = webbrowser.get()
     wb.open(f"file:///{home}/../output/{title}.html")
-    print("Done. You can find it in the output folder!\n")
 
 # Chatalyses the chat and prints it to terminal
 def printlyse(chats):
