@@ -109,7 +109,7 @@ class MainGUI(Window):
         """Selects directory with the data using a dialog window"""
         self.Program.dataDirPath = filedialog.askdirectory(title="Select source directory")
         self.dataDirPathTk.set(self.Program.dataDirPath)
-        self.after(20, self.Program.dirSelected(self.Program))  # check if directory is valid
+        self.after(20, self.Program.dirSelected)  # check if directory is valid
 
 
 class WindowTopTen(Window):
