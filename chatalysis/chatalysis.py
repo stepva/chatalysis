@@ -12,7 +12,7 @@ from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home
 
 # Chatalyses the chat and produces an HTML output
-def htmllyse(chats, folders: list[str]):
+def htmllyse(chats, folders: "list[str]"):
     chat_paths = getPaths(chats, folders)
     jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)

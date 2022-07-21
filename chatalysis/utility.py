@@ -6,7 +6,7 @@ import pathlib
 home = pathlib.Path(__file__).parent.absolute()
 
 # Gets list of all conversations and their ID
-def identifyChats(folders: list[str]):
+def identifyChats(folders: "list[str]"):
     chats = {}
     
     for folder in folders:
@@ -22,7 +22,7 @@ def identifyChats(folders: list[str]):
     return chats
 
 # Gets the messages folders
-def getMessageFolders(path: str) -> list[str]:
+def getMessageFolders(path: str) -> "list[str]":
     folders = []
 
     for d in os.listdir(path):
@@ -35,7 +35,7 @@ def getMessageFolders(path: str) -> list[str]:
     return folders
 
 # Checks if all media types are included, as for some users Facebook doesn’t include files or videos
-def checkMedia(folders: list[str]):
+def checkMedia(folders: "list[str]"):
     media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
 
     for folder in folders:
@@ -53,7 +53,7 @@ def checkMedia(folders: list[str]):
         raise Exception(f"These media types are not included in your messages for some reason: {no_media_str}. I can’t do anything about it.\n")
 
 # Gets path(s) to the desired chat(s)
-def getPaths(chat_ids, folders: list[str]):
+def getPaths(chat_ids, folders: "list[str]"):
     chat_paths = []
 
     if len(chat_ids) == 1:

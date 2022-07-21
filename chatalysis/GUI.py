@@ -1,9 +1,9 @@
 # Standard library imports
 import os
 import abc
+import ctypes
 import tkinter as tk
 from tkinter import filedialog
-from ctypes import windll
 
 # Application imports
 from analysis import topTen
@@ -32,7 +32,7 @@ class Window(tk.Tk):
         pass
 
     @staticmethod
-    def removeLabels(labels: list[tk.Label]):
+    def removeLabels(labels: "list[tk.Label]"):
         """Removes labels from a given window
 
         :param labels: list of labels to remove
@@ -55,7 +55,7 @@ class MainGUI(Window):
     def create(self):
         # fix high DPI blurriness on Windows 10
         if os.name == "nt":
-            windll.shcore.SetProcessDpiAwareness(1)
+            ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
 
         self.title("Chatalysis")
