@@ -1,12 +1,17 @@
+# Standard library imports
 import os
-import time
 import tkinter as tk
 from tkinter import filedialog
 from ctypes import windll
 from pprint import pformat
+
+# Application imports
 from utility import identifyChats, getMessageFolders, checkMedia
 from analysis import topTen
 from chatalysis import htmllyse
+
+# Third party imports
+from tabulate import tabulate
 
 
 class Program:
@@ -16,6 +21,7 @@ class Program:
         self.chats = None
         self.folders = None
         self.topConversations = None
+        self.topTenList = None
         self.dataDirPath = ""
         self.validDir = False
 
@@ -85,10 +91,10 @@ class Program:
         """Creates a separate window for the top 10 conversations"""
         self.windowTopTen = tk.Tk()
         self.windowTopTen.title("Top 10 conversations")
-        self.windowTopTen.geometry("420x300")
+        self.windowTopTen.geometry("470x320")
 
-        self.windowTopTen.grid_columnconfigure(0, weight=1)
-        self.windowTopTen.grid_rowconfigure(0, weight=1)
+        self.windowTopTen.grid_columnconfigure(0, weight=2)
+        self.windowTopTen.grid_rowconfigure(0, weight=2)
 
         self.windowTopTen.labelAnalyzing = tk.Label(self.windowTopTen, text="Analyzing...")
 
@@ -158,18 +164,22 @@ class Program:
         self.createWindowTopTen()
 
         # Calculate the top 10 conversations if not done already
-        if self.topConversations is None:
+        if self.topTenList is None:
             self.windowTopTen.labelAnalyzing.grid(column=0, row=0, padx=5, pady=5)
             self.windowTopTen.update()
 
             self.topConversations = topTen(self.dataDirPath)
-
-        topTenList = pformat(self.topConversations, indent=2, sort_dicts=False)
+            self.topTenList = tabulate(self.topConversations.items(),
+                                       headers=["Conversation", "Messages"],
+                                       colalign=("left", "right",))
 
         self.removeLabels([self.windowTopTen.labelAnalyzing])  # remove the "Analyzing..." label if present
 
-        self.windowTopTen.labelTopTen = tk.Label(self.windowTopTen, text=topTenList)  # print the top 10
-        self.windowTopTen.labelTopTen.grid(column=0, row=0, padx=5, pady=5)
+        self.windowTopTen.labelTopTen = tk.Label(self.windowTopTen,
+                                                 text=self.topTenList,
+                                                 anchor="n",
+                                                 font=("TkFixedFont",))  # print the top 10
+        self.windowTopTen.labelTopTen.grid(column=0, row=0)
 
     def removeLabels(self, labels: list[tk.Label]):
         """Removes labels from a given window

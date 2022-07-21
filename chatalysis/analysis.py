@@ -7,7 +7,7 @@ import pathlib
 import emoji
 import regex
 # Application imports
-from utility import decode, home
+from utility import decode, getNames
 from infographic import s
 
 # Goes through all the messages and returns the stats in a "raw" form
@@ -256,7 +256,10 @@ def topTen(path: str):
                 with open(n + "/" + file) as data:
                     data = json.load(data)
                     if data["thread_type"] == "Regular":
-                        chats[m] = len(data["messages"]) + chats.get(m, 0)
+                        # get the "real" name of the individual conversation (as opposed to the "condensed"
+                        # format in the folder name (represented here by the variable "m"))
+                        nameIndividual = data["title"].encode('iso-8859-1').decode('utf-8')
+                        chats[nameIndividual] = len(data["messages"]) + chats.get(nameIndividual, 0)
                     else:
                         groups[m] = len(data["messages"]) + groups.get(m, 0)
                     if data["messages"][0]["timestamp_ms"] > ts:
