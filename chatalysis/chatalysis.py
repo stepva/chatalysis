@@ -3,6 +3,7 @@ import webbrowser
 import pathlib
 import io
 import sys
+import os
 import threading
 from pprint import pprint
 # Application imports
@@ -15,19 +16,27 @@ from utility import getPaths, getJsons, getMsgs, home
 def htmllyse(chats, folders: "list[str]"):
     chat_paths = getPaths(chats, folders)
     jsons, title, names = getJsons(chat_paths)
-    messages = getMsgs(jsons)
-    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
-
-    source = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
-
-    with io.open(f"{home}/../output/{title}.html", "w", encoding="utf-8") as data:
-        data.write(source)
 
     if sys.platform == 'darwin':
         wb = webbrowser.get("safari")
     else:
         wb = webbrowser.get()
-    wb.open(f"file:///{home}/../output/{title}.html")
+
+    file = f"{home}/../output/{title}.html"
+
+    if os.path.exists(file):
+        wb.open(file)
+        return
+
+    messages = getMsgs(jsons)
+    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
+
+    source = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
+
+    with io.open(file, "w", encoding="utf-8") as data:
+        data.write(source)
+
+    wb.open(file)
 
 # Chatalyses the chat and prints it to terminal
 def printlyse(chats):
