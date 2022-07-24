@@ -15,6 +15,7 @@ from tabulate import tabulate
 
 class Window(tk.Tk):
     """Tkinter window base class"""
+
     def __init__(self):
         tk.Tk.__init__(self)
 
@@ -44,6 +45,7 @@ class Window(tk.Tk):
 
 class MainGUI(Window):
     """Main GUI for the program"""
+
     def __init__(self, program):
         Window.__init__(self)
         self.labelError = None
@@ -68,29 +70,30 @@ class MainGUI(Window):
 
         # Create buttons
         self.buttonSelectDir = tk.Button(
-            self,
-            text="Select directory",
-            command=self.selectDir
+            self, text="Select directory", command=self.selectDir
         )
         self.button1 = tk.Button(
             self,
             text="Show top 10 (individual) conversations",
-            command=self.WindowTopTen.create
+            command=self.WindowTopTen.create,
         )
         self.button2 = tk.Button(
             self,
             text="Analyze individual conversations",
-            command=self.WindowIndividual.create
+            command=self.WindowIndividual.create,
         )
 
         # Create labels
-        self.labelSelectDir = tk.Label(self, text="Please select directory with the messages:")
+        self.labelSelectDir = tk.Label(
+            self, text="Please select directory with the messages:"
+        )
 
         # Create entry widgets
         self.dataDirPathTk = tk.StringVar()
         self.entryDataDir = tk.Entry(self, textvariable=self.dataDirPathTk, width=60)
         self.entryDataDir.config(
-            background="#f02663")  # display directory path in red until a valid path is entered
+            background="#f02663"
+        )  # display directory path in red until a valid path is entered
 
         # Render objects onto a grid
         self.labelSelectDir.grid(column=0, row=0, padx=5, pady=5)
@@ -107,21 +110,28 @@ class MainGUI(Window):
 
     def selectDir(self):
         """Selects directory with the data using a dialog window"""
-        self.Program.dataDirPath = filedialog.askdirectory(title="Select source directory")
+        self.Program.dataDirPath = filedialog.askdirectory(
+            title="Select source directory", initialdir=os.getcwd()
+        )
         self.dataDirPathTk.set(self.Program.dataDirPath)
         self.after(20, self.Program.dirSelected)  # check if directory is valid
 
 
 class WindowTopTen(Window):
     """Window showing the top 10 conversations"""
+
     def __init__(self, program, gui: MainGUI):
         self.created = False
         self.Program = program
         self.MainGUI = gui
 
     def create(self):
-        if not self.Program.validDir:  # don't do anything if source directory is invalid to avoid errors
-            self.MainGUI.displayError("Cannot analyze until a valid directory is selected")
+        if (
+            not self.Program.validDir
+        ):  # don't do anything if source directory is invalid to avoid errors
+            self.MainGUI.displayError(
+                "Cannot analyze until a valid directory is selected"
+            )
             return
 
         # call the Window __init__ here as to avoid creating the window along with the main GUI
@@ -151,17 +161,23 @@ class WindowTopTen(Window):
             self.update()
 
             self.Program.topConversations = topTen(self.Program.dataDirPath)
-            self.Program.topTenList = tabulate(self.Program.topConversations.items(),
-                                               headers=["Conversation", "Messages"],
-                                               colalign=("left", "right",))
+            self.Program.topTenList = tabulate(
+                self.Program.topConversations.items(),
+                headers=["Conversation", "Messages"],
+                colalign=(
+                    "left",
+                    "right",
+                ),
+            )
 
-        self.removeLabels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
+        self.removeLabels(
+            [self.labelAnalyzing]
+        )  # remove the "Analyzing..." label if present
 
         # Print the top 10, fixed font is necessary for the correct table formatting done by tabulate
-        self.labelTopTen = tk.Label(self,
-                                    text=self.Program.topTenList,
-                                    anchor="n",
-                                    font=("TkFixedFont",))
+        self.labelTopTen = tk.Label(
+            self, text=self.Program.topTenList, anchor="n", font=("TkFixedFont",)
+        )
         self.labelTopTen.grid(column=0, row=0)
 
 
@@ -171,8 +187,12 @@ class WindowIndividual(Window):
         self.Program = program
 
     def create(self):
-        if not self.Program.validDir:  # don't do anything if source directory is invalid to avoid errors
-            self.MainGUI.displayError("Cannot analyze until a valid directory is selected")
+        if (
+            not self.Program.validDir
+        ):  # don't do anything if source directory is invalid to avoid errors
+            self.MainGUI.displayError(
+                "Cannot analyze until a valid directory is selected"
+            )
             return
 
         # call the Window __init__ here as to avoid creating the window along with the main GUI
@@ -187,12 +207,14 @@ class WindowIndividual(Window):
         self.labelInstructions = tk.Label(
             self,
             text="Please enter conversation name in the format 'namesurname' without special characters (for example: johnsmith)",
-            wraplength=450
+            wraplength=450,
         )
 
         # add an invisible label so that the labels indicating success or error stay in the same place
         # the entire time without the rest of the objects "jumping" around
-        self.labelEmpty = tk.Label(self, text="                              ", wraplength=650, fg="red")
+        self.labelEmpty = tk.Label(
+            self, text="                              ", wraplength=650, fg="red"
+        )
 
         self.labelDone = None
         self.labelError = None
@@ -231,7 +253,9 @@ class WindowIndividual(Window):
         if chat is not None:
             # chat was found and successfully analyzed
             htmllyse(chat, self.Program.folders)
-            self.labelDone = tk.Label(self, text="Done. You can find it in the output folder!", fg="green")
+            self.labelDone = tk.Label(
+                self, text="Done. You can find it in the output folder!", fg="green"
+            )
             self.labelDone.grid(column=0, row=2, sticky="N", padx=5, pady=5)
         else:
             # chat wasn't found

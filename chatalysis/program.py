@@ -1,5 +1,5 @@
 from utility import identifyChats, getMessageFolders, checkMedia
-from GUI import MainGUI
+from gui import MainGUI
 
 
 class Program:
@@ -26,11 +26,15 @@ class Program:
         try:
             self.processMessagesDir()
         except Exception as e:
-            self.gui.entryDataDir.config(background="#f02663")  # display directory path in red
+            self.gui.entryDataDir.config(
+                background="#f02663"
+            )  # display directory path in red
             self.validDir = False
             self.gui.displayError(e)
             return
 
         self.validDir = True
         self.gui.removeLabels([self.gui.labelError])
-        self.gui.entryDataDir.config(background="#17850b")  # display directory path in green
+        self.gui.entryDataDir.config(
+            background="#17850b"
+        )  # display directory path in green
