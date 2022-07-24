@@ -6,8 +6,8 @@ class Program:
     def __init__(self):
         self.chats = None
         self.folders = None
-        self.topConversations = None
-        self.topTenList = None
+        self.topTenIndividual = None
+        self.topFiveGroups = None
         self.dataDirPath = ""
         self.validDir = False
         self.gui = MainGUI(self)

@@ -74,7 +74,7 @@ class MainGUI(Window):
         )
         self.button1 = tk.Button(
             self,
-            text="Show top 10 (individual) conversations",
+            text="Show top conversations",
             command=self.WindowTopTen.create,
         )
         self.button2 = tk.Button(
@@ -118,7 +118,7 @@ class MainGUI(Window):
 
 
 class WindowTopTen(Window):
-    """Window showing the top 10 conversations"""
+    """Window showing the top 10 individual conversations & top 5 group chats"""
 
     def __init__(self, program, gui: MainGUI):
         self.created = False
@@ -136,8 +136,8 @@ class WindowTopTen(Window):
 
         # call the Window __init__ here as to avoid creating the window along with the main GUI
         Window.__init__(self)
-        self.title("Top 10 conversations")
-        self.geometry("470x320")
+        self.title("Top conversations")
+        self.geometry("600x600")
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -145,7 +145,7 @@ class WindowTopTen(Window):
         self.labelAnalyzing = tk.Label(self, text="Analyzing...")
         self.labelError = None
 
-        self.showTopTen()  # runs the top 10 analysis & print
+        self.showTop()  # runs the top 10 analysis & print
 
     def displayError(self, errorMessage: str):
         self.removeLabels([self.labelError])
@@ -153,16 +153,16 @@ class WindowTopTen(Window):
         self.labelError = tk.Label(self, text=errorMessage, wraplength=650, fg="red")
         self.labelError.grid(column=0, row=1, padx=5, pady=5)
 
-    def showTopTen(self):
-        """Analyzes and shows the top 10 conversations"""
-        # Calculate the top 10 conversations if not done already
-        if self.Program.topTenList is None:
+    def showTop(self):
+        """Analyzes and shows the top conversations"""
+        # Calculate the top conversations if not done already
+        if self.Program.topTenIndividual is None:
             self.labelAnalyzing.grid(column=0, row=0, padx=5, pady=5)
             self.update()
 
-            self.Program.topConversations = topTen(self.Program.dataDirPath)
-            self.Program.topTenList = tabulate(
-                self.Program.topConversations.items(),
+            topIndividual, topGroup = topTen(self.Program.dataDirPath)
+            self.Program.topTenIndividual = tabulate(
+                topIndividual.items(),
                 headers=["Conversation", "Messages"],
                 colalign=(
                     "left",
@@ -170,13 +170,24 @@ class WindowTopTen(Window):
                 ),
             )
 
+            self.Program.topFiveGroups = tabulate(topGroup.items(),
+                                                  headers=["Conversation", "Messages"],
+                                                  colalign=("left", "right"))
+
         self.removeLabels(
             [self.labelAnalyzing]
         )  # remove the "Analyzing..." label if present
 
-        # Print the top 10, fixed font is necessary for the correct table formatting done by tabulate
+        # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
         self.labelTopTen = tk.Label(
-            self, text=self.Program.topTenList, anchor="n", font=("TkFixedFont",)
+            self,
+            text="\n".join(["Top 10 individual conversations\n",
+                            self.Program.topTenIndividual,
+                            "\n",
+                            "Top 5 group chats\n",
+                            self.Program.topFiveGroups]),
+            anchor="n",
+            font=("TkFixedFont",)
         )
         self.labelTopTen.grid(column=0, row=0)
 

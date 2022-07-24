@@ -243,7 +243,7 @@ def emojiStats(emojis, names, people):
     return stats     
 
 # Goes through conversations and returns the top 10 chats based on messages number
-def topTen(path: str):
+def topTen(path: str) -> "tuple[dict[str, int], dict[str, int]]":
     chats = {}
     groups = {}
     inboxes = [f"{path}/{m}/inbox/" for m in os.listdir(path) if m.startswith("messages")]
@@ -251,24 +251,23 @@ def topTen(path: str):
     ts = 0
 
     for n in names:
-        m = n.split("inbox/")[1]
         for file in os.listdir(n):
             if file.startswith("message") and file.endswith(".json"):
                 with open(n + "/" + file) as data:
                     data = json.load(data)
+
+                    # get the "real" name of the individual conversation (as opposed to the "condensed"
+                    # format in the folder name (represented here by the variable "m"))
+                    conversationName = data["title"].encode('iso-8859-1').decode('utf-8')
+
                     if data["thread_type"] == "Regular":
-                        # get the "real" name of the individual conversation (as opposed to the "condensed"
-                        # format in the folder name (represented here by the variable "m"))
-                        nameIndividual = data["title"].encode('iso-8859-1').decode('utf-8')
-                        chats[nameIndividual] = len(data["messages"]) + chats.get(nameIndividual, 0)
-                    else:
-                        groups[m] = len(data["messages"]) + groups.get(m, 0)
+                        chats[conversationName] = len(data["messages"]) + chats.get(conversationName, 0)
+                    elif data["thread_type"] == "RegularGroup":
+                        groups[conversationName] = len(data["messages"]) + groups.get(conversationName, 0)
+
                     if data["messages"][0]["timestamp_ms"] > ts:
                         ts = data["messages"][0]["timestamp_ms"]
 
-    topChats = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
-    for key in list(topChats.keys()):
-        name = key.split("_")[0]
-        topChats[name] = s(topChats.pop(key))
-    
-    return topChats
+    topIndividual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
+    topGroup = dict(sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5])
+    return topIndividual, topGroup

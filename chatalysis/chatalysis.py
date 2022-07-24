@@ -7,7 +7,7 @@ import os
 import threading
 from pprint import pprint
 # Application imports
-from __init__ import version
+from __init__ import __version__
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
 from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home
@@ -31,7 +31,7 @@ def htmllyse(chats, folders: "list[str]"):
     messages = getMsgs(jsons)
     basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
 
-    source = mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
+    source = mrHtml(__version__, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
 
     with io.open(file, "w", encoding="utf-8") as data:
         data.write(source)

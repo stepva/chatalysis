@@ -5,7 +5,7 @@ import os
 from pprint import pprint
 from analysis import topTen
 from utility import checkMedia, getMessageFolders, identifyChats
-from __init__ import version
+from __init__ import __version__
 from chatalysis import htmllyse
 
 
@@ -23,7 +23,7 @@ def cli():
     i = ""
 
     print("************************************")
-    print(f"Welcome to Chatalysis {version}!\n")
+    print(f"Welcome to Chatalysis {__version__}!\n")
     checkMedia(folders)
     print(
         """To see your Top 10 chats, just type \"top\"
