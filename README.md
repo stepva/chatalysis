@@ -6,12 +6,6 @@ Chatalysis lets you analyse and, more importantly, visualise stats from your own
 <img height="650" src="output/preview_v1.jpg">
 </p>
 
-## Recent Updates
-
-- _v1.0.2_: fixed and updated for a new version of the emoji library
-- _v1.0.1_: added error message for no messages folder and improved HTML visualization when there are no emojis/reactions
-- _v1_: published!
-
 ## Installation
 
 1. Download your messages from <https://www.facebook.com/dyi/>. You only need to select **Messages** and make sure to choose **JSON** as the Format and **Low** for Media Quality (you can select higher media quality but it will make the files larger and it is not necessary for Chatalysis). It will take Facebook some time (several hours) to prepare your file and you can expect it to be a few gigabytes large. You will get a notification when it's ready to download.
