@@ -1,65 +1,32 @@
 # Standard library imports
 import argparse
-import os
-import pathlib
-from pprint import pprint
+import sys
 
 # Application imports
+from program import Program
+from cli import cli
 from __init__ import version
-from infographic import mrHtml
-from utility import identifyChats, checkMedia, getMessageFolders
-from chatalysis import printlyse, htmllyse
-from analysis import topTen
 
 
 def main(argv=None):
-    chats = identifyChats()
-    folders = getMessageFolders()
-    if not folders:
-        print("Looks like there is no messages folder here. Make sure to add the \"messages\" folder downloaded from Facebook to the chatalysis parent folder. More info in the README :)")
-        exit()
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('-V', '-version', '--version', help='Version', action='version', version=version)
-    parser.add_argument('chat', nargs='?', type=str, choices=chats.keys())
+    parser.add_argument(
+        "-V", "-version", help="Version info", action="version", version=version
+    )
+
+    subparses = parser.add_subparsers()
+    parser_cli = subparses.add_parser("cli", help="Use CLI instead of GUI")
+    parser_cli.set_defaults(func=cli)
+
     args = parser.parse_args(argv)
 
-    if args.chat:
-        printlyse(chats[args.chat])
-        exit()
-    
-    tops = None
-    i = ''
+    if "cli" in sys.argv:
+        args.func()
 
-    print("************************************")
-    print(f"Welcome to Chatalysis {version}!\n")
-    checkMedia()
-    print("""To see your Top 10 chats, just type \"top\"
-To chatalyse a specific conversation, just say which one - \"namesurname\"
-If you need help, read the README
-To exit, just type \"exit\":
-        """)
-
-    while i != 'exit':
-        print("What do you want to do?")
-        i = input()
-        chat = chats.get(i)
-
-        if i == "top":
-            print("\nLoading...\n")
-            if not tops:
-                tops = topTen()
-
-            pprint(tops, indent=2, sort_dicts=False)
-
-        elif chat is not None:
-            print("\nLoading...\n")
-            htmllyse(chat)
-
-        elif i != 'exit':
-            print(f'No chats named {i}. Try again.')
+    else:
+        p = Program()
+        p.run()
 
 
-    
 if __name__ == "__main__":
     main()
