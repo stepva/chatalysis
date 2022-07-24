@@ -207,7 +207,7 @@ def countTypes(names, emojis, sent):
 def avgCounts(names, people, emojis, sent):
     avgs = {}
     for n in names:
-        avgs[n] = round(emojis[sent][n]["total"]/people[n], 2)
+        avgs[n] = round(emojis[sent][n]["total"] / people[n], 2) if people[n] != 0 else 0
     return avgs
 
 # Gets the number of top emojis or reactions up to 10

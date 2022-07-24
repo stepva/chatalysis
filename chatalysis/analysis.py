@@ -30,6 +30,7 @@ def raw(messages, names):
     hours = hoursList()
 
     for n in names:
+        people[n] = 0
         reactions["gave"][n] = {"total": 0}
         reactions["got"][n] = {"total": 0}
         emojis["sent"][n] = {"total": 0}
