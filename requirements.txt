@@ -1,3 +1,4 @@
-emoji
+emoji==1.2.0
 regex
 jinja2
+tabulate
