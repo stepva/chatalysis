@@ -1,10 +1,8 @@
 # Standard library imports
 import webbrowser
-import pathlib
 import io
 import sys
 import os
-import threading
 from pprint import pprint
 # Application imports
 from __init__ import __version__
@@ -12,8 +10,12 @@ from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, first
 from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home
 
-# Chatalyses the chat and produces an HTML output
-def htmllyse(chats, folders: "list[str]"):
+def htmllyse(chats: "list[str]", folders: "list[str]"):
+    """Analyzes the chat and creates HTML output file with stat visualization
+
+    :param chats: list of the chats to analyze
+    :param folders: list of folders containing the messages and other data (pictures etc.)
+    """
     chat_paths = getPaths(chats, folders)
     jsons, title, names = getJsons(chat_paths)
 
@@ -38,8 +40,11 @@ def htmllyse(chats, folders: "list[str]"):
 
     wb.open(file)
 
-# Chatalyses the chat and prints it to terminal
-def printlyse(chats):
+def printlyse(chats: "list[str]"):
+    """Analyzes the chat and prints the stats to terminal
+
+    :param chats: list of the chats to analyze
+    """
     chat_paths = getPaths(chats)
     jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
