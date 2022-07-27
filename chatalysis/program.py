@@ -34,7 +34,7 @@ class Program:
             return
 
         self.validDir = True
-        self.gui.removeLabels([self.gui.labelError])
+        self.gui.labelError.config(text="")
         self.gui.entryDataDir.config(
             background="#17850b"
         )  # display directory path in green

@@ -20,11 +20,6 @@ class Window(tk.Tk):
         tk.Tk.__init__(self)
 
     @abc.abstractmethod
-    def create(self):
-        """Creates and renders the window and all its objects"""
-        pass
-
-    @abc.abstractmethod
     def displayError(self, errorMessage: str):
         """Displays an error message in the window
 
@@ -50,8 +45,6 @@ class MainGUI(Window):
         Window.__init__(self)
         self.labelError = None
         self.Program = program
-        self.WindowTopTen = WindowTopTen(self.Program, self)
-        self.WindowIndividual = WindowIndividual(self.Program, self)
         self.create()
 
     def create(self):
@@ -75,25 +68,22 @@ class MainGUI(Window):
         self.button1 = tk.Button(
             self,
             text="Show top conversations",
-            command=self.WindowTopTen.create,
+            command=lambda: WindowTopTen(self.Program, self),
         )
         self.button2 = tk.Button(
             self,
             text="Analyze individual conversations",
-            command=self.WindowIndividual.create,
+            command=lambda: WindowIndividual(self.Program, self),
         )
 
         # Create labels
-        self.labelSelectDir = tk.Label(
-            self, text="Please select directory with the messages:"
-        )
+        self.labelError = tk.Label(self, text="", fg="red", wraplength=650)
+        self.labelSelectDir = tk.Label(self, text="Please select directory with the messages:")
 
         # Create entry widgets
         self.dataDirPathTk = tk.StringVar()
         self.entryDataDir = tk.Entry(self, textvariable=self.dataDirPathTk, width=60)
-        self.entryDataDir.config(
-            background="#f02663"
-        )  # display directory path in red until a valid path is entered
+        self.entryDataDir.config(background="#f02663")  # display directory path in red until a valid path is entered
 
         # Render objects onto a grid
         self.labelSelectDir.grid(column=0, row=0, padx=5, pady=5)
@@ -101,12 +91,10 @@ class MainGUI(Window):
         self.entryDataDir.grid(column=0, row=2, sticky="N", padx=5, pady=5)
         self.button1.grid(column=0, row=3, sticky="S", padx=5, pady=5)
         self.button2.grid(column=0, row=4, sticky="N", padx=5, pady=5)
+        self.labelError.grid(column=0, row=5, padx=5, pady=5)
 
     def displayError(self, errorMessage: str):
-        self.removeLabels([self.labelError])
-
-        self.labelError = tk.Label(self, text=errorMessage, wraplength=650, fg="red")
-        self.labelError.grid(column=0, row=5, padx=5, pady=5)
+        self.labelError.config(text=errorMessage, fg="red")
 
     def selectDir(self):
         """Selects directory with the data using a dialog window"""
@@ -121,20 +109,12 @@ class WindowTopTen(Window):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
     def __init__(self, program, gui: MainGUI):
-        self.created = False
-        self.Program = program
-        self.MainGUI = gui
-
-    def create(self):
-        if (
-            not self.Program.validDir
-        ):  # don't do anything if source directory is invalid to avoid errors
-            self.MainGUI.displayError(
-                "Cannot analyze until a valid directory is selected"
-            )
+        if not program.validDir:  # don't do anything if source directory is invalid to avoid errors
+            gui.displayError("Cannot analyze until a valid directory is selected")
             return
 
-        # call the Window __init__ here as to avoid creating the window along with the main GUI
+        self.Program = program
+
         Window.__init__(self)
         self.title("Top conversations")
         self.geometry("600x600")
@@ -144,6 +124,7 @@ class WindowTopTen(Window):
 
         self.labelAnalyzing = tk.Label(self, text="Analyzing...")
         self.labelError = None
+        self.labelTop = None
 
         self.showTop()  # runs the top 10 analysis & print
 
@@ -164,22 +145,17 @@ class WindowTopTen(Window):
             self.Program.topTenIndividual = tabulate(
                 topIndividual.items(),
                 headers=["Conversation", "Messages"],
-                colalign=(
-                    "left",
-                    "right",
-                ),
+                colalign=("left", "right",)
             )
 
             self.Program.topFiveGroups = tabulate(topGroup.items(),
                                                   headers=["Conversation", "Messages"],
                                                   colalign=("left", "right"))
 
-        self.removeLabels(
-            [self.labelAnalyzing]
-        )  # remove the "Analyzing..." label if present
+        self.removeLabels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
 
         # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
-        self.labelTopTen = tk.Label(
+        self.labelTop = tk.Label(
             self,
             text="\n".join(["Top 10 individual conversations\n",
                             self.Program.topTenIndividual,
@@ -189,27 +165,24 @@ class WindowTopTen(Window):
             anchor="n",
             font=("TkFixedFont",)
         )
-        self.labelTopTen.grid(column=0, row=0)
+        self.labelTop.grid(column=0, row=0)
 
 
 class WindowIndividual(Window):
     def __init__(self, program, gui: MainGUI):
-        self.MainGUI = gui
-        self.Program = program
-
-    def create(self):
-        if (
-            not self.Program.validDir
-        ):  # don't do anything if source directory is invalid to avoid errors
-            self.MainGUI.displayError(
-                "Cannot analyze until a valid directory is selected"
-            )
+        if not program.validDir:  # don't do anything if source directory is invalid to avoid errors
+            gui.displayError("Cannot analyze until a valid directory is selected")
             return
 
-        # call the Window __init__ here as to avoid creating the window along with the main GUI
+        self.Program = program
+
         Window.__init__(self)
         self.title("Analyze individual conversations")
         self.geometry("600x200")
+        self.create()
+
+    def create(self):
+        """Creates and renders the objects in the window"""
 
         self.grid_columnconfigure(0, weight=1)
         for i in range(0, 2):
@@ -223,12 +196,7 @@ class WindowIndividual(Window):
 
         # add an invisible label so that the labels indicating success or error stay in the same place
         # the entire time without the rest of the objects "jumping" around
-        self.labelEmpty = tk.Label(
-            self, text="                              ", wraplength=650, fg="red"
-        )
-
-        self.labelDone = None
-        self.labelError = None
+        self.labelUnder = tk.Label(self, text="", wraplength=650, fg="red")
 
         # Entry for entering the conversation name. It's bound to start the analysis when the user hits Enter.
         self.entryName = tk.Entry(self, width=50)
@@ -236,38 +204,27 @@ class WindowIndividual(Window):
 
         self.labelInstructions.grid(column=0, row=0, sticky="S", padx=5, pady=5)
         self.entryName.grid(column=0, row=1, sticky="N", padx=5, pady=5)
-        self.labelEmpty.grid(column=0, row=2, padx=5, pady=5)
+        self.labelUnder.grid(column=0, row=2, padx=5, pady=5)
 
     def displayError(self, errorMessage: str):
-        self.removeLabels([self.labelDone, self.labelError])
-
-        self.labelError = tk.Label(self, text=errorMessage, wraplength=650, fg="red")
-        self.labelError.grid(column=0, row=2, sticky="N", padx=5, pady=5)
+        self.labelUnder.config(text=errorMessage, fg="red")
 
     def analyzeIndividual(self, event: tk.Event):
         """Analyzes an individual conversation and prints information about the process
 
-        :param event: the event bound to the key press - not used, but it stops working if you remove it
+        :param event: the event bound to the key press - not used, but it doesn't work without it
         """
-        self.removeLabels([self.labelDone, self.labelError])
+        self.labelUnder.config(text="Analyzing...", fg="black")
         self.update()
-
-        self.labelAnalyzing = tk.Label(self, text="Analyzing...")
-        self.labelAnalyzing.grid(column=0, row=2, sticky="N", padx=5, pady=5)
 
         # Get the name of the conversation to analyze
         name = self.entryName.get()
         chat = self.Program.chats.get(name)
 
-        self.labelAnalyzing.destroy()  # remove the "Analyzing..." label
-
         if chat is not None:
             # chat was found and successfully analyzed
             htmllyse(chat, self.Program.folders)
-            self.labelDone = tk.Label(
-                self, text="Done. You can find it in the output folder!", fg="green"
-            )
-            self.labelDone.grid(column=0, row=2, sticky="N", padx=5, pady=5)
+            self.labelUnder.config(text="Done. You can find it in the output folder!", fg="green")
         else:
             # chat wasn't found
             self.displayError("Sorry, this conversation doesn't exist")
