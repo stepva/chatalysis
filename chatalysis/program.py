@@ -6,8 +6,8 @@ class Program:
     def __init__(self):
         self.chats = None
         self.folders = None
-        self.topConversations = None
-        self.topTenList = None
+        self.topTenIndividual = None
+        self.topFiveGroups = None
         self.dataDirPath = ""
         self.validDir = False
         self.gui = MainGUI(self)
@@ -34,7 +34,7 @@ class Program:
             return
 
         self.validDir = True
-        self.gui.removeLabels([self.gui.labelError])
+        self.gui.labelError.config(text="")
         self.gui.entryDataDir.config(
             background="#17850b"
         )  # display directory path in green

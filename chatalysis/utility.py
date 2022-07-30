@@ -5,8 +5,8 @@ import pathlib
 
 home = pathlib.Path(__file__).parent.absolute()
 
-# Gets list of all conversations and their ID
 def identifyChats(folders: "list[str]"):
+    """Gets list of all conversations and their ID"""
     chats = {}
     
     for folder in folders:
@@ -21,8 +21,8 @@ def identifyChats(folders: "list[str]"):
                     chats[name].append(chat_id.lower())
     return chats
 
-# Gets the messages folders
 def getMessageFolders(path: str) -> "list[str]":
+    """Gets the messages folders"""
     folders = []
 
     for d in os.listdir(path):
@@ -34,8 +34,8 @@ def getMessageFolders(path: str) -> "list[str]":
 
     return folders
 
-# Checks if all media types are included, as for some users Facebook doesn’t include files or videos
 def checkMedia(folders: "list[str]"):
+    """Checks if all media types are included, as for some users Facebook doesn’t include files or videos"""
     media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
 
     for folder in folders:
@@ -52,8 +52,8 @@ def checkMedia(folders: "list[str]"):
     if no_media:
         raise Exception(f"These media types are not included in your messages for some reason: {no_media_str}. I can’t do anything about it.\n")
 
-# Gets path(s) to the desired chat(s)
 def getPaths(chat_ids, folders: "list[str]"):
+    """Gets path(s) to the desired chat(s)"""
     chat_paths = []
 
     if len(chat_ids) == 1:
@@ -69,8 +69,8 @@ def getPaths(chat_ids, folders: "list[str]"):
                 chat_paths.append(f'{folder}/inbox/{chat}')
     return chat_paths
 
-# Gets information about chats with the same name
 def multipleChats(chat_ids):
+    """Gets information about chats with the same name"""
     chat_paths = {}
     jsons = {}
     names = {}
@@ -82,8 +82,8 @@ def multipleChats(chat_ids):
         lengths[chat_id] = [(len(jsons[chat_id])-1)*10000, len(jsons[chat_id])*10000]
         print(f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages")
 
-# Gets the json(s) with desired messages
 def getJsons(chat_paths):
+    """Gets the json(s) with desired messages"""
     jsons = []
     for ch in chat_paths:
         for file in os.listdir(ch):
@@ -98,8 +98,8 @@ def getJsons(chat_paths):
         raise Exception("NO JSON FILES IN THIS CHAT")
     return (jsons, title, names)
 
-# Gets the desired messages
 def getMsgs(jsons):
+    """Gets the desired messages"""
     messages = []
     for j in jsons:
         with open(j) as data:
@@ -109,8 +109,8 @@ def getMsgs(jsons):
     decodeMsgs(messages)
     return messages
 
-# Gets names of the participants in the chat
 def getNames(data):
+    """Gets names of the participants in the chat"""
     ns = []
     for i in data["participants"]:
         ns.append(i["name"].encode('iso-8859-1').decode('utf-8'))
@@ -118,12 +118,12 @@ def getNames(data):
         ns.append(ns[0])
     return ns
 
-# Decodes a string from the Facebook encoding
-def decode(word):
+def decode(word: str) -> str:
+    """Decodes a string from the Facebook encoding"""
     return word.encode('iso-8859-1').decode('utf-8')
 
-# Decodes all messages from the Facebook encoding
 def decodeMsgs(messages):
+    """Decodes all messages from the Facebook encoding"""
     for m in messages:
         m["sender_name"] = m["sender_name"].encode('iso-8859-1').decode('utf-8')
         if "content" in m:

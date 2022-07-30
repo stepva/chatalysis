@@ -1,17 +1,21 @@
 # Standard library imports
 from datetime import datetime, date, timedelta
+from typing import Any
 import json
 import os
-import pathlib
 # Third party imports
 import emoji
 import regex
 # Application imports
-from utility import decode, getNames
-from infographic import s
+from utility import decode
 
-# Goes through all the messages and returns the stats in a "raw" form
-def raw(messages, names):
+def raw(messages: list, names: "list[str]"):
+    """Goes through all the messages and returns the stats in a "raw" form
+
+    :param messages: list of messages to be analyzed
+    :param names: list of names of participants in the conversation
+    :return: tuple of conversation stats
+    """
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
     people = {"total": 0}
@@ -102,8 +106,12 @@ def raw(messages, names):
     times = (hours, days, weekdays, months, years)
     return basicStats, reactions, emojis, times, people, fromDay, toDay, names
 
-# Prepares a dictionary with all days from the first message up to the last one
-def daysList(messages):
+def daysList(messages: list) -> "dict[str, int]":
+    """Prepares a dictionary with all days from the first message up to the last one
+
+    :param messages: list of messages in the conversation
+    :return: dictionary of days
+    """
     fromDay = date.fromtimestamp(messages[0]["timestamp_ms"]//1000)
     toDay = date.fromtimestamp(messages[-1]["timestamp_ms"]//1000)
     delta = toDay - fromDay
@@ -113,16 +121,23 @@ def daysList(messages):
         days[str(day)] = 0
     return days
 
-# Prepares a dictionary with hours in the day
-def hoursList():
+def hoursList() -> "dict[int, int]":
+    """Creates a dictionary of hours in a day
+
+    :return: dictionary of hours
+    """
     hours = {}
     for i in range(24):
         hours[i] = 0
     return hours
 
-# Prepares basic chat stats for a terminal output
-def chatStats(basicStats, names):
-    #basicStats = [people, photos, gifs, stickers, videos, audios, files]
+def chatStats(basicStats: tuple, names: "list[str]") -> "dict[str, Any]":
+    """Creates basic chat stats for a terminal output
+
+    :param basicStats: tuple of [people, photos, gifs, stickers, videos, audios, files]
+    :param names: list of names of participants in the conversation
+    :return: dictionary of conversation stats
+    """
     info = {
         "1) Total messages": basicStats[0]["total"],
         "2) Total audios": basicStats[5]["total"],
@@ -145,9 +160,12 @@ def chatStats(basicStats, names):
         
     return info
 
-# Prepares time stats for a terminal output
-def timeStats(times):
-    #times = [hours, days, weekdays, months, years]
+def timeStats(times: tuple):
+    """Creates time stats for terminal output
+
+    :param times: tuple of [hours, days, weekdays, months, years]
+    :return: dictionary of time stats
+    """
     wdNames = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
 
     topDay = sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0]
@@ -164,9 +182,15 @@ def timeStats(times):
     }
     return stats
 
-# Prepares reaction stats for a terminal output
-def reactionStats(reactions, names, people):
-    #reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+def reactionStats(reactions: dict, names, people):
+    """Creates reaction stats for a terminal output
+
+    :param reactions: dictionary with structure
+                      {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+    :param names:
+    :param people:
+    :return: dictionary of reaction stats
+    """
     gaves = {}
     gots = {}
     gotsAvg = {}
@@ -198,8 +222,12 @@ def reactionStats(reactions, names, people):
 
     return stats
 
-# Returns the first conversation ever
-def firstMsg(messages):
+def firstMsg(messages: list) -> dict:
+    """Returns the first conversation ever
+
+    :param messages: list of the messages in a conversation
+    :return: dictionary with the first message
+    """
     author = messages[0]["sender_name"]
     texts = {}
     i = 0
@@ -214,9 +242,15 @@ def firstMsg(messages):
             break
     return texts
 
-# Prepares emoji stats for a terminal output
-def emojiStats(emojis, names, people):
-    #emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+def emojiStats(emojis: dict, names, people) -> dict:
+    """Prepares emoji stats for terminal output
+
+    :param emojis: dict with structure
+                   {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+    :param names:
+    :param people:
+    :return: dictionary with emoji stats
+    """
     sents = {}
     sentsAvg = {}
 
@@ -242,8 +276,14 @@ def emojiStats(emojis, names, people):
 
     return stats     
 
-# Goes through conversations and returns the top 10 chats based on messages number
-def topTen(path: str):
+def topTen(path: str) -> "tuple[dict[str, int], dict[str, int]]":
+    """Goes through conversations and returns the top 10 individual chats
+    and top 5 group chats based on messages number.
+
+    :param path: path to a directory with all the messages
+    :return: dictionary of top 10 individual conversations & top 5 group chats
+             with the structure {conversation name: number of messages}
+    """
     chats = {}
     groups = {}
     inboxes = [f"{path}/{m}/inbox/" for m in os.listdir(path) if m.startswith("messages")]
@@ -251,24 +291,23 @@ def topTen(path: str):
     ts = 0
 
     for n in names:
-        m = n.split("inbox/")[1]
         for file in os.listdir(n):
             if file.startswith("message") and file.endswith(".json"):
                 with open(n + "/" + file) as data:
                     data = json.load(data)
+
+                    # get the "real" name of the individual conversation (as opposed to the "condensed"
+                    # format in the folder name (represented here by the variable "m"))
+                    conversationName = data["title"].encode('iso-8859-1').decode('utf-8')
+
                     if data["thread_type"] == "Regular":
-                        # get the "real" name of the individual conversation (as opposed to the "condensed"
-                        # format in the folder name (represented here by the variable "m"))
-                        nameIndividual = data["title"].encode('iso-8859-1').decode('utf-8')
-                        chats[nameIndividual] = len(data["messages"]) + chats.get(nameIndividual, 0)
-                    else:
-                        groups[m] = len(data["messages"]) + groups.get(m, 0)
+                        chats[conversationName] = len(data["messages"]) + chats.get(conversationName, 0)
+                    elif data["thread_type"] == "RegularGroup":
+                        groups[conversationName] = len(data["messages"]) + groups.get(conversationName, 0)
+
                     if data["messages"][0]["timestamp_ms"] > ts:
                         ts = data["messages"][0]["timestamp_ms"]
 
-    topChats = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
-    for key in list(topChats.keys()):
-        name = key.split("_")[0]
-        topChats[name] = s(topChats.pop(key))
-    
-    return topChats
+    topIndividual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
+    topGroup = dict(sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5])
+    return topIndividual, topGroup
