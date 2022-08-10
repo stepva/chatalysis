@@ -9,7 +9,7 @@ from pprint import pprint
 from __init__ import __version__
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
 from infographic import mrHtml
-from utility import getPaths, getJsons, getMsgs, home
+from utility import getPaths, getJsons, getMsgs, home, get_messages_from_html
 
 
 def htmllyse(chats: "list[str]", folders: "list[str]"):
@@ -32,9 +32,10 @@ def htmllyse(chats: "list[str]", folders: "list[str]"):
         wb = webbrowser.get()
 
     if os.path.exists(file_path):
-        # todo check for the number of messages in the file
-        wb.open(path_to_open)
-        return
+        html_messages = get_messages_from_html(file_path)
+        if len(messages) == html_messages:
+            wb.open(path_to_open)
+            return
 
     basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(
         messages, names
