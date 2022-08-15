@@ -4,11 +4,13 @@ import io
 import sys
 import os
 from pprint import pprint
+
 # Application imports
 from __init__ import __version__
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
 from infographic import mrHtml
-from utility import getPaths, getJsons, getMsgs, home
+from utility import getPaths, getJsons, getMsgs, home, get_messages_from_html
+
 
 def htmllyse(chats: "list[str]", folders: "list[str]"):
     """Analyzes the chat and creates HTML output file with stat visualization
@@ -18,27 +20,36 @@ def htmllyse(chats: "list[str]", folders: "list[str]"):
     """
     chat_paths = getPaths(chats, folders)
     jsons, title, names = getJsons(chat_paths)
+    messages = getMsgs(jsons)
 
-    if sys.platform == 'darwin':
+    file_path = f"{home}/../output/{title}.html"
+
+    if sys.platform == "darwin":
+        path_to_open = f"file://{file_path}"
         wb = webbrowser.get("safari")
     else:
+        path_to_open = file_path
         wb = webbrowser.get()
 
-    file = f"{home}/../output/{title}.html"
+    if os.path.exists(file_path):
+        html_messages = get_messages_from_html(file_path)
+        if len(messages) == html_messages:
+            wb.open(path_to_open)
+            return
 
-    if os.path.exists(file):
-        wb.open(file)
-        return
+    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(
+        messages, names
+    )
 
-    messages = getMsgs(jsons)
-    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(messages, names)
+    source = mrHtml(
+        __version__, names, basicStats, fromDay, toDay, times, emojis, reactions, title
+    )
 
-    source = mrHtml(__version__, names, basicStats, fromDay, toDay, times, emojis, reactions, title)
-
-    with io.open(file, "w", encoding="utf-8") as data:
+    with io.open(file_path, "w", encoding="utf-8") as data:
         data.write(source)
 
-    wb.open(file)
+    wb.open(path_to_open)
+
 
 def printlyse(chats: "list[str]"):
     """Analyzes the chat and prints the stats to terminal
@@ -48,7 +59,9 @@ def printlyse(chats: "list[str]"):
     chat_paths = getPaths(chats)
     jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
-    basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(messages, names)
+    basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(
+        messages, names
+    )
 
     print(f"Chat: {title}, from {fromDay} to {toDay}")
     pprint(chatStats(basicStats, names), indent=2, sort_dicts=True)
