@@ -163,7 +163,12 @@ def get_messages_from_html(file_path: str) -> int:
     soup = BeautifulSoup(f, features="html.parser")
     field = soup.find("p", {"id": "total messages"})
     if field:
-        messages = int(field.text.replace(" ", "").replace(",", ""))
+        messages = int(
+            # remove number formatting
+            field.text.replace(" ", "")
+            .replace(u"\u202f", "")  # \u202f is a no-break space
+            .replace(",", "")
+        )
     else:
         messages = 0
     return messages
