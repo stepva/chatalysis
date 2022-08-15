@@ -159,11 +159,11 @@ def decodeMsgs(messages):
 
 def get_messages_from_html(file_path: str) -> int:
     """Find the number of total messages from a previously generated HTML file"""
-    f = open(file_path, "r")
+    f = open(file_path, "r", encoding="utf-8")
     soup = BeautifulSoup(f, features="html.parser")
     field = soup.find("p", {"id": "total messages"})
     if field:
-        messages = int(field.text.replace(" ", ""))
+        messages = int(field.text.replace(" ", "").replace(",", ""))
     else:
         messages = 0
     return messages
