@@ -35,14 +35,8 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     return template.render(
         # utility
-        path=home / "..",
-        chartjs=home / ".." / "node_modules" / "chart.js" / "dist" / "Chart.js",
-        chartjs_labels=home
-        / ".."
-        / "node_modules"
-        / "chartjs-plugin-labels"
-        / "src"
-        / "chartjs-plugin-labels.js",
+        chartjs="../node_modules/chart.js/dist/Chart.js",
+        chartjs_labels="../node_modules/chartjs-plugin-labels/src/chartjs-plugin-labels.js",
         participants=len(names),
         version=version,
         fromDay=fromDay,
@@ -127,10 +121,10 @@ def getPics(names: "list[str]") -> "dict[str, str]":
     """
     pics = {}
     for n in names:
-        pics[n] = home / ".." / "resources" / "images" / "placeholder.jpg"
+        pics[n] = "../resources/images/placeholder.jpg"
         for p in os.listdir(home / ".." / "resources" / "images"):
             if p.startswith(changeName(n)):
-                pics[n] = home / ".." / "resources" / "images" / p
+                pics[n] = "../resources/images/p"
     return pics
 
 
