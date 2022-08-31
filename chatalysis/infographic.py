@@ -21,7 +21,7 @@ translation_table = str.maketrans(TRANSLATION_TABLE)
 
 def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions, title):
     """Imports stats and other variables into HTML"""
-    file_loader = FileSystemLoader(f"{home}/../resources/templates")
+    file_loader = FileSystemLoader(home / ".." / "resources" / "templates")
     env = Environment(loader=file_loader)
     env.filters["space"] = s
 
@@ -35,7 +35,14 @@ def mrHtml(version, names, basicStats, fromDay, toDay, times, emojis, reactions,
 
     return template.render(
         # utility
-        path=f"{home}/..",
+        path=home / "..",
+        chartjs=home / ".." / "node_modules" / "chart.js" / "dist" / "Chart.js",
+        chartjs_labels=home
+        / ".."
+        / "node_modules"
+        / "chartjs-plugin-labels"
+        / "src"
+        / "chartjs-plugin-labels.js",
         participants=len(names),
         version=version,
         fromDay=fromDay,
@@ -120,10 +127,10 @@ def getPics(names: "list[str]") -> "dict[str, str]":
     """
     pics = {}
     for n in names:
-        pics[n] = f"{home}/../resources/images/placeholder.jpg"
-        for p in os.listdir(f"{home}/../resources/images"):
+        pics[n] = home / ".." / "resources" / "images" / "placeholder.jpg"
+        for p in os.listdir(home / ".." / "resources" / "images"):
             if p.startswith(changeName(n)):
-                pics[n] = f"{home}/../resources/images/{p}"
+                pics[n] = home / ".." / "resources" / "images" / p
     return pics
 
 

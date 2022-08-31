@@ -1,12 +1,12 @@
 # Standard library imports
 import os
 import json
-import pathlib
+from pathlib import Path
 
 # Third party imports
 from bs4 import BeautifulSoup
 
-home = pathlib.Path(__file__).parent.absolute()
+home = Path(__file__).parent.absolute()
 
 
 def identifyChats(folders: "list[str]"):
@@ -14,7 +14,7 @@ def identifyChats(folders: "list[str]"):
     chats = {}
 
     for folder in folders:
-        for chat_id in os.listdir(f"{folder}/inbox"):
+        for chat_id in os.listdir(Path(folder) / "inbox"):
             name = chat_id.split("_")[0].lower()
 
             if name not in chats:
@@ -31,8 +31,8 @@ def getMessageFolders(path: str) -> "list[str]":
     folders = []
 
     for d in os.listdir(path):
-        if d.startswith("messages") and os.path.isdir(f"{path}/{d}"):
-            folders.append(f"{path}/{d}")
+        if d.startswith("messages") and os.path.isdir(Path(path) / d):
+            folders.append(Path(path) / d)
 
     if len(folders) == 0:
         raise Exception(
@@ -75,9 +75,9 @@ def getPaths(chat_ids, folders: "list[str]"):
         i = int(input("Which one do you want? ")) - 1
 
     for folder in folders:
-        for chat in os.listdir(f"{folder}/inbox"):
+        for chat in os.listdir(folder / "inbox"):
             if chat.lower() == chat_ids[i]:
-                chat_paths.append(f"{folder}/inbox/{chat}")
+                chat_paths.append(folder / "inbox" / chat)
     return chat_paths
 
 
@@ -106,9 +106,9 @@ def getJsons(chat_paths):
     for ch in chat_paths:
         for file in os.listdir(ch):
             if file.startswith("message") and file.endswith(".json"):
-                jsons.append(f"{ch}/{file}")
+                jsons.append(ch / file)
             if file == "message_1.json":
-                with open(f"{ch}/{file}") as last:
+                with open(ch / file) as last:
                     data = json.load(last)
                     title = decode(data["title"])
                     names = getNames(data)
@@ -166,7 +166,7 @@ def get_messages_from_html(file_path: str) -> int:
         messages = int(
             # remove number formatting
             field.text.replace(" ", "")
-            .replace(u"\u202f", "")  # \u202f is a no-break space
+            .replace("\u202f", "")  # \u202f is a no-break space
             .replace(",", "")
         )
     else:
