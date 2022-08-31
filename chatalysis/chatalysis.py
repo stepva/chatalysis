@@ -22,7 +22,7 @@ def htmllyse(chats: "list[str]", folders: "list[str]"):
     jsons, title, names = getJsons(chat_paths)
     messages = getMsgs(jsons)
 
-    file_path = f"{home}/../output/{title}.html"
+    file_path = home / ".." / "output" / f"{title}.html"
 
     if sys.platform == "darwin":
         path_to_open = f"file://{file_path}"
