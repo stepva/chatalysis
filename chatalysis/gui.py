@@ -8,7 +8,7 @@ from tkinter import filedialog
 # Application imports
 from analysis import topTen
 from chatalysis import htmllyse
-from Messenger import FacebookMessenger
+from messenger import FacebookMessenger
 
 # Third party imports
 from tabulate import tabulate

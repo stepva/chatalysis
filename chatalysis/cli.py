@@ -6,7 +6,7 @@ from pprint import pprint
 from analysis import topTen
 from __init__ import __version__
 from chatalysis import htmllyse
-from Messenger import FacebookMessenger
+from messenger import FacebookMessenger
 
 
 def cli():

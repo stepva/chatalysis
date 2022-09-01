@@ -26,5 +26,5 @@ class Program:
                 background="#f02663"
             )  # display directory path in red
             self.validDir = False
-            self.gui.displayError(e)
+            self.gui.displayError(repr(e))
             return
