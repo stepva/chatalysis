@@ -1,106 +1,13 @@
 # Standard library imports
 import os
-import json
 from pathlib import Path
+import webbrowser
+import sys
 
 # Third party imports
 from bs4 import BeautifulSoup
 
 home = Path(__file__).parent.absolute()
-
-
-def getPaths(chat_ids, folders: "list[str]"):
-    """Gets path(s) to the desired chat(s)"""
-    chat_paths = []
-
-    if len(chat_ids) == 1:
-        i = 0
-    else:
-        print(f"There are {len(chat_ids)} different chats with this name:")
-        multipleChats(chat_ids, folders)
-        i = int(input("Which one do you want? ")) - 1
-
-    for folder in folders:
-        for chat in os.listdir(Path(folder) / "inbox"):
-            if chat.lower() == chat_ids[i]:
-                chat_paths.append(Path(folder) / "inbox" / Path(chat))
-    return chat_paths
-
-
-def multipleChats(chat_ids, folders):
-    """Gets information about chats with the same name"""
-    chat_paths = {}
-    jsons = {}
-    names = {}
-    lengths = {}
-
-    for chat_id in chat_ids:
-        chat_paths[chat_id] = getPaths([chat_id], folders)
-        jsons[chat_id], _, names[chat_id] = getJsons(chat_paths[chat_id])
-        lengths[chat_id] = [
-            (len(jsons[chat_id]) - 1) * 10000,
-            len(jsons[chat_id]) * 10000,
-        ]
-        print(
-            f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages"
-        )
-
-
-def getJsons(chat_paths):
-    """Gets the json(s) with desired messages"""
-    jsons = []
-    for ch in chat_paths:
-        for file in os.listdir(ch):
-            if file.startswith("message") and file.endswith(".json"):
-                jsons.append(ch / file)
-            if file == "message_1.json":
-                with open(ch / file) as last:
-                    data = json.load(last)
-                    title = decode(data["title"])
-                    names = getNames(data)
-    if not jsons:
-        raise Exception("NO JSON FILES IN THIS CHAT")
-    return (jsons, title, names)
-
-
-def getMsgs(jsons):
-    """Gets the desired messages"""
-    messages = []
-    for j in jsons:
-        with open(j) as data:
-            data = json.load(data)
-            messages.extend(data["messages"])
-    messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-    decodeMsgs(messages)
-    return messages
-
-
-def getNames(data):
-    """Gets names of the participants in the chat."""
-    ns = []
-    for i in data["participants"]:
-        ns.append(i["name"].encode("iso-8859-1").decode("utf-8"))
-    if len(ns) == 1:
-        ns.append(ns[0])
-    return ns
-
-
-def decode(word: str) -> str:
-    """Decode a string from the Facebook encoding."""
-    return word.encode("iso-8859-1").decode("utf-8")
-
-
-def decodeMsgs(messages):
-    """Decodes all messages from the Facebook encoding"""
-    for m in messages:
-        m["sender_name"] = m["sender_name"].encode("iso-8859-1").decode("utf-8")
-        if "content" in m:
-            m["content"] = m["content"].encode("iso-8859-1").decode("utf-8")
-        if "reactions" in m:
-            for r in m["reactions"]:
-                r["reaction"] = r["reaction"].encode("iso-8859-1").decode("utf-8")
-                r["actor"] = r["actor"].encode("iso-8859-1").decode("utf-8")
-    return messages
 
 
 def get_messages_from_html(file_path: str) -> int:
@@ -123,3 +30,44 @@ def get_messages_from_html(file_path: str) -> int:
 def html_spaces(n):
     """Splits number by thousands with a space"""
     return "{0:n}".format(n) if n != 1 else n
+
+
+def open_html(path: str):
+    """Opens the html file in a browser"""
+    if sys.platform == "darwin":
+        wb = webbrowser.get("safari")
+        path_to_open = f"file://{path}"
+    else:
+        wb = webbrowser.get()
+        path_to_open = path
+
+    wb.open(path_to_open)
+
+
+def check_if_create_new(title: str, messages: dict):
+    """Checks if the html file of a chat's title exists and compares it with the chat's messages"""
+    file_path = home / ".." / "output" / f"{title}.html"
+
+    if os.path.exists(file_path):
+        html_messages = get_messages_from_html(file_path)
+        if len(messages) == html_messages:
+            open_html(file_path)
+            return False
+
+    return True
+
+
+def hours_list() -> "dict[int, int]":
+    """Creates a dictionary of hours in a day
+
+    :return: dictionary of hours
+    """
+    hours = {}
+    for i in range(24):
+        hours[i] = 0
+    return hours
+
+
+def get_file_path(title: str):
+    """Returns a file_path of the chosen chat title"""
+    return home / ".." / "output" / f"{title}.html"
