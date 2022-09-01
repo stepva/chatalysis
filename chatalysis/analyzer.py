@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Application imports
 from __init__ import __version__
+from utility import html_spaces
 from utility import home
 from const import TRANSLATION_TABLE, DAYS
 
@@ -19,6 +20,7 @@ from const import TRANSLATION_TABLE, DAYS
 
 locale.setlocale(locale.LC_ALL, "")
 
+
 class Analyzer:
     def __init__(self, chat) -> None:
         self.chat = chat
@@ -27,7 +29,7 @@ class Analyzer:
         """Imports stats and other variables into HTML"""
         file_loader = FileSystemLoader(home / ".." / "resources" / "templates")
         env = Environment(loader=file_loader)
-        env.filters["space"] = self.s
+        env.filters["space"] = html_spaces
 
         (people, photos, gifs, stickers, videos, audios, files) = self.chat.basic_stats
         (hours, days, weekdays, months, years) = self.chat.times
@@ -97,10 +99,6 @@ class Analyzer:
             topReacs=self.topEmojis(self.chat.reactions, "got"),
             reacsL=self.topsCount(self.chat.reactions, "got"),
         )
-
-    def s(self, n):
-        """Splits number by thousands with a space"""
-        return "{0:n}".format(n) if n != 1 else n
 
     def msgGraph(self, people):
         """Prepares labels and data for the messages graph"""
