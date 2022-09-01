@@ -4,15 +4,16 @@ import os
 # Application imports
 from pprint import pprint
 from analysis import topTen
-from utility import checkMedia, getMessageFolders, identifyChats
 from __init__ import __version__
 from chatalysis import htmllyse
+from Messenger import FacebookMessenger
 
 
 def cli():
     path = os.getcwd()
-    folders = getMessageFolders(path)
-    chats = identifyChats(folders)
+    source = FacebookMessenger(path)
+    folders = source.folders
+    chats = source.chats
     if not folders:
         print(
             'Looks like there is no messages folder here. Make sure to add the "messages" folder downloaded from Facebook to the chatalysis parent folder. More info in the README :)'
@@ -24,7 +25,6 @@ def cli():
 
     print("************************************")
     print(f"Welcome to Chatalysis {__version__}!\n")
-    checkMedia(folders)
     print(
         """To see your Top 10 chats, just type \"top\"
 To chatalyse a specific conversation, just say which one - \"namesurname\"
