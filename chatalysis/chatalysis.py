@@ -10,7 +10,6 @@ from pprint import pprint
 from __init__ import __version__
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
 from analyzer import Analyzer
-from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home, get_messages_from_html
 from chat import Chat
 

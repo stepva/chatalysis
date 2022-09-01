@@ -1,21 +1,23 @@
 # Standard library imports
-from datetime import datetime, date, timedelta
-from typing import Any
-import json
 import math
 import os
 
 # Third party imports
-import emoji
-import regex
+import locale
 from jinja2 import Environment, FileSystemLoader
 
 
 # Application imports
 from __init__ import __version__
-from utility import decode, home
+from utility import home
 from const import TRANSLATION_TABLE, DAYS
 
+
+# emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+# reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+
+
+locale.setlocale(locale.LC_ALL, "")
 
 class Analyzer:
     def __init__(self, chat) -> None:
@@ -27,7 +29,7 @@ class Analyzer:
         env = Environment(loader=file_loader)
         env.filters["space"] = self.s
 
-        (people, photos, gifs, stickers, videos, audios, files) = self.chat.basicStats
+        (people, photos, gifs, stickers, videos, audios, files) = self.chat.basic_stats
         (hours, days, weekdays, months, years) = self.chat.times
 
         template = env.get_template("index.html.j2")
@@ -41,8 +43,8 @@ class Analyzer:
             chartjs_labels="../node_modules/chartjs-plugin-labels/src/chartjs-plugin-labels.js",
             participants=len(self.chat.names),
             version=__version__,
-            fromDay=self.chat.fromDay,
-            toDay=self.chat.toDay,
+            fromDay=self.chat.from_day,
+            toDay=self.chat.to_day,
             # names
             title=self.chat.title,
             names=self.chat.names,

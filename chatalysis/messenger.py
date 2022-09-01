@@ -10,7 +10,7 @@ class FacebookMessenger(MessageSource):
         self.chats = self.get_all_chats()
         self._check_media()
 
-    def get_all_chats(self) -> list:
+    def get_all_chats(self):
         """Gets list of all conversations and their ID"""
         chats = {}
 

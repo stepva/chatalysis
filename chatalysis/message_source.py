@@ -7,7 +7,7 @@ class MessageSource:
         self.data_dir_path = path
 
     @abc.abstractmethod
-    def get_all_chats(self) -> list:
+    def get_all_chats(self):
         """Extracts all chats in the data folder"""
         pass
 
