@@ -118,3 +118,8 @@ def get_messages_from_html(file_path: str) -> int:
     else:
         messages = 0
     return messages
+
+
+def html_spaces(n):
+    """Splits number by thousands with a space"""
+    return "{0:n}".format(n) if n != 1 else n
