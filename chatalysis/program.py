@@ -1,11 +1,9 @@
-from utility import identifyChats, getMessageFolders, checkMedia
 from gui import MainGUI
 
 
 class Program:
     def __init__(self):
-        self.chats = None
-        self.folders = None
+        self.source = None
         self.topTenIndividual = None
         self.topFiveGroups = None
         self.dataDirPath = ""
@@ -15,16 +13,14 @@ class Program:
     def run(self):
         self.gui.mainloop()
 
-    def processMessagesDir(self):
-        """Processes the directory with the messages for analysis"""
-        self.folders = getMessageFolders(self.dataDirPath)
-        self.chats = identifyChats(self.folders)
-        checkMedia(self.folders)
-
     def dirSelected(self):
         """Checks if directory is valid (contains the 'messages' folder) and colors the entry field"""
         try:
-            self.processMessagesDir()
+            self.validDir = True
+            self.gui.labelError.config(text="")
+            self.gui.entryDataDir.config(
+                background="#17850b"
+            )  # display directory path in green
         except Exception as e:
             self.gui.entryDataDir.config(
                 background="#f02663"
@@ -32,9 +28,3 @@ class Program:
             self.validDir = False
             self.gui.displayError(e)
             return
-
-        self.validDir = True
-        self.gui.labelError.config(text="")
-        self.gui.entryDataDir.config(
-            background="#17850b"
-        )  # display directory path in green

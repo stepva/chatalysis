@@ -1,4 +1,5 @@
 # Standard library imports
+import re
 import webbrowser
 import io
 import sys
@@ -8,8 +9,10 @@ from pprint import pprint
 # Application imports
 from __init__ import __version__
 from analysis import raw, chatStats, reactionStats, emojiStats, timeStats, firstMsg
+from analyzer import Analyzer
 from infographic import mrHtml
 from utility import getPaths, getJsons, getMsgs, home, get_messages_from_html
+from chat import Chat
 
 
 def htmllyse(chats: "list[str]", folders: "list[str]"):
@@ -37,13 +40,17 @@ def htmllyse(chats: "list[str]", folders: "list[str]"):
             wb.open(path_to_open)
             return
 
-    basicStats, reactions, emojis, times, _, fromDay, toDay, names = raw(
+    basicStats, reactions, emojis, times, people, fromDay, toDay, names = raw(
         messages, names
     )
 
-    source = mrHtml(
-        __version__, names, basicStats, fromDay, toDay, times, emojis, reactions, title
+    CHAT = Chat(
+        basicStats, reactions, emojis, times, people, fromDay, toDay, names, title
     )
+
+    ANALYZER = Analyzer(CHAT)
+
+    source = ANALYZER.mrHtml()
 
     with io.open(file_path, "w", encoding="utf-8") as data:
         data.write(source)

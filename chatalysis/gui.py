@@ -8,6 +8,7 @@ from tkinter import filedialog
 # Application imports
 from analysis import topTen
 from chatalysis import htmllyse
+from Messenger import FacebookMessenger
 
 # Third party imports
 from tabulate import tabulate
@@ -103,6 +104,8 @@ class MainGUI(Window):
         )
         self.dataDirPathTk.set(self.Program.dataDirPath)
         self.after(20, self.Program.dirSelected)  # check if directory is valid
+
+        self.Program.source = FacebookMessenger(self.Program.dataDirPath)
 
 
 class WindowTopTen(Window):
@@ -219,11 +222,11 @@ class WindowIndividual(Window):
 
         # Get the name of the conversation to analyze
         name = self.entryName.get()
-        chat = self.Program.chats.get(name)
+        chat = self.Program.source.get_chat(name)
 
         if chat is not None:
             # chat was found and successfully analyzed
-            htmllyse(chat, self.Program.folders)
+            htmllyse(chat, self.Program.source.folders)
             self.labelUnder.config(text="Done. You can find it in the output folder!", fg="green")
         else:
             # chat wasn't found
