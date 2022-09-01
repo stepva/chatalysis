@@ -273,3 +273,166 @@ class Analyzer:
             return -len(self.chat.names)
         else:
             return 1
+
+    def chat_stats(self, basicStats: tuple, names: "list[str]") -> "dict[str, Any]":
+        """Creates basic chat stats for a terminal output
+
+        :param basicStats: tuple of [people, photos, gifs, stickers, videos, audios, files]
+        :param names: list of names of participants in the conversation
+        :return: dictionary of conversation stats
+        """
+        info = {
+            "1) Total messages": basicStats[0]["total"],
+            "2) Total audios": basicStats[5]["total"],
+            "3) Total files": basicStats[6]["total"],
+            "4) Total gifs": basicStats[2]["total"],
+            "5) Total images": basicStats[1]["total"],
+            "6) Total stickers": basicStats[3]["total"],
+            "7) Total videos": basicStats[4]["total"],
+        }
+        for n in names:
+            if n in basicStats[0]:
+                info[n] = basicStats[0][n]
+                info[f"{n} %"] = round(
+                    basicStats[0][n] / basicStats[0]["total"] * 100, 2
+                )
+            if n in basicStats[1]:
+                info[n + " images"] = basicStats[1][n]
+            if n in basicStats[2]:
+                info[n + " gifs"] = basicStats[2][n]
+            if n in basicStats[4]:
+                info[n + " videos"] = basicStats[4][n]
+            if n in basicStats[3]:
+                info[n + " stickers"] = basicStats[3][n]
+            if n in basicStats[5]:
+                info[n + " audio"] = basicStats[5][n]
+            if n in basicStats[6]:
+                info[n + " files"] = basicStats[6][n]
+
+        return info
+
+    def reaction_stats(self, reactions: dict, names, people):
+        """Creates reaction stats for a terminal output
+
+        :param reactions: dictionary with structure
+                        {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
+        :param names:
+        :param people:
+        :return: dictionary of reaction stats
+        """
+        gaves = {}
+        gots = {}
+        gotsAvg = {}
+
+        for n in names:
+            gaves[n] = reactions["gave"][n]["total"]
+            gots[n] = reactions["got"][n]["total"]
+            gotsAvg[n] = round(reactions["got"][n]["total"] / people[n], 2)
+
+        stats = {
+            "1) total reactions": reactions["total"],
+            "2) total different reactions": len(reactions["types"]),
+            "3) top reactions": sorted(
+                reactions["types"].items(), key=lambda item: item[1], reverse=True
+            )[0:5],
+            "4) got most reactions": sorted(
+                gots.items(), key=lambda item: item[1], reverse=True
+            )[0],
+            "5) got most reactions on avg": sorted(
+                gotsAvg.items(), key=lambda item: item[1], reverse=True
+            )[0],
+            "6) gave most reactions": sorted(
+                gaves.items(), key=lambda item: item[1], reverse=True
+            )[0],
+        }
+
+        for n in names:
+            stats[n] = {
+                "total got": gots[n],
+                "avg got": gotsAvg[n],
+                "dif got": len(reactions["got"][n]) - 1,
+                "top got": sorted(
+                    reactions["got"][n].items(), key=lambda item: item[1], reverse=True
+                )[1:4],
+                "total gave": gaves[n],
+                "dif gave": len(reactions["gave"][n]) - 1,
+                "top gave": sorted(
+                    reactions["gave"][n].items(), key=lambda item: item[1], reverse=True
+                )[1:4],
+            }
+
+        return stats
+
+    def emoji_stats(self, emojis: dict, names, people) -> dict:
+        """Prepares emoji stats for terminal output
+
+        :param emojis: dict with structure
+                    {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
+        :param names:
+        :param people:
+        :return: dictionary with emoji stats
+        """
+        sents = {}
+        sentsAvg = {}
+
+        for n in names:
+            sents[n] = emojis["sent"][n]["total"]
+            sentsAvg[n] = round(emojis["sent"][n]["total"] / people[n], 2)
+
+        stats = {
+            "1) total emojis": emojis["total"],
+            "2) total different emojis": len(emojis["types"]),
+            "3) top emojis": sorted(
+                emojis["types"].items(), key=lambda item: item[1], reverse=True
+            )[0:5],
+            "4) sent most emojis": sorted(
+                sents.items(), key=lambda item: item[1], reverse=True
+            )[0],
+            "5) sent most emojis on avg": sorted(
+                sentsAvg.items(), key=lambda item: item[1], reverse=True
+            )[0],
+        }
+
+        for n in names:
+            stats[n] = {
+                "total": sents[n],
+                "avg": sentsAvg[n],
+                "dif": len(emojis["sent"][n]) - 1,
+                "top": sorted(
+                    emojis["sent"][n].items(), key=lambda item: item[1], reverse=True
+                )[1:6],
+            }
+
+        return stats
+
+    def time_stats(self, times: tuple):
+        """Creates time stats for terminal output
+
+        :param times: tuple of [hours, days, weekdays, months, years]
+        :return: dictionary of time stats
+        """
+        wdNames = {
+            1: "Monday",
+            2: "Tuesday",
+            3: "Wednesday",
+            4: "Thursday",
+            5: "Friday",
+            6: "Saturday",
+            7: "Sunday",
+        }
+
+        topDay = sorted(times[1].items(), key=lambda item: item[1], reverse=True)[0]
+        topWd = sorted(times[2].items(), key=lambda item: item[1], reverse=True)[0]
+        topMonth = sorted(times[3].items(), key=lambda item: item[1], reverse=True)[0]
+        topYear = sorted(times[4].items(), key=lambda item: item[1], reverse=True)[0]
+
+        stats = {
+            "1) The top day": [topDay[0], f"{topDay[1]} messages"],
+            "2) Top hours of day": sorted(
+                times[0].items(), key=lambda item: item[1], reverse=True
+            )[0:3],
+            "3) Top weekday": [wdNames[topWd[0]], topWd[1]],
+            "4) Top month": topMonth,
+            "5) Top year": topYear,
+        }
+        return stats

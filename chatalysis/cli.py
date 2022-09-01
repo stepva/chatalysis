@@ -3,9 +3,7 @@ import os
 
 # Application imports
 from pprint import pprint
-from analysis import topTen
 from __init__ import __version__
-from chatalysis import htmllyse
 from messenger import FacebookMessenger
 
 
@@ -41,13 +39,14 @@ To exit, just type \"exit\":
         if i == "top":
             print("\nLoading...\n")
             if not tops:
-                tops = topTen(path)
+                tops = source.top_ten()
 
             pprint(tops, indent=2, sort_dicts=False)
 
         elif chat is not None:
             print("\nLoading...\n")
-            htmllyse(chat, folders)
+            source.to_html(chat)
+            source.to_cli(chat)
             print("Done. You can find it in the output folder!\n")
 
         elif i != "exit":

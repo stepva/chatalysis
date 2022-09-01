@@ -6,8 +6,6 @@ import tkinter as tk
 from tkinter import filedialog
 
 # Application imports
-from analysis import topTen
-from chatalysis import htmllyse
 from messenger import FacebookMessenger
 
 # Third party imports
@@ -79,12 +77,16 @@ class MainGUI(Window):
 
         # Create labels
         self.labelError = tk.Label(self, text="", fg="red", wraplength=650)
-        self.labelSelectDir = tk.Label(self, text="Please select directory with the messages:")
+        self.labelSelectDir = tk.Label(
+            self, text="Please select directory with the messages:"
+        )
 
         # Create entry widgets
         self.dataDirPathTk = tk.StringVar()
         self.entryDataDir = tk.Entry(self, textvariable=self.dataDirPathTk, width=60)
-        self.entryDataDir.config(background="#f02663")  # display directory path in red until a valid path is entered
+        self.entryDataDir.config(
+            background="#f02663"
+        )  # display directory path in red until a valid path is entered
 
         # Render objects onto a grid
         self.labelSelectDir.grid(column=0, row=0, padx=5, pady=5)
@@ -112,7 +114,9 @@ class WindowTopTen(Window):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
     def __init__(self, program, gui: MainGUI):
-        if not program.validDir:  # don't do anything if source directory is invalid to avoid errors
+        if (
+            not program.validDir
+        ):  # don't do anything if source directory is invalid to avoid errors
             gui.displayError("Cannot analyze until a valid directory is selected")
             return
 
@@ -144,36 +148,51 @@ class WindowTopTen(Window):
             self.labelAnalyzing.grid(column=0, row=0, padx=5, pady=5)
             self.update()
 
-            topIndividual, topGroup = topTen(self.Program.dataDirPath)
+            topIndividual, topGroup = self.Program.source.top_ten()
+
+            # topIndividual, topGroup = topTen(self.Program.dataDirPath)
             self.Program.topTenIndividual = tabulate(
                 topIndividual.items(),
                 headers=["Conversation", "Messages"],
-                colalign=("left", "right",)
+                colalign=(
+                    "left",
+                    "right",
+                ),
             )
 
-            self.Program.topFiveGroups = tabulate(topGroup.items(),
-                                                  headers=["Conversation", "Messages"],
-                                                  colalign=("left", "right"))
+            self.Program.topFiveGroups = tabulate(
+                topGroup.items(),
+                headers=["Conversation", "Messages"],
+                colalign=("left", "right"),
+            )
 
-        self.removeLabels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
+        self.removeLabels(
+            [self.labelAnalyzing]
+        )  # remove the "Analyzing..." label if present
 
         # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
         self.labelTop = tk.Label(
             self,
-            text="\n".join(["Top 10 individual conversations\n",
-                            self.Program.topTenIndividual,
-                            "\n",
-                            "Top 5 group chats\n",
-                            self.Program.topFiveGroups]),
+            text="\n".join(
+                [
+                    "Top 10 individual conversations\n",
+                    self.Program.topTenIndividual,
+                    "\n",
+                    "Top 5 group chats\n",
+                    self.Program.topFiveGroups,
+                ]
+            ),
             anchor="n",
-            font=("TkFixedFont",)
+            font=("TkFixedFont",),
         )
         self.labelTop.grid(column=0, row=0)
 
 
 class WindowIndividual(Window):
     def __init__(self, program, gui: MainGUI):
-        if not program.validDir:  # don't do anything if source directory is invalid to avoid errors
+        if (
+            not program.validDir
+        ):  # don't do anything if source directory is invalid to avoid errors
             gui.displayError("Cannot analyze until a valid directory is selected")
             return
 
@@ -226,8 +245,10 @@ class WindowIndividual(Window):
 
         if chat is not None:
             # chat was found and successfully analyzed
-            htmllyse(chat, self.Program.source.folders)
-            self.labelUnder.config(text="Done. You can find it in the output folder!", fg="green")
+            self.Program.source.to_html(chat)
+            self.labelUnder.config(
+                text="Done. You can find it in the output folder!", fg="green"
+            )
         else:
             # chat wasn't found
             self.displayError("Sorry, this conversation doesn't exist")
