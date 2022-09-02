@@ -4,6 +4,7 @@ import abc
 import ctypes
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 
 # Application imports
 from analysis import topTen
@@ -179,6 +180,8 @@ class WindowIndividual(Window):
         Window.__init__(self)
         self.title("Analyze individual conversations")
         self.geometry("600x200")
+        self.searched_name = tk.StringVar(self)
+        self.original_names = []
         self.create()
 
     def create(self):
@@ -198,13 +201,29 @@ class WindowIndividual(Window):
         # the entire time without the rest of the objects "jumping" around
         self.labelUnder = tk.Label(self, text="", wraplength=650, fg="red")
 
-        # Entry for entering the conversation name. It's bound to start the analysis when the user hits Enter.
-        self.entryName = tk.Entry(self, width=50)
-        self.entryName.bind("<Return>", self.analyzeIndividual)
+        """Entry for entering the conversation name. It's bound to start the analysis when the user hits Enter.
+           Also fills the name entry combobox."""
+        self.original_names = sorted(list((self.Program.chats.keys())))
+
+        self.entry_name = ttk.Combobox(self, width=50, textvariable=self.searched_name)
+        self.searched_name.trace('w', self.filterNameList)
+        self.entry_name['values'] = self.original_names
+        self.entry_name.bind("<Return>", self.analyzeIndividual)
 
         self.labelInstructions.grid(column=0, row=0, sticky="S", padx=5, pady=5)
-        self.entryName.grid(column=0, row=1, sticky="N", padx=5, pady=5)
+        self.entry_name.grid(column=0, row=1, sticky="N", padx=5, pady=5)
         self.labelUnder.grid(column=0, row=2, padx=5, pady=5)
+
+    # takes current combobox options and filters them according to input
+    def filterNameList(self, *args):
+        new_names = []
+        chars_entered = len(self.searched_name.get())
+
+        for n in self.original_names:
+            if n[0 : chars_entered] == self.searched_name.get():
+                new_names.append(n)
+
+        self.entry_name['values'] = new_names
 
     def displayError(self, errorMessage: str):
         self.labelUnder.config(text=errorMessage, fg="red")
@@ -218,7 +237,7 @@ class WindowIndividual(Window):
         self.update()
 
         # Get the name of the conversation to analyze
-        name = self.entryName.get()
+        name = str(self.searched_name.get())
         chat = self.Program.chats.get(name)
 
         if chat is not None:
