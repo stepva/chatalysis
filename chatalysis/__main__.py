@@ -10,9 +10,7 @@ from __init__ import __version__
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-V", "-version", help="Version info", action="version", version=__version__
-    )
+    parser.add_argument("-V", "-version", help="Version info", action="version", version=__version__)
 
     subparses = parser.add_subparsers()
     parser_cli = subparses.add_parser("cli", help="Use CLI instead of GUI")
@@ -22,7 +20,6 @@ def main(argv=None):
 
     if "cli" in sys.argv:
         args.func()
-
     else:
         p = Program()
         p.run()

@@ -7,12 +7,19 @@ import sys
 # Third party imports
 from bs4 import BeautifulSoup
 
+# Application imports
+from const import TRANSLATION_TABLE
+
 home = Path(__file__).parent.absolute()
 
 
-def get_messages_from_html(file_path: str) -> int:
-    """Find the number of total messages from a previously generated HTML file"""
-    f = open(file_path, "r", encoding="utf-8")
+def get_messages_from_html(path: str | Path) -> int:
+    """Find the number of total messages from a previously generated HTML file
+
+    :param path: path to the HTML file
+    :return: number of messages in the HTML file
+    """
+    f = open(path, "r", encoding="utf-8")
     soup = BeautifulSoup(f, features="html.parser")
     field = soup.find("p", {"id": "total messages"})
     if field:
@@ -27,13 +34,16 @@ def get_messages_from_html(file_path: str) -> int:
     return messages
 
 
-def html_spaces(n):
+def html_spaces(n: int):
     """Splits number by thousands with a space"""
     return "{0:n}".format(n) if n != 1 else n
 
 
-def open_html(path: str):
-    """Opens the html file in a browser"""
+def open_html(path: str | Path):
+    """Opens the HTML file in a browser
+
+    :param path: path to the HTML file
+    """
     if sys.platform == "darwin":
         wb = webbrowser.get("safari")
         path_to_open = f"file://{path}"
@@ -44,30 +54,30 @@ def open_html(path: str):
     wb.open(path_to_open)
 
 
-def check_if_create_new(title: str, messages: dict):
-    """Checks if the html file of a chat's title exists and compares it with the chat's messages"""
+def check_if_create_new(title: str, messages_count: int) -> bool:
+    """Checks if the HTML output file for a given chat exists and compares it with the chat's messages
+
+    :param title: name of the chat
+    :param messages_count: current number of messages in the chat
+    :return: True if the HTML file doesn't exist or the number of messages differs (a new file should be created),
+             False if the existing HTML file exists and has current data
+    """
     file_path = home / ".." / "output" / f"{title}.html"
 
     if os.path.exists(file_path):
-        html_messages = get_messages_from_html(file_path)
-        if len(messages) == html_messages:
+        html_messages_count = get_messages_from_html(file_path)
+        if messages_count == html_messages_count:
             open_html(file_path)
             return False
 
     return True
 
 
-def hours_list() -> "dict[int, int]":
-    """Creates a dictionary of hours in a day
-
-    :return: dictionary of hours
-    """
-    hours = {}
-    for i in range(24):
-        hours[i] = 0
-    return hours
-
-
-def get_file_path(title: str):
+def get_file_path(title: str) -> Path:
     """Returns a file_path of the chosen chat title"""
     return home / ".." / "output" / f"{title}.html"
+
+
+def change_name(name: str) -> str:
+    """Removes non-english characters from a name"""
+    return name.translate(TRANSLATION_TABLE).lower()

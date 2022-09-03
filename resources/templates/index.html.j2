@@ -59,7 +59,7 @@
                 </div>
                 <div style="padding-top: 10px;">
                     <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} and {{ names[1] }}</h1>
-                    <b>{{ fromDay }}</b>   -   <b>{{ toDay }}</b>
+                    <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b>
                 </div> 
                 <div style="text-align: left; padding-top: 10px;">
                     <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture">
@@ -68,7 +68,7 @@
                 <div></div>
                 <div style="padding-bottom: 15px;">
                     <h1 style="font-size: 30; margin-bottom: 5;">{{ title }}</h1>
-                    <b>{{ fromDay }}</b> - <b>{{ toDay }}</b>
+                    <b>{{ from_day }}</b> - <b>{{ to_day }}</b>
                 </div>
                 <div></div>
             {% endif %}
@@ -238,24 +238,24 @@
         {% endif %}
         <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
             <div>
-                <p class="stats-num">{{ topDay[0] }}</p>
+                <p class="stats-num">{{ top_day[0] }}</p>
                 <p class="stats-text">top day<br>
-                ({{ topDay[1]|space }} messages)</p>
+                ({{ top_day[1]|space }} messages)</p>
             </div>
             <div>
-                <p class="stats-num">{{ topMonth[0] }}</p>
+                <p class="stats-num">{{ top_month[0] }}</p>
                 <p class="stats-text">top month<br>
-                ({{ topMonth[1]|space }})</p>
+                ({{ top_month[1]|space }})</p>
             </div>
             <div>
-                <p class="stats-num">{{ topYear[0] }}</p>
+                <p class="stats-num">{{ top_year[0] }}</p>
                 <p class="stats-text"></p>top year<br>
-                ({{ topYear[1]|space }})</p>
+                ({{ top_year[1]|space }})</p>
             </div>
             <div>
-                <p class="stats-num">{{ topWeekday[0] }}</p>
+                <p class="stats-num">{{ top_weekday[0] }}</p>
                 <p class="stats-text">top weekday<br>
-                ({{ topWeekday[1]|space }})</p>
+                ({{ top_weekday[1]|space }})</p>
             </div>
         </section>
         <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 40px; padding-top: 20px; padding-right: 75px; padding-left: 75px;">
@@ -266,17 +266,17 @@
                 <canvas id="hours"></canvas>
             </div>
         </section>
-        {% if emojisCount["total"] > 0 %}
+        {% if emojis_count["total"] > 0 %}
             <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
                 <div style="display: flex; align-items: center; justify-self: end;">
                     <div>    
-                        <p class="stats-num">{{ emojisCount["total"]|space }}</p>
+                        <p class="stats-num">{{ emojis_count["total"]|space }}</p>
                         <p class="stats-text">total emojis</p>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: center;">
-                <div style="display: grid; grid-template-columns: repeat({{ emojisL["total"] }}, 60px);">
-                    {% for emoji, n, f in topEmojis["total"] %}
+                <div style="display: grid; grid-template-columns: repeat({{ emojis_L["total"] }}, 60px);">
+                    {% for emoji, n, f in top_emojis["total"] %}
                     <div style="display: flex; justify-content: center;">
                         <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
                         ({{ n|space }})</p>
@@ -286,13 +286,13 @@
                 </div>
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div>
-                        <p class="stats-num">{{ diffEmojis["total"]|space }}</p>
+                        <p class="stats-num">{{ diff_emojis["total"]|space }}</p>
                         <p class="stats-text">different emojis</p>
                     </div>
                 </div>
             </section>
             <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-            {% for n in names[:-leftEmojis] %}
+            {% for n in names[:-left_emojis] %}
                 <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                         <div style="display: flex; align-items: center; justify-self: end;">
@@ -308,9 +308,9 @@
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ emojisCount["sent"][n]["total"]|space }}</b> total emojis<br>
-                                    <b>{{ diffEmojis[n]|space }}</b> different emojis<br>
-                                    <b>{{ avgEmojis[n] }}</b> emojis per message<br>
+                                    <b>{{ emojis_count["sent"][n]["total"]|space }}</b> total emojis<br>
+                                    <b>{{ diff_emojis[n]|space }}</b> different emojis<br>
+                                    <b>{{ avg_emojis[n] }}</b> emojis per message<br>
                                     <br>
                                     top emojis:
                                 </p>
@@ -318,8 +318,8 @@
                         </div>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{ emojisL[n] }}, 50px);">
-                            {% for emoji, num, f in topEmojis[n] %}
+                        <div style="display: grid; grid-template-columns: repeat({{ emojis_L[n] }}, 50px);">
+                            {% for emoji, num, f in top_emojis[n] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
                                     ({{ num|space }})</p>
@@ -330,7 +330,7 @@
                 </div>
             {% endfor %}
             </section>
-            {% if leftEmojis == 1 %}
+            {% if left_emojis == 1 %}
                 <section id="extra emoji personal" style="padding-bottom: 15px;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
@@ -347,9 +347,9 @@
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ emojisCount["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
-                                        <b>{{ diffEmojis[names[-1]]|space }}</b> different emojis<br>
-                                        <b>{{ avgEmojis[names[-1]] }}</b> emojis per message<br>
+                                        <b>{{ emojis_count["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
+                                        <b>{{ diff_emojis[names[-1]]|space }}</b> different emojis<br>
+                                        <b>{{ avg_emojis[names[-1]] }}</b> emojis per message<br>
                                         <br>
                                         top emojis:
                                     </p>
@@ -357,8 +357,8 @@
                             </div>
                         </div>
                         <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                            <div style="display: grid; grid-template-columns: repeat({{ emojisL[names[-1]] }}, 50px);">
-                                {% for emoji, num, f in topEmojis[names[-1]] %}
+                            <div style="display: grid; grid-template-columns: repeat({{ emojis_L[names[-1]] }}, 50px);">
+                                {% for emoji, num, f in top_emojis[names[-1]] %}
                                 <div style="display: flex; justify-content: center;">
                                     <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
                                         ({{ num|space }})</p>
@@ -370,17 +370,17 @@
                 </section>
             {% endif %}
         {% endif %}
-        {% if reacsCount["total"] > 0 %}
+        {% if reacts_count["total"] > 0 %}
             <section id="reacts stats" style="display: grid; grid-template-columns: 1fr 58.5% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
                 <div style="display: flex; align-items: center; justify-self: end;">
                     <div>
-                        <p class="stats-num">{{ reacsCount["total"]|space }}</p>
+                        <p class="stats-num">{{ reacts_count["total"]|space }}</p>
                         <p class="stats-text">total reactions</p>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: center;">
-                    <div style="display: grid; grid-template-columns: repeat({{ reacsL["total"] }}, 60px);">
-                        {% for reac, n, f in topReacs["total"] %}
+                    <div style="display: grid; grid-template-columns: repeat({{ reacts_L["total"] }}, 60px);">
+                        {% for reac, n, f in top_reacts["total"] %}
                         <div style="display: flex; justify-content: center;">
                             <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                 ({{ n|space }})</p>
@@ -390,13 +390,13 @@
                 </div>
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div>
-                        <p class="stats-num">{{ diffReacsGave["total"]|space }}</p>
+                        <p class="stats-num">{{ diff_reacts_gave["total"]|space }}</p>
                         <p class="stats-text">different reactions</p>
                     </div>
                 </div>
             </section>
             <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-            {% for n in names[:-leftEmojis] %}
+            {% for n in names[:-left_emojis] %}
                 <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                         <div style="display: flex; align-items: center; justify-self: end;">
@@ -413,10 +413,10 @@
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ reacsCount["gave"][n]["total"]|space }}</b> reactions given<br>
-                                    <b>{{ diffReacsGave[n]|space }}</b> different reactions given<br>
-                                    <b>{{ reacsCount["got"][n]["total"]|space }}</b> reactions received<br>
-                                    <b>{{ avgReacs[n] }}</b> reactions per message<br>
+                                    <b>{{ reacts_count["gave"][n]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diff_reacts_gave[n]|space }}</b> different reactions given<br>
+                                    <b>{{ reacts_count["got"][n]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avg_reacts[n] }}</b> reactions per message<br>
                                     <br>
                                     top reactions received:
                                 </p>
@@ -424,8 +424,8 @@
                         </div>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{reacsL[n]}}, 50px);">
-                            {% for reac, num, f in topReacs[n] %}
+                        <div style="display: grid; grid-template-columns: repeat({{reacts_L[n]}}, 50px);">
+                            {% for reac, num, f in top_reacts[n] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                     ({{ num|space }})</p>
@@ -436,7 +436,7 @@
                 </div>
             {% endfor %}
             </section>
-            {% if leftEmojis == 1 %}
+            {% if left_emojis == 1 %}
                 <section id="extra reacs personal" style="padding-bottom: 15px;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
@@ -454,10 +454,10 @@
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ reacsCount["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
-                                    <b>{{ diffReacsGave[names[-1]]|space }}</b> different reactions given<br>
-                                    <b>{{ reacsCount["got"][names[-1]]["total"]|space }}</b> reactions received<br>
-                                    <b>{{ avgReacs[names[-1]] }}</b> reactions per message<br>
+                                    <b>{{ reacts_count["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diff_reacts_gave[names[-1]]|space }}</b> different reactions given<br>
+                                    <b>{{ reacts_count["got"][names[-1]]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avg_reacts[names[-1]] }}</b> reactions per message<br>
                                     <br>
                                     top reactions received:
                                 </p>
@@ -465,8 +465,8 @@
                         </div>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{reacsL[names[-1]]}}, 50px);">
-                            {% for reac, num, f in topReacs[names[-1]] %}
+                        <div style="display: grid; grid-template-columns: repeat({{reacts_L[names[-1]]}}, 50px);">
+                            {% for reac, num, f in top_reacts[names[-1]] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                     ({{ num|space }})</p>
@@ -515,7 +515,7 @@
         var myChart = new Chart("timeGraph", {
                 type: "bar",
                 data: {
-                    labels: {{ daysLab|safe }},
+                    labels: {{ days_lab|safe }},
                     datasets: [{
                         maxBarThickness: 2,
                         data: {{ days|safe }},
@@ -544,7 +544,7 @@
                                     drawOnChartArea: false
                                 },
                                 ticks: {
-                                    stepSize: {{ stepSizeY }}
+                                    step_size: {{ step_size_Y }}
                                 }
                             }]
                     },
@@ -566,7 +566,7 @@
         var myChart = new Chart("hours", {
                 type: "line",
                 data: {
-                    labels: {{ hoursLab| safe }},
+                    labels: {{ hours_lab| safe }},
                     datasets: [{
                         data: {{ hours| safe }},
                         backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -596,7 +596,7 @@
                                 },
                                 ticks: {
                                     display: false,
-                                    stepSize: {{ stepSizeYh }}
+                                    step_size: {{ step_size_Yh }}
                                 }
                             }]
                         },
