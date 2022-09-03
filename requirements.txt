@@ -2,4 +2,4 @@ emoji==2.0.0
 regex
 jinja2
 tabulate
-bs4
+beautifulsoup4

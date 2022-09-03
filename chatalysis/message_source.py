@@ -1,40 +1,29 @@
 import abc
+from chat import Chat
 
 
-class MessageSource:
+class MessageSource(abc.ABC):
+    """Abstract class for a message source, which loads all available conversations
+    and extracts them into Chat objects upon request."""
+
     def __init__(self, path: str):
-        self.chats = []
+        super().__init__()
         self.data_dir_path = path
 
     @abc.abstractmethod
-    def get_all_chats(self):
-        """Extracts all chats in the data folder"""
-        pass
+    def get_chat(self, chat_name: str) -> Chat:
+        """Extracts an individual chat. If there are colliding chats with the same name,
+        extracts one of the possible chats, based on the user's choice.
 
-    @abc.abstractmethod
-    def get_chat(self, chat_name: str) -> "list[str]":
-        """Gets a list of specific chats to analyze
-
-        :param chat_name: name of the chat whose information should be analyzed
+        :param chat_name: name of the chat to extract
+        :return: desired chat as a Chat object (chat class inherited from Chat)
         """
-        pass
 
     @abc.abstractmethod
-    def process_messages(self, messages: list, names: "list[str]", *args):
-        """Goes through all the messages and returns Chat object
+    def top_ten(self) -> "tuple[dict[str, int], dict[str, int]]":
+        """Goes through conversations and returns the top 10 individual chats
+        and top 5 group chats based on number of messages.
 
-        :param messages: messages to be analyzed
-        :param names: names of the participants
-        :return: Chat
+        :return: dictionary of top 10 individual conversations & top 5 group chats
+                 with the structure {conversation name: number of messages}
         """
-        pass
-
-    @abc.abstractmethod
-    def to_html(self, chat: "list[str]"):
-        """Analyzes the chat and creates HTML output file with stat visualization"""
-        pass
-
-    @abc.abstractmethod
-    def to_cli(self, chat: "list[str]"):
-        """Analyzes the chat and generates a CLI output"""
-        pass
