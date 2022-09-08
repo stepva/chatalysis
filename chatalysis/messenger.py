@@ -65,6 +65,8 @@ class FacebookMessenger(MessageSource):
                         # get the "real" name of the individual conversation (as opposed to the "condensed"
                         # format in the folder name (represented here by the variable "m"))
                         conversationName = self._decode(data["title"])
+                        # remove emoji because it ruins the aligning of the output text
+                        conversationName = emoji.replace_emoji(conversationName, "")
 
                         if data["thread_type"] == "Regular":
                             chats[conversationName] = len(data["messages"]) + chats.get(conversationName, 0)
