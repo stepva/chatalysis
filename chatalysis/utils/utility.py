@@ -8,9 +8,9 @@ import sys
 from bs4 import BeautifulSoup
 
 # Application imports
-from const import TRANSLATION_TABLE
+from utils.const import TRANSLATION_TABLE
 
-home = Path(__file__).parent.absolute()
+home = Path(__file__).parent.parent.parent.absolute()
 
 
 def get_messages_from_html(path: str | Path) -> int:
@@ -62,7 +62,7 @@ def check_if_create_new(title: str, messages_count: int) -> bool:
     :return: True if the HTML file doesn't exist or the number of messages differs (a new file should be created),
              False if the existing HTML file exists and has current data
     """
-    file_path = home / ".." / "output" / f"{title}.html"
+    file_path = home / "output" / f"{title}.html"
 
     if os.path.exists(file_path):
         html_messages_count = get_messages_from_html(file_path)
@@ -75,7 +75,7 @@ def check_if_create_new(title: str, messages_count: int) -> bool:
 
 def get_file_path(title: str) -> Path:
     """Returns a file_path of the chosen chat title"""
-    return home / ".." / "output" / f"{title}.html"
+    return home / "output" / f"{title}.html"
 
 
 def change_name(name: str) -> str:

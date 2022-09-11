@@ -1,5 +1,8 @@
+# Standard library imports
 import abc
-from chat import Chat
+
+# Application imports
+from chats.chat import Chat
 
 
 class MessageSource(abc.ABC):
