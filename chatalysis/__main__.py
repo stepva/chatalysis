@@ -3,7 +3,7 @@ import argparse
 import sys
 
 # Application imports
-from program import Program
+from program.program import Program
 from __init__ import __version__
 
 

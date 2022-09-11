@@ -1,10 +1,15 @@
+# Standard library imports
 import io
 import os
+
+# Third party imports
 from pprint import pprint
-from gui import MainGUI
-from analyzer import Analyzer
-from utility import open_html, get_file_path, check_if_create_new
-from messenger import FacebookMessenger
+
+# Application imports
+from program.gui import MainGUI
+from chats.analyzer import Analyzer
+from utils.utility import open_html, get_file_path, check_if_create_new
+from sources.messenger import FacebookMessenger
 from __init__ import __version__
 
 
