@@ -75,10 +75,7 @@ class Analyzer:
             border=border,
             # timestats
             top_day=self._top_times(days),
-            top_weekday=[
-                days_names[self._top_times(weekdays)[0]],
-                self._top_times(weekdays)[1],
-            ],
+            top_weekday=[days_names[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
             top_month=self._top_times(months),
             top_year=self._top_times(years),
             # daysgraph
@@ -122,15 +119,9 @@ class Analyzer:
         stats = {
             "1) total emojis": emojis["total"],
             "2) total different emojis": len(emojis["types"]),
-            "3) top emojis": sorted(
-                emojis["types"].items(), key=lambda item: item[1], reverse=True
-            )[0:5],
-            "4) sent most emojis": sorted(
-                sents.items(), key=lambda item: item[1], reverse=True
-            )[0],
-            "5) sent most emojis on avg": sorted(
-                sents_avg.items(), key=lambda item: item[1], reverse=True
-            )[0],
+            "3) top emojis": sorted(emojis["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
+            "4) sent most emojis": sorted(sents.items(), key=lambda item: item[1], reverse=True)[0],
+            "5) sent most emojis on avg": sorted(sents_avg.items(), key=lambda item: item[1], reverse=True)[0],
         }
 
         for n in names:
@@ -138,9 +129,7 @@ class Analyzer:
                 "total": sents[n],
                 "avg": sents_avg[n],
                 "dif": len(emojis["sent"][n]) - 1,
-                "top": sorted(
-                    emojis["sent"][n].items(), key=lambda item: item[1], reverse=True
-                )[1:6],
+                "top": sorted(emojis["sent"][n].items(), key=lambda item: item[1], reverse=True)[1:6],
             }
 
         return stats
@@ -151,41 +140,23 @@ class Analyzer:
         :param times: namedtuple of [hours, days, weekdays, months, years]
         :return: dictionary of time stats
         """
-        wd_names = {
-            1: "Monday",
-            2: "Tuesday",
-            3: "Wednesday",
-            4: "Thursday",
-            5: "Friday",
-            6: "Saturday",
-            7: "Sunday",
-        }
+        wd_names = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
 
         top_day = sorted(times.days.items(), key=lambda item: item[1], reverse=True)[0]
-        top_wd = sorted(times.weekdays.items(), key=lambda item: item[1], reverse=True)[
-            0
-        ]
-        top_month = sorted(
-            times.months.items(), key=lambda item: item[1], reverse=True
-        )[0]
-        top_year = sorted(times.years.items(), key=lambda item: item[1], reverse=True)[
-            0
-        ]
+        top_wd = sorted(times.weekdays.items(), key=lambda item: item[1], reverse=True)[0]
+        top_month = sorted(times.months.items(), key=lambda item: item[1], reverse=True)[0]
+        top_year = sorted(times.years.items(), key=lambda item: item[1], reverse=True)[0]
 
         stats = {
             "1) The top day": [top_day[0], f"{top_day[1]} messages"],
-            "2) Top hours of day": sorted(
-                times[0].items(), key=lambda item: item[1], reverse=True
-            )[0:3],
+            "2) Top hours of day": sorted(times[0].items(), key=lambda item: item[1], reverse=True)[0:3],
             "3) Top weekday": [wd_names[top_wd[0]], top_wd[1]],
             "4) Top month": top_month,
             "5) Top year": top_year,
         }
         return stats
 
-    def chat_stats(
-        self, basic_stats: BasicStats, names: "list[str]"
-    ) -> "dict[str, Any]":
+    def chat_stats(self, basic_stats: BasicStats, names: "list[str]") -> "dict[str, Any]":
         """Creates basic chat stats for a terminal output
 
         :param basic_stats: tuple of [people, photos, gifs, stickers, videos, audios, files]
@@ -204,9 +175,7 @@ class Analyzer:
         for n in names:
             if n in basic_stats.people:
                 info[n] = basic_stats.people[n]
-                info[f"{n} %"] = round(
-                    basic_stats.people[n] / basic_stats.people["total"] * 100, 2
-                )
+                info[f"{n} %"] = round(basic_stats.people[n] / basic_stats.people["total"] * 100, 2)
             if n in basic_stats.photos:
                 info[n + " images"] = basic_stats.photos[n]
             if n in basic_stats.gifs:
@@ -243,18 +212,10 @@ class Analyzer:
         stats = {
             "1) total reactions": reactions["total"],
             "2) total different reactions": len(reactions["types"]),
-            "3) top reactions": sorted(
-                reactions["types"].items(), key=lambda item: item[1], reverse=True
-            )[0:5],
-            "4) got most reactions": sorted(
-                gots.items(), key=lambda item: item[1], reverse=True
-            )[0],
-            "5) got most reactions on avg": sorted(
-                gots_avg.items(), key=lambda item: item[1], reverse=True
-            )[0],
-            "6) gave most reactions": sorted(
-                gaves.items(), key=lambda item: item[1], reverse=True
-            )[0],
+            "3) top reactions": sorted(reactions["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
+            "4) got most reactions": sorted(gots.items(), key=lambda item: item[1], reverse=True)[0],
+            "5) got most reactions on avg": sorted(gots_avg.items(), key=lambda item: item[1], reverse=True)[0],
+            "6) gave most reactions": sorted(gaves.items(), key=lambda item: item[1], reverse=True)[0],
         }
 
         for n in names:
@@ -262,14 +223,10 @@ class Analyzer:
                 "total got": gots[n],
                 "avg got": gots_avg[n],
                 "dif got": len(reactions["got"][n]) - 1,
-                "top got": sorted(
-                    reactions["got"][n].items(), key=lambda item: item[1], reverse=True
-                )[1:4],
+                "top got": sorted(reactions["got"][n].items(), key=lambda item: item[1], reverse=True)[1:4],
                 "total gave": gaves[n],
                 "dif gave": len(reactions["gave"][n]) - 1,
-                "top gave": sorted(
-                    reactions["gave"][n].items(), key=lambda item: item[1], reverse=True
-                )[1:4],
+                "top gave": sorted(reactions["gave"][n].items(), key=lambda item: item[1], reverse=True)[1:4],
             }
 
         return stats
@@ -301,9 +258,7 @@ class Analyzer:
             bg = background[0:2]
             bo = border[0:2]
         else:
-            for n in sorted(people.items(), key=lambda item: item[1], reverse=True)[
-                1:10
-            ]:
+            for n in sorted(people.items(), key=lambda item: item[1], reverse=True)[1:10]:
                 labels.append(n[0])
                 data.append(n[1])
                 bg = background[0:9]
@@ -370,9 +325,7 @@ class Analyzer:
 
     def _top_emojis_personal(self, to_count, name: str, keyword: str):
         """Prepares personal top emojis for the HTML"""
-        l = sorted(
-            to_count[keyword][name].items(), key=lambda item: item[1], reverse=True
-        )
+        l = sorted(to_count[keyword][name].items(), key=lambda item: item[1], reverse=True)
         types = []
         counts = []
         for e in l:
@@ -384,13 +337,7 @@ class Analyzer:
         """Packs the overall and top emojis for the HTML"""
         fontSizesT = list(map(str, range(300, 100, -20)))
         fontSizesP = list(map(str, range(180, 80, -10)))
-        tops = {
-            "total": zip(
-                self._top_emojis_total(to_count)[0],
-                self._top_emojis_total(to_count)[1],
-                fontSizesT,
-            )
-        }
+        tops = {"total": zip(self._top_emojis_total(to_count)[0], self._top_emojis_total(to_count)[1], fontSizesT)}
         for n in self.chat.names:
             tops[n] = zip(
                 self._top_emojis_personal(to_count, n, keyword)[0],
@@ -417,11 +364,7 @@ class Analyzer:
         """Gets the average of sent emojis or reactions"""
         avgs = {}
         for n in self.chat.names:
-            avgs[n] = (
-                round(to_count[keyword][n]["total"] / self.chat.people[n], 2)
-                if self.chat.people[n] != 0
-                else 0
-            )
+            avgs[n] = round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
         return avgs
 
     def _tops_count(self, to_count, keyword: str):
