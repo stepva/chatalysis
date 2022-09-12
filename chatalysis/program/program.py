@@ -52,19 +52,9 @@ class Program:
         analyzer = Analyzer(chat)
 
         print(f"Chat: {chat.title}, from {chat.from_day} to {chat.to_day}")
-        pprint(
-            analyzer.chat_stats(chat.basic_stats, chat.names), indent=2, sort_dicts=True
-        )
-        pprint(
-            analyzer.reaction_stats(chat.reactions, chat.names, chat.people),
-            indent=2,
-            sort_dicts=False,
-        )
-        pprint(
-            analyzer.emoji_stats(chat.emojis, chat.names, chat.people),
-            indent=2,
-            sort_dicts=False,
-        )
+        pprint(analyzer.chat_stats(chat.basic_stats, chat.names), indent=2, sort_dicts=True)
+        pprint(analyzer.reaction_stats(chat.reactions, chat.names, chat.people), indent=2, sort_dicts=False)
+        pprint(analyzer.emoji_stats(chat.emojis, chat.names, chat.people), indent=2, sort_dicts=False)
         pprint(analyzer.time_stats(chat.times), indent=2, sort_dicts=False)
         pprint(chat.first_message(), indent=2, sort_dicts=False)
 

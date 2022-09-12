@@ -71,23 +71,15 @@ class FacebookMessenger(MessageSource):
                         conversationName = emoji.replace_emoji(conversationName, "")
 
                         if data["thread_type"] == "Regular":
-                            chats[conversationName] = len(data["messages"]) + chats.get(
-                                conversationName, 0
-                            )
+                            chats[conversationName] = len(data["messages"]) + chats.get(conversationName, 0)
                         elif data["thread_type"] == "RegularGroup":
-                            groups[conversationName] = len(
-                                data["messages"]
-                            ) + groups.get(conversationName, 0)
+                            groups[conversationName] = len(data["messages"]) + groups.get(conversationName, 0)
 
                         # if data["messages"][0]["timestamp_ms"] > ts:
                         #     ts = data["messages"][0]["timestamp_ms"]
 
-        top_individual = dict(
-            sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10]
-        )
-        top_group = dict(
-            sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5]
-        )
+        top_individual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
+        top_group = dict(sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5])
         return top_individual, top_group
 
     # endregion
@@ -253,34 +245,19 @@ class FacebookMessenger(MessageSource):
                     else:
                         reaction = r["reaction"]
                     reactions["total"] += 1
-                    reactions["types"][reaction] = 1 + reactions["types"].get(
-                        reaction, 0
-                    )
+                    reactions["types"][reaction] = 1 + reactions["types"].get(reaction, 0)
                     if name in names:
                         reactions["got"][name]["total"] += 1
-                        reactions["got"][name][reaction] = 1 + reactions["got"][
-                            name
-                        ].get(reaction, 0)
+                        reactions["got"][name][reaction] = 1 + reactions["got"][name].get(reaction, 0)
                         if r["actor"] in names:
                             reactions["gave"][r["actor"]]["total"] += 1
-                            reactions["gave"][r["actor"]][reaction] = 1 + reactions[
-                                "gave"
-                            ][r["actor"]].get(reaction, 0)
+                            reactions["gave"][r["actor"]][reaction] = 1 + reactions["gave"][r["actor"]].get(reaction, 0)
 
         basic_stats = BasicStats(people, photos, gifs, stickers, videos, audios, files)
         times = Times(hours, days, weekdays, months, years)
 
         return FacebookMessengerChat(
-            messages,
-            basic_stats,
-            reactions,
-            emojis,
-            times,
-            people,
-            from_day,
-            to_day,
-            names,
-            title,
+            messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title
         )
 
     # endregion
@@ -382,13 +359,8 @@ class FacebookMessenger(MessageSource):
 
         for chat_id in chat_ids:
             chat_paths[chat_id] = self._get_paths(chat_id)
-            jsons[chat_id], _, names[chat_id] = self._get_jsons_title_names(
-                chat_paths[chat_id]
-            )
-            lengths[chat_id] = [
-                (len(jsons[chat_id]) - 1) * 10000,
-                len(jsons[chat_id]) * 10000,
-            ]
+            jsons[chat_id], _, names[chat_id] = self._get_jsons_title_names(chat_paths[chat_id])
+            lengths[chat_id] = [(len(jsons[chat_id]) - 1) * 10000, len(jsons[chat_id]) * 10000]
             print(
                 f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages"
             )

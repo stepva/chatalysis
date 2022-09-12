@@ -62,34 +62,20 @@ class MainGUI(Window):
             self.grid_rowconfigure(i, weight=1)
 
         # Create buttons
-        self.button_select_dir = tk.Button(
-            self, text="Select directory", command=self.select_dir
-        )
-        self.button1 = tk.Button(
-            self,
-            text="Show top conversations",
-            command=lambda: WindowTopTen(self.Program, self),
-        )
+        self.button_select_dir = tk.Button(self, text="Select directory", command=self.select_dir)
+        self.button1 = tk.Button(self, text="Show top conversations", command=lambda: WindowTopTen(self.Program, self))
         self.button2 = tk.Button(
-            self,
-            text="Analyze individual conversations",
-            command=lambda: WindowIndividual(self.Program, self),
+            self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
 
         # Create labels
         self.label_error = tk.Label(self, text="", fg="red", wraplength=650)
-        self.label_select_dir = tk.Label(
-            self, text="Please select directory with the messages:"
-        )
+        self.label_select_dir = tk.Label(self, text="Please select directory with the messages:")
 
         # Create entry widgets
         self.data_dir_path_tk = tk.StringVar()
-        self.entry_data_dir = tk.Entry(
-            self, textvariable=self.data_dir_path_tk, width=60
-        )
-        self.entry_data_dir.config(
-            background="#f02663"
-        )  # display directory path in red until a valid path is entered
+        self.entry_data_dir = tk.Entry(self, textvariable=self.data_dir_path_tk, width=60)
+        self.entry_data_dir.config(background="#f02663")  # display directory path in red until a valid path is entered
 
         # Render objects onto a grid
         self.label_select_dir.grid(column=0, row=0, padx=5, pady=5)
@@ -104,27 +90,21 @@ class MainGUI(Window):
 
     def select_dir(self):
         """Selects directory with the data using a dialog window"""
-        self.Program.data_dir_path = filedialog.askdirectory(
-            title="Select source directory", initialdir=os.getcwd()
-        )
+        self.Program.data_dir_path = filedialog.askdirectory(title="Select source directory", initialdir=os.getcwd())
         self.data_dir_path_tk.set(self.Program.data_dir_path)
 
         try:
             self.Program.source = FacebookMessenger(self.Program.data_dir_path)
         except Exception as e:
             # directory is not valid (missing 'messages' folder or other issue)
-            self.entry_data_dir.config(
-                background="#f02663"
-            )  # display directory path in red
+            self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
             self.display_error(e)
             return
 
         self.Program.valid_dir = True
         self.label_error.config(text="")
-        self.entry_data_dir.config(
-            background="#17850b"
-        )  # display directory path in green
+        self.entry_data_dir.config(background="#17850b")  # display directory path in green
 
 
 class WindowTopTen(Window):
@@ -167,20 +147,14 @@ class WindowTopTen(Window):
             topIndividual, topGroup = self.Program.source.top_ten()
 
             self.Program.top_ten_individual = tabulate(
-                topIndividual.items(),
-                headers=["Conversation", "Messages"],
-                colalign=("left", "right"),
+                topIndividual.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
             )
 
             self.Program.top_five_groups = tabulate(
-                topGroup.items(),
-                headers=["Conversation", "Messages"],
-                colalign=("left", "right"),
+                topGroup.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
             )
 
-        self.remove_labels(
-            [self.labelAnalyzing]
-        )  # remove the "Analyzing..." label if present
+        self.remove_labels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
 
         # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
         self.label_top = tk.Label(
@@ -255,6 +229,4 @@ class WindowIndividual(Window):
             self.display_error("Sorry, this conversation doesn't exist")
             return
 
-        self.label_under.config(
-            text="Done. You can find it in the output folder!", fg="green"
-        )
+        self.label_under.config(text="Done. You can find it in the output folder!", fg="green")

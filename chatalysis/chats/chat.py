@@ -5,9 +5,7 @@ from datetime import date
 from collections import namedtuple
 
 Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
-BasicStats = namedtuple(
-    "BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"]
-)
+BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])
 
 
 @dataclass
