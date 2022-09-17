@@ -1,8 +1,6 @@
-# Standard library imports
 import abc
 
-# Application imports
-from chats.chat import Chat
+from chatalysis.chats.chat import Chat
 
 
 class MessageSource(abc.ABC):

@@ -1,18 +1,14 @@
-# Standard library imports
-import os
 import json
-from datetime import datetime, date, timedelta
+import os
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
-# Third party imports
-import regex
 import emoji
+import regex
 
-# Application imports
-from chats.chat import FacebookMessengerChat, Times, BasicStats
-from sources.message_source import MessageSource
-from utils.const import HOURS_DICT
-
+from chatalysis.chats.chat import BasicStats, FacebookMessengerChat, Times
+from chatalysis.sources.message_source import MessageSource
+from chatalysis.utils.const import HOURS_DICT
 
 # chat ID example = "johnsmith_djnas32owkldm"
 

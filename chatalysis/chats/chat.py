@@ -1,8 +1,7 @@
-# Standard library imports
 import abc
+from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
-from collections import namedtuple
 
 Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
 BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])

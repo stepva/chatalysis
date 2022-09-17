@@ -1,10 +1,8 @@
-# Standard library imports
 import argparse
 import sys
 
-# Application imports
-from program.program import Program
-from __init__ import __version__
+from chatalysis.__init__ import __version__
+from chatalysis.program.program import Program
 
 
 def main():

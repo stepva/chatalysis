@@ -1,16 +1,12 @@
-# Standard library imports
 import io
 import os
-
-# Third party imports
 from pprint import pprint
 
-# Application imports
-from program.gui import MainGUI
-from chats.analyzer import Analyzer
-from utils.utility import open_html, get_file_path, check_if_create_new
-from sources.messenger import FacebookMessenger
-from __init__ import __version__
+from chatalysis.__init__ import __version__
+from chatalysis.chats.analyzer import Analyzer
+from chatalysis.program.gui import MainGUI
+from chatalysis.sources.messenger import FacebookMessenger
+from chatalysis.utils.utility import check_if_create_new, get_file_path, open_html
 
 
 class Program:

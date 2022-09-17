@@ -1,14 +1,11 @@
-# Standard library imports
 import os
-from pathlib import Path
-import webbrowser
 import sys
+import webbrowser
+from pathlib import Path
 
-# Third party imports
 from bs4 import BeautifulSoup
 
-# Application imports
-from utils.const import TRANSLATION_TABLE
+from chatalysis.utils.const import TRANSLATION_TABLE
 
 home = Path(__file__).parent.parent.parent.absolute()
 
