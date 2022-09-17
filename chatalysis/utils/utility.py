@@ -5,7 +5,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from chatalysis.utils.const import TRANSLATION_TABLE
+from utils.const import TRANSLATION_TABLE
 
 home = Path(__file__).parent.parent.parent.absolute()
 

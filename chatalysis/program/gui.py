@@ -6,7 +6,7 @@ from tkinter import filedialog
 
 from tabulate import tabulate
 
-from chatalysis.sources.messenger import FacebookMessenger
+from sources.messenger import FacebookMessenger
 
 
 class Window(tk.Tk):

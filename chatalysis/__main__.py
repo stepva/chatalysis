@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from chatalysis.__init__ import __version__
-from chatalysis.program.program import Program
+from __init__ import __version__
+from program.program import Program
 
 
 def main():

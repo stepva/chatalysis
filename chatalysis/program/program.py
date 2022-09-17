@@ -2,11 +2,11 @@ import io
 import os
 from pprint import pprint
 
-from chatalysis.__init__ import __version__
-from chatalysis.chats.analyzer import Analyzer
-from chatalysis.program.gui import MainGUI
-from chatalysis.sources.messenger import FacebookMessenger
-from chatalysis.utils.utility import check_if_create_new, get_file_path, open_html
+from __init__ import __version__
+from chats.analyzer import Analyzer
+from program.gui import MainGUI
+from sources.messenger import FacebookMessenger
+from utils.utility import check_if_create_new, get_file_path, open_html
 
 
 class Program:

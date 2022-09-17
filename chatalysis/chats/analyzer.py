@@ -5,11 +5,11 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
-from chatalysis.__init__ import __version__
-from chatalysis.chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
-from chatalysis.chats.chat import BasicStats, Chat, Times
-from chatalysis.utils.const import DAYS
-from chatalysis.utils.utility import change_name, home, html_spaces
+from __init__ import __version__
+from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
+from chats.chat import BasicStats, Chat, Times
+from utils.const import DAYS
+from utils.utility import change_name, home, html_spaces
 
 # emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
