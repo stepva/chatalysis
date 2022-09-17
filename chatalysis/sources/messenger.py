@@ -3,28 +3,35 @@ import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from statistics import mode
 
 import emoji
 import regex
 
-from chats.chat import BasicStats, FacebookMessengerChat, Times
+from chats.chat import BasicStats, ChatType, FacebookMessengerChat, Times
 from sources.message_source import MessageSource
 from utils.const import HOURS_DICT
 
-# chat ID example = "johnsmith_djnas32owkldm"
+chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "johnsmith_djnas32owkldm")
 
 
 class FacebookMessenger(MessageSource):
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self.folders: list[str] = []
+        self.folders = []
+        self.chat_ids = []  # list of all conversations identified by their chat ID
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
         # can represent multiple chats, the chat IDs are stored in a list.
-        self.chat_ids: dict[str, list[str]] = {}
+        self.chat_id_map: dict[str, list[chat_id_str]] = {}
+
+        # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
+        # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
+        # they are removed from this cache as they can be accessed via the Chat object.
+        self.messages_cache: dict[chat_id_str, tuple[list, list, str, ChatType]] = {}
 
         # cache of Chat objects
-        self.chats_cache: dict[str, FacebookMessengerChat] = {}
+        self.chats_cache: dict[chat_id_str, FacebookMessengerChat] = {}
 
         self._load_message_folders()
         self._load_all_chats()
@@ -33,7 +40,7 @@ class FacebookMessenger(MessageSource):
     # region Public API
 
     def get_chat(self, chat_name: str) -> FacebookMessengerChat:
-        possible_chat_ids = self.chat_ids[chat_name]
+        possible_chat_ids = self.chat_id_map[chat_name]
 
         # Check for chat collisions
         if len(possible_chat_ids) == 1:
@@ -49,31 +56,53 @@ class FacebookMessenger(MessageSource):
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
 
+    def global_stats(self) -> FacebookMessengerChat:
+        messages = []
+        names = []  # list of participants from all conversations
+
+        for chat_id in self.chat_ids:
+            if chat_id in self.chats_cache:
+                messages.extend(self.chats_cache[chat_id].messages)
+                names.extend(self.chats_cache[chat_id].names)
+            elif chat_id in self.messages_cache:
+                messages.extend(self.messages_cache[chat_id][0])
+                names.extend(self.messages_cache[chat_id][1])
+            else:
+                # extract data for the chat and cache it
+                self.messages_cache[chat_id] = self._prepare_chat_data(chat_id)
+                messages.extend(self.messages_cache[chat_id][0])
+                names.extend(self.messages_cache[chat_id][1])
+
+        # find the user's name (the one that appears in all conversations)
+        name = mode(names)
+
+        messages = [m for m in messages if m["sender_name"] == name]
+        messages = sorted(messages, key=lambda k: k["timestamp_ms"])
+        return self._process_messages(messages, [name], "__global__", ChatType.GLOBAL)
+
     def top_ten(self):
         chats = {}
         groups = {}
-        inboxes = [f"{folder}/inbox/" for folder in self.folders]
-        names = [i + n for i in inboxes for n in os.listdir(i) if os.path.isdir(i + n)]
 
-        for n in names:
-            for file in os.listdir(n):
-                if file.startswith("message") and file.endswith(".json"):
-                    with open(n + "/" + file) as data:
-                        data = json.load(data)
+        for chat_id in self.chat_ids:
+            if chat_id in self.chats_cache:
+                title = self.chats_cache[chat_id].title
+                chat_type = self.chats_cache[chat_id].chat_type
+                messages = self.chats_cache[chat_id].messages
+            elif chat_id in self.messages_cache:
+                messages, _, title, chat_type = self.messages_cache[chat_id]
+            else:
+                # extract data for the chat and cache it
+                messages, participants, title, chat_type = self._prepare_chat_data(chat_id)
+                self.messages_cache[chat_id] = messages, participants, title, chat_type
 
-                        # get the "real" name of the individual conversation (as opposed to the "condensed"
-                        # format in the folder name (represented here by the variable "m"))
-                        conversationName = self._decode(data["title"])
-                        # remove emoji because it ruins the aligning of the output text
-                        conversationName = emoji.replace_emoji(conversationName, "")
+                # remove emoji because it ruins the aligning of the output text
+                title = emoji.replace_emoji(title, "")
 
-                        if data["thread_type"] == "Regular":
-                            chats[conversationName] = len(data["messages"]) + chats.get(conversationName, 0)
-                        elif data["thread_type"] == "RegularGroup":
-                            groups[conversationName] = len(data["messages"]) + groups.get(conversationName, 0)
-
-                        # if data["messages"][0]["timestamp_ms"] > ts:
-                        #     ts = data["messages"][0]["timestamp_ms"]
+            if chat_type == ChatType.REGULAR:
+                chats[title] = len(messages)
+            elif chat_type == ChatType.GROUP:
+                groups[title] = len(messages)
 
         top_individual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
         top_group = dict(sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5])
@@ -83,22 +112,60 @@ class FacebookMessenger(MessageSource):
 
     # region Chat processing
 
-    def _compile_chat_data(self, chat_name: str):
+    def _compile_chat_data(self, chat_id: str):
         """Gets all the chat data, processes it and stores it as a Chat object in the cache.
 
-        :param chat_name: name of the chat to process
+        :param chat_id: name of the chat to process
         """
-        chat_paths = self._get_paths(chat_name)
-        jsons, title, names = self._get_jsons_title_names(chat_paths)
-        messages = self._get_messages(jsons)
+        if chat_id in self.messages_cache:
+            # fetch unprocessed extracted data
+            messages, participants, title, chat_type = self.messages_cache[chat_id]
+            self.messages_cache.pop(chat_id)
+        else:
+            messages, participants, title, chat_type = self._prepare_chat_data(chat_id)
 
-        self.chats_cache[chat_name] = self._process_messages(messages, names, title)
+        self.chats_cache[chat_id] = self._process_messages(messages, participants, title, chat_type)
+
+    def _prepare_chat_data(self, chat_id: str) -> tuple[list, list, str, ChatType]:
+        """Extracts the chat data (messages, names of the participants, chat title and chat type)
+
+        :param chat_id: name of the chat to process
+        :return: messages - list of messages
+                 title - name of the conversation,
+                 participants - names of conversation participants
+                 chat_type - type of chat (regular chat, group chat)
+        """
+        chat_paths = self._get_paths(chat_id)
+        jsons = self._get_jsons(chat_paths)
+        messages = []
+
+        first = True
+        for json_file in jsons:
+            with open(json_file, "r") as data:
+                data = json.load(data)
+                messages.extend(data["messages"])
+
+                if first:
+                    # get title, participants and chat type, which are the same across all JSONs
+                    title = self._decode(data["title"])
+                    participants = self._get_participants(data)
+
+                    if data["thread_type"] == "RegularGroup":
+                        chat_type = ChatType.GROUP
+                    else:
+                        chat_type = ChatType.REGULAR
+
+                    first = False
+
+        messages = sorted(messages, key=lambda k: k["timestamp_ms"])
+        self._decode_messages(messages)
+        return messages, participants, title, chat_type
 
     def _get_paths(self, chat_id: str) -> list[Path]:
         """Gets paths to the inbox folders with desired chat.
 
         :param chat_id: chat ID of the desired chat
-        :return: list of Path objects to the inbox folders
+        :return: list of paths to the inbox folders
         """
         paths = []
 
@@ -109,55 +176,41 @@ class FacebookMessenger(MessageSource):
 
         return paths
 
-    def _get_jsons_title_names(self, chat_paths) -> tuple[list[str], str, list[str]]:
+    @staticmethod
+    def _get_jsons(chat_paths: list[Path]) -> list[Path]:
         """Gets the json(s) with messages for a particular chat
 
         :param chat_paths: list of paths to the inbox folders of the chat
-        :return: jsons - JSON files with the messages,
-                 title - name of the conversation,
-                 names - names of conversation participants
+        :return: list of JSON files with the messages
         """
         jsons = []
+
         for ch in chat_paths:
             for file in os.listdir(ch):
-                if file.startswith("message") and file.endswith(".json"):
-                    jsons.append(ch / file)
-                if file == "message_1.json":
-                    with open(ch / file) as last:
-                        data = json.load(last)
-                        title, names = self._get_title_and_names(data)
+                if str(file).startswith("message") and str(file).endswith(".json"):
+                    jsons.append(ch / str(file))
         if not jsons:
-            raise Exception("NO JSON FILES IN THIS CHAT")
-        return jsons, title, names
+            raise Exception("No JSON files in this chat")
 
-    def _get_messages(self, jsons: "list[str]") -> list:
-        """Gets the messages for a conversation.
+        return jsons
 
-        :param jsons: JSON files containing the messages
-        :return: list of messages
+    def _get_participants(self, chat: dict) -> list[str]:
+        """Gets names of the participants in the chat.
+
+        :param chat: raw chat data
+        :return: list of chat participants
         """
-        messages = []
-        for j in jsons:
-            with open(j, "r") as data:
-                messages.extend(json.load(data)["messages"])
-        messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-        self._decode_messages(messages)
-        return messages
-
-    def _get_title_and_names(self, chat: dict) -> tuple[str, list[str]]:
-        """Gets names of the participants in the chat and the title of the chat."""
         participants = []
         for i in chat["participants"]:
             participants.append(self._decode(i["name"]))
         if len(participants) == 1:
             participants.append(participants[0])
+        return participants
 
-        title = self._decode(chat["title"])
-        return title, participants
-
-    def _process_messages(self, messages: list, names, title) -> FacebookMessengerChat:
+    def _process_messages(
+        self, messages: list, names: list[str], title: str, chat_type: ChatType
+    ) -> FacebookMessengerChat:
         """Processes the messages, produces raw stats and stores them in a Chat object.
-
         :param messages: list of messages to process
         :param names: list of the chat participants
         :param title: title of the chat
@@ -205,7 +258,7 @@ class FacebookMessenger(MessageSource):
                 if name in names:
                     data = regex.findall(r"\X", m["content"])
                     for c in data:
-                        if any(char in emoji.EMOJI_DATA for char in c):
+                        if c in emoji.EMOJI_DATA:
                             emojis["total"] += 1
                             emojis["types"][c] = 1 + emojis["types"].get(c, 0)
                             emojis["sent"][name]["total"] += 1
@@ -253,7 +306,7 @@ class FacebookMessenger(MessageSource):
         times = Times(hours, days, weekdays, months, years)
 
         return FacebookMessengerChat(
-            messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title
+            messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title, chat_type
         )
 
     # endregion
@@ -278,12 +331,14 @@ class FacebookMessenger(MessageSource):
             for chat_id in os.listdir(Path(folder) / "inbox"):
                 name = str(chat_id).split("_")[0].lower()
 
-                if name not in self.chat_ids:
-                    self.chat_ids[name] = [str(chat_id).lower()]
+                if name not in self.chat_id_map:
+                    self.chat_id_map[name] = [str(chat_id).lower()]
                 else:
-                    previous_id = self.chat_ids[name][0]
+                    previous_id = self.chat_id_map[name][0]
                     if chat_id != previous_id:
-                        self.chat_ids[name].append(str(chat_id).lower())
+                        self.chat_id_map[name].append(str(chat_id).lower())
+
+                self.chat_ids.append(chat_id)
 
     def _check_media(self):
         """Checks if all media types are included, as for some users Facebook doesn’t include files or videos"""
@@ -355,7 +410,7 @@ class FacebookMessenger(MessageSource):
 
         for chat_id in chat_ids:
             chat_paths[chat_id] = self._get_paths(chat_id)
-            jsons[chat_id], _, names[chat_id] = self._get_jsons_title_names(chat_paths[chat_id])
+            jsons[chat_id], _, names[chat_id], _ = self._get_jsons_title_names(chat_paths[chat_id])
             lengths[chat_id] = [(len(jsons[chat_id]) - 1) * 10000, len(jsons[chat_id]) * 10000]
             print(
                 f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages"
