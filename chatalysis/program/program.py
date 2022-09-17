@@ -4,6 +4,7 @@ from pprint import pprint
 
 from __init__ import __version__
 from chats.analyzer import Analyzer
+from chats.chat import Chat
 from program.gui import MainGUI
 from sources.messenger import FacebookMessenger
 from utils.utility import check_if_create_new, get_file_path, open_html
@@ -13,6 +14,7 @@ from utils.config import Config
 class Program:
     def __init__(self):
         self.source = None
+        self.global_stats = None
         self.top_ten_individual = None
         self.top_five_groups = None
         self.data_dir_path = ""

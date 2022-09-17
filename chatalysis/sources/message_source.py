@@ -21,6 +21,10 @@ class MessageSource(abc.ABC):
         """
 
     @abc.abstractmethod
+    def global_stats(self):
+        """Extracts personal global stats (stats across all available conversations)"""
+
+    @abc.abstractmethod
     def top_ten(self) -> "tuple[dict[str, int], dict[str, int]]":
         """Goes through conversations and returns the top 10 individual chats
         and top 5 group chats based on number of messages.
