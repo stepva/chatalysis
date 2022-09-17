@@ -1,5 +1,5 @@
-import plotly.graph_objects as go
 import plotly as pl
+import plotly.graph_objects as go
 
 
 def messages_pie(people: dict) -> str:

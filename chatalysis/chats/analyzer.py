@@ -1,19 +1,15 @@
-# Standard library imports
+import locale
 import math
 import os
 from typing import Any
 
-# Third party imports
-import locale
 from jinja2 import Environment, FileSystemLoader
 
-# Application imports
-from __init__ import __version__
-from chats.charts.plotly_messages import messages_pie, daily_messages_bar, hourly_messages_line
-from utils.utility import html_spaces, home, change_name
-from utils.const import DAYS
-from chats.chat import Chat, Times, BasicStats
-
+from chatalysis.__init__ import __version__
+from chatalysis.chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
+from chatalysis.chats.chat import BasicStats, Chat, Times
+from chatalysis.utils.const import DAYS
+from chatalysis.utils.utility import change_name, home, html_spaces
 
 # emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}

@@ -1,15 +1,12 @@
-# Standard library imports
-import os
 import abc
 import ctypes
+import os
 import tkinter as tk
 from tkinter import filedialog
 
-# Application imports
-from sources.messenger import FacebookMessenger
-
-# Third party imports
 from tabulate import tabulate
+
+from chatalysis.sources.messenger import FacebookMessenger
 
 
 class Window(tk.Tk):
