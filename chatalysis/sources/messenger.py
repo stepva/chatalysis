@@ -6,9 +6,9 @@ from pathlib import Path
 import emoji
 import regex
 
-from chatalysis.chats.chat import BasicStats, FacebookMessengerChat, Times
-from chatalysis.sources.message_source import MessageSource
-from chatalysis.utils.const import HOURS_DICT
+from chats.chat import BasicStats, FacebookMessengerChat, Times
+from sources.message_source import MessageSource
+from utils.const import HOURS_DICT
 
 # chat ID example = "johnsmith_djnas32owkldm"
 

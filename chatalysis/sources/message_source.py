@@ -1,6 +1,6 @@
 import abc
 
-from chatalysis.chats.chat import Chat
+from chats.chat import Chat
 
 
 class MessageSource(abc.ABC):
