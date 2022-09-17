@@ -7,6 +7,7 @@ from tkinter import filedialog
 from tabulate import tabulate
 
 from sources.messenger import FacebookMessenger
+from utils.utility import get_file_path, open_html
 
 
 class Window(tk.Tk):
@@ -39,7 +40,7 @@ class MainGUI(Window):
 
     def __init__(self, program):
         Window.__init__(self)
-        self.label_error = None
+        self.label_under = None
         self.Program = program
         self.create()
 
@@ -51,7 +52,7 @@ class MainGUI(Window):
             self.tk.call("tk", "scaling", 1.75)
 
         self.title("Chatalysis")
-        self.geometry("800x300")
+        self.geometry("700x350")
 
         # Configure grids & columns
         self.grid_columnconfigure(0, weight=1)
@@ -64,9 +65,10 @@ class MainGUI(Window):
         self.button2 = tk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
+        self.button3 = tk.Button(self, text="Global stats", command=self.show_global)
 
         # Create labels
-        self.label_error = tk.Label(self, text="", fg="red", wraplength=650)
+        self.label_under = tk.Label(self, text="", wraplength=650)
         self.label_select_dir = tk.Label(self, text="Please select directory with the messages:")
 
         # Create entry widgets
@@ -77,13 +79,14 @@ class MainGUI(Window):
         # Render objects onto a grid
         self.label_select_dir.grid(column=0, row=0, padx=5, pady=5)
         self.button_select_dir.grid(column=0, row=1, padx=5, pady=5)
-        self.entry_data_dir.grid(column=0, row=2, sticky="N", padx=5, pady=5)
-        self.button1.grid(column=0, row=3, sticky="S", padx=5, pady=5)
-        self.button2.grid(column=0, row=4, sticky="N", padx=5, pady=5)
-        self.label_error.grid(column=0, row=5, padx=5, pady=5)
+        self.entry_data_dir.grid(column=0, row=2)
+        self.button1.grid(column=0, row=3, sticky="S")
+        self.button2.grid(column=0, row=4)
+        self.button3.grid(column=0, row=5, sticky="N")
+        self.label_under.grid(column=0, row=6, padx=5, pady=5)
 
     def display_error(self, errorMessage: str):
-        self.label_error.config(text=errorMessage, fg="red")
+        self.label_under.config(text=errorMessage, fg="red")
 
     def select_dir(self):
         """Selects directory with the data using a dialog window"""
@@ -100,8 +103,23 @@ class MainGUI(Window):
             return
 
         self.Program.valid_dir = True
-        self.label_error.config(text="")
+        self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
+
+    def show_global(self):
+        if not self.Program.valid_dir:
+            # don't do anything if source directory is invalid to avoid errors
+            self.display_error("Cannot analyze until a valid directory is selected")
+            return
+
+        if not self.Program.global_stats:
+            self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
+            self.update()
+            self.Program.global_to_html()
+        else:
+            open_html(get_file_path("__global__"))
+
+        self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
 
 class WindowTopTen(Window):
@@ -221,7 +239,7 @@ class WindowIndividual(Window):
         name = self.entry_name.get()  # get the name of the conversation to analyze
 
         try:
-            self.Program.to_html(name)
+            self.Program.chat_to_html(name)
         except KeyError:  # chat wasn't found
             self.display_error("Sorry, this conversation doesn't exist")
             return

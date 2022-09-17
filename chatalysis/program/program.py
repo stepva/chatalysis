@@ -4,6 +4,7 @@ from pprint import pprint
 
 from __init__ import __version__
 from chats.analyzer import Analyzer
+from chats.chat import Chat
 from program.gui import MainGUI
 from sources.messenger import FacebookMessenger
 from utils.utility import check_if_create_new, get_file_path, open_html
@@ -12,6 +13,7 @@ from utils.utility import check_if_create_new, get_file_path, open_html
 class Program:
     def __init__(self):
         self.source = None
+        self.global_stats = None
         self.top_ten_individual = None
         self.top_five_groups = None
         self.data_dir_path = ""
@@ -25,10 +27,25 @@ class Program:
             self.gui = MainGUI(self)
             self.gui.mainloop()
 
-    def to_html(self, chat_name: str):
-        """Analyzes the chat and creates an HTML output file"""
-        chat = self.source.get_chat(chat_name)
+    def global_to_html(self):
+        """Analyzes global stats and creates an HTML output file"""
+        self.global_stats = self.source.global_stats()
+        self.to_html(self.global_stats)
 
+    def chat_to_html(self, chat_name: str):
+        """Takes a chat (individual or group chat), analyzes it and creates an HTML output file
+
+        :param chat_name: name of the chat to analyze
+        """
+        chat = self.source.get_chat(chat_name)
+        self.to_html(chat)
+
+    @staticmethod
+    def to_html(chat: Chat):
+        """Analyzes any type of chat, creates an HTML output file and opens it in the browser.
+
+        :param chat: chat to analyze
+        """
         create_new = check_if_create_new(chat.title, len(chat.messages))
         if not create_new:
             return
