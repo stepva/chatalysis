@@ -42,8 +42,7 @@
             align-self: flex-end;
         }
     </style>
-    <script src="{{chartjs}}"></script>
-    <script src="{{chartjs_labels}}"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <meta charset="utf-8">
 </head>
 
@@ -143,9 +142,7 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <canvas id="pieMessages" width="200px" height="200px"></canvas>
-            </div>
+            {{messages_pie}}
             <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                 <div style="display: flex; align-items: center; justify-self: end;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
@@ -259,12 +256,8 @@
             </div>
         </section>
         <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 40px; padding-top: 20px; padding-right: 75px; padding-left: 75px;">
-            <div style="height: 225px;">
-                <canvas id="timeGraph"></canvas>
-            </div>
-            <div style="height: 225px;">
-                <canvas id="hours"></canvas>
-            </div>
+            {{daily_messages_bar}}
+            {{hourly_messages_line}}
         </section>
         {% if emojis_count["total"] > 0 %}
             <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
@@ -483,139 +476,6 @@
             <i><a style="color: inherit; text-decoration: none;" href="https://github.com/stepva/chatalysis">https://github.com/stepva/chatalysis</a></i>
         </section>
     </div>
-    <script>
-        var myChart = new Chart("pieMessages", {
-            type: 'doughnut',
-            data: {
-                labels: {{ labels }},
-                datasets: [{
-                    data: {{ data }},
-                    backgroundColor: {{ background }},
-                    borderColor: {{ border }},
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                legend: {display: false},
-                title: {
-                    display: true,
-                    text: 'Messages distribution',
-                    fontStyle: "normal",
-                    fontSize: 15
-                },
-                plugins: {
-                    labels: {
-                        render: "percentage",
-                    }
-                }
-            }    
-        })
-    </script>
-    <script>
-        var myChart = new Chart("timeGraph", {
-                type: "bar",
-                data: {
-                    labels: {{ days_lab|safe }},
-                    datasets: [{
-                        maxBarThickness: 2,
-                        data: {{ days|safe }},
-                        backgroundColor: "rgba(0, 0, 0, 1)",
-                        borderColor: "rgba(0, 0, 0, 1)",
-                        hoverBackgroundColor: "rgba(0, 0, 0, 1)",
-                        hoverBorderColor: "rgba(0, 0, 0, 1)" 
-                    }]               
-                },
-                options: {
-                    plugins: {
-                        labels: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            gridLines: {
-                                drawOnChartArea: false
-                            },
-                            ticks: {
-                                autoSkipPadding: 50,
-                                maxRotation: 0
-                            }
-                        }],
-                            yAxes: [{
-                                gridLines: {
-                                    drawOnChartArea: false
-                                },
-                                ticks: {
-                                    step_size: {{ step_size_Y }}
-                                }
-                            }]
-                    },
-                    legend: {display: false},
-                    title: {
-                        display: true,
-                        text: "Daily messages over time",
-                        fontStyle: "normal",
-                        fontSize: 15
-
-                    },
-                    maintainAspectRatio: false,
-                    tooltips: {enabled: false},
-                    hover: {mode: null}
-            }
-        })
-    </script>
-    <script>
-        var myChart = new Chart("hours", {
-                type: "line",
-                data: {
-                    labels: {{ hours_lab| safe }},
-                    datasets: [{
-                        data: {{ hours| safe }},
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        borderColor: "rgba(0, 0, 0, 0.8)",
-                        hoverBackgroundColor: "rgba(0, 0, 0, 0.2)",
-                        hoverBorderColor: "rgba(0, 0, 0, 0.8)",
-                        borderWidth: 2 
-                        }]               
-                },
-                options: {
-                    plugins: {
-                        labels: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            gridLines: {
-                                drawOnChartArea: false
-                            },
-                            ticks: {
-                                autoSkipPadding: 50,
-                                maxRotation: 0
-                            }
-                        }],
-                            yAxes: [{
-                                gridLines: {
-                                    drawOnChartArea: false,
-                                },
-                                ticks: {
-                                    display: false,
-                                    step_size: {{ step_size_Yh }}
-                                }
-                            }]
-                        },
-                    elements: {
-                        point: {
-                            radius: 0
-                        }
-                    },        
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: "Messages throughout the day",
-                        fontStyle: "normal",
-                        fontSize: 15
-                        },
-                    maintainAspectRatio: false
-                    }
-                })
-    </script>
       
 </body>
 

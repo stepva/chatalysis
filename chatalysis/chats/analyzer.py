@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Application imports
 from __init__ import __version__
+from chats.charts.plotly_messages import messages_pie, daily_messages_bar, hourly_messages_line
 from utils.utility import html_spaces, home, change_name
 from utils.const import DAYS
 from chats.chat import Chat, Times, BasicStats
@@ -38,9 +39,6 @@ class Analyzer:
 
         template = env.get_template("index.html.j2")
 
-        days_names = DAYS
-        labels, data, background, border = self._msg_graph(people)
-
         return template.render(
             # utility
             # needs to be relative path from the output directory inside HTML
@@ -69,23 +67,16 @@ class Analyzer:
             left=self._pers_stats_count()[1],
             left_emojis=self._emoji_stats_count(),
             # messagesgraph
-            labels=labels,
-            data=data,
-            background=background,
-            border=border,
+            messages_pie=messages_pie(people),
             # timestats
             top_day=self._top_times(days),
-            top_weekday=[days_names[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
+            top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
             top_month=self._top_times(months),
             top_year=self._top_times(years),
             # daysgraph
-            days=list(days.values()),
-            days_lab=self._month_label(days),
-            step_size_Y=self._step_size(days),
+            daily_messages_bar=daily_messages_bar(days),
             # hourgraph
-            hours=list(hours.values()),
-            hours_lab=list(hours.keys()),
-            step_size_Yh=self._step_size(hours),
+            hourly_messages_line=hourly_messages_line(hours),
             # emojis
             emojis_count=self.chat.emojis,
             diff_emojis=self._count_types(self.chat.emojis, "sent"),
@@ -235,42 +226,6 @@ class Analyzer:
 
     # region utilities
 
-    def _msg_graph(self, people):
-        """Prepares labels and data for the messages graph"""
-        labels = []
-        data = []
-        background = [
-            "hsla(42, 79%, 54%, 0.4)",
-            "hsla(45, 98%, 67%, 0.2)",
-            "hsla(42, 79%, 54%, 0.6)",
-            "hsla(45, 98%, 67%, 0.4)",
-            "hsla(42, 79%, 54%, 0.8)",
-            "hsla(45, 98%, 67%, 0.6)",
-            "hsla(42, 79%, 54%, 1)",
-            "hsla(45, 98%, 67%, 0.8)",
-            "hsla(69, 100%, 66%, 0.6)",
-            "hsla(17, 80%, 66%, 0.5)",
-        ]
-        border = ["hsla(53, 0%, 0%, 0.5)"] * 10
-        if len(self.chat.names) == 2:
-            labels = [self.chat.names[1], self.chat.names[0]]
-            data = [people[self.chat.names[1]], people[self.chat.names[0]]]
-            bg = background[0:2]
-            bo = border[0:2]
-        else:
-            for n in sorted(people.items(), key=lambda item: item[1], reverse=True)[1:10]:
-                labels.append(n[0])
-                data.append(n[1])
-                bg = background[0:9]
-                bo = border[0:9]
-            if len(self.chat.names) > 9:
-                labels.append("Others")
-                sofar = sum(data)
-                data.append(people["total"] - sofar)
-                bg.append(background[9])
-                bo.append(border[9])
-        return labels, data, background, border
-
     def _split_names(self) -> "dict[str, str]":
         """Splits names and takes just the first name
 
@@ -294,24 +249,6 @@ class Analyzer:
                 if p.startswith(change_name(n)):
                     pics[n] = "../resources/images/p"
         return pics
-
-    @staticmethod
-    def _step_size(times) -> float:
-        """Calculates the desired step size for the time chart"""
-        x = sorted(times.items(), key=lambda item: item[1], reverse=True)[0][1]
-        if x < 100:
-            y = x if x % 10 == 0 else x + 10 - x % 10
-        elif x > 100:
-            y = x if x % 100 == 0 else x + 100 - x % 100
-        return y / 2
-
-    @staticmethod
-    def _month_label(times):
-        """Creates labels for the time chart"""
-        l = list(times.keys())
-        for i in range(len(l)):
-            l[i] = l[i][:7]
-        return l
 
     def _top_emojis_total(self, to_count):
         """Prepares top emojis for the HTML"""

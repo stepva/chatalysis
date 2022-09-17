@@ -3,3 +3,4 @@ regex
 jinja2
 tabulate
 beautifulsoup4
+plotly==5.10.0
