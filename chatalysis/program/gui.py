@@ -124,7 +124,7 @@ class MainGUI(Window):
             self.update()
             self.Program.global_to_html()
         else:
-            open_html(get_file_path("__global__"))
+            open_html(get_file_path("Global stats"))
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 

@@ -116,8 +116,9 @@
             </div>
             </div>
         </section>
+        {% if not chat_type == 3 %}
         <section id="personal stats" style="display: grid; grid-template-columns: 1fr 200px 1fr; padding-bottom: 30px; padding-top: 20px; grid-gap: 2px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">  
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                 <div style="display: flex; align-items: center; justify-self: end;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                         <div>
@@ -146,7 +147,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                 <div style="display: flex; align-items: center; justify-self: end;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                        <div>   
+                        <div>
                         <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture-small">
                         </div>
                         <p style="margin-bottom: 0; margin-top: 5px;">
@@ -168,7 +169,8 @@
                     </div>
                 </div>
             </div>
-        </section>    
+        </section>
+        {% endif %}
         {% if participants > 2 %}
             {% if lines > 0 %}     
                 <section id="more personal stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 2px;">
