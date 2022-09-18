@@ -136,6 +136,9 @@ class WindowTopTen(Window):
         self.show_top()  # runs the top 10 analysis & print
 
     def display_error(self, errorMessage: str):
+        if not self.label_error:
+            return
+
         self.remove_labels([self.label_error])
 
         self.label_error = tk.Label(self, text=errorMessage, wraplength=650, fg="red")

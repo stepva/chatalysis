@@ -7,7 +7,7 @@ Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
 BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])
 
 
-@dataclass
+@dataclass # type: ignore[misc]
 class Chat(abc.ABC):
     messages: list
     basic_stats: BasicStats
