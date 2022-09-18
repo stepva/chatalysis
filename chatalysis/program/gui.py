@@ -82,13 +82,20 @@ class MainGUI(Window):
         self.button2.grid(column=0, row=4, sticky="N", padx=5, pady=5)
         self.label_error.grid(column=0, row=5, padx=5, pady=5)
 
+        # get source dir from last session (or cwd if used for the first time)
+        self.data_dir_last = self.Program.config.load("last_source_dir")
+
     def display_error(self, errorMessage: str):
         self.label_error.config(text=errorMessage, fg="red")
 
     def select_dir(self):
         """Selects directory with the data using a dialog window"""
-        self.Program.data_dir_path = filedialog.askdirectory(title="Select source directory", initialdir=os.getcwd())
+        self.Program.data_dir_path = filedialog.askdirectory(
+            title="Select source directory", initialdir=self.data_dir_last
+        )
         self.data_dir_path_tk.set(self.Program.data_dir_path)
+
+        self.Program.config.save("last_source_dir", self.Program.data_dir_path)  # save last used dir
 
         try:
             self.Program.source = FacebookMessenger(self.Program.data_dir_path)
