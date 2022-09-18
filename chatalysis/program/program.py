@@ -7,6 +7,7 @@ from chats.analyzer import Analyzer
 from program.gui import MainGUI
 from sources.messenger import FacebookMessenger
 from utils.utility import check_if_create_new, get_file_path, open_html
+from utils.config import Config
 
 
 class Program:
@@ -17,6 +18,7 @@ class Program:
         self.data_dir_path = ""
         self.valid_dir = False
         self.gui = None
+        self.config = Config()
 
     def run(self, cli: bool = False):
         if cli:
@@ -26,11 +28,12 @@ class Program:
             self.gui.mainloop()
 
     def to_html(self, chat_name: str):
-        """Analyzes the chat and creates an HTML output file"""
+        """Analyzes any type of chat, creates an HTML output file and opens it in the browser."""
         chat = self.source.get_chat(chat_name)
-
         create_new = check_if_create_new(chat.title, len(chat.messages))
-        if not create_new:
+
+        if not create_new and not self.config.load("force_generate", is_bool=True):
+            open_html(get_file_path(chat.title))
             return
 
         analyzer = Analyzer(chat)
