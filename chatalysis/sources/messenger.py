@@ -78,7 +78,7 @@ class FacebookMessenger(MessageSource):
 
         messages = [m for m in messages if m["sender_name"] == name]
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-        return self._process_messages(messages, [name], "__global__", ChatType.GLOBAL)
+        return self._process_messages(messages, [name], "Global stats", ChatType.GLOBAL)
 
     def top_ten(self):
         chats = {}
@@ -96,8 +96,8 @@ class FacebookMessenger(MessageSource):
                 messages, participants, title, chat_type = self._prepare_chat_data(chat_id)
                 self.messages_cache[chat_id] = messages, participants, title, chat_type
 
-                # remove emoji because it ruins the aligning of the output text
-                title = emoji.replace_emoji(title, "")
+            # remove emoji because it ruins the aligning of the output text
+            title = emoji.replace_emoji(title, "")
 
             if chat_type == ChatType.REGULAR:
                 chats[title] = len(messages)

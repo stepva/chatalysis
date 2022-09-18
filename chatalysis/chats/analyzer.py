@@ -85,6 +85,8 @@ class Analyzer:
             avg_reacts=self._avg_counts(self.chat.reactions, "gave"),
             top_reacts=self._top_emojis(self.chat.reactions, "got"),
             reacts_L=self._tops_count(self.chat.reactions, "got"),
+            # chat type
+            chat_type=self.chat.chat_type.value,
         )
 
     def emoji_stats(self, emojis: dict, names, people) -> dict:
