@@ -2,6 +2,7 @@ import json
 import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from typing import Any, Dict, List
 
 import emoji
 import regex
@@ -16,7 +17,7 @@ from utils.const import HOURS_DICT
 class FacebookMessenger(MessageSource):
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self.folders = []
+        self.folders: List[str] = []
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
         # can represent multiple chats, the chat IDs are stored in a list.
@@ -138,8 +139,7 @@ class FacebookMessenger(MessageSource):
         messages = []
         for j in jsons:
             with open(j, "r") as data:
-                data = json.load(data)
-                messages.extend(data["messages"])
+                messages.extend(json.load(data)["messages"])
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
         self._decode_messages(messages)
         return messages
@@ -172,12 +172,12 @@ class FacebookMessenger(MessageSource):
         videos = {"total": 0}
         audios = {"total": 0}
         files = {"total": 0}
-        reactions = {"total": 0, "types": {}, "gave": {}, "got": {}}
-        emojis = {"total": 0, "types": {}, "sent": {}}
+        reactions: Any = {"total": 0, "types": {}, "gave": {}, "got": {}}
+        emojis: Any = {"total": 0, "types": {}, "sent": {}}
         days = self._days_list(messages)
-        months = {}
-        years = {}
-        weekdays = {}
+        months: Dict[str, int] = {}
+        years: Dict[str, int] = {}
+        weekdays: Dict[int, int] = {}
         hours = HOURS_DICT.copy()
 
         for n in names:

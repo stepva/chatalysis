@@ -46,7 +46,7 @@ def open_html(path: str | Path):
         path_to_open = f"file://{path}"
     else:
         wb = webbrowser.get()
-        path_to_open = path
+        path_to_open = str(path)
 
     wb.open(path_to_open)
 
