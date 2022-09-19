@@ -2,7 +2,7 @@ import json
 import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import emoji
 import regex
@@ -17,7 +17,7 @@ from utils.const import HOURS_DICT
 class FacebookMessenger(MessageSource):
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self.folders: List[str] = []
+        self.folders: list[str] = []
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
         # can represent multiple chats, the chat IDs are stored in a list.
@@ -175,9 +175,9 @@ class FacebookMessenger(MessageSource):
         reactions: Any = {"total": 0, "types": {}, "gave": {}, "got": {}}
         emojis: Any = {"total": 0, "types": {}, "sent": {}}
         days = self._days_list(messages)
-        months: Dict[str, int] = {}
-        years: Dict[str, int] = {}
-        weekdays: Dict[int, int] = {}
+        months: dict[str, int] = {}
+        years: dict[str, int] = {}
+        weekdays: dict[int, int] = {}
         hours = HOURS_DICT.copy()
 
         for n in names:
