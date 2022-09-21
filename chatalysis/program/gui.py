@@ -65,7 +65,7 @@ class MainGUI(Window):
         self.button2 = tk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
-        self.button3 = tk.Button(self, text="Global stats", command=self.show_global)
+        self.button3 = tk.Button(self, text="Show your global stats", command=self.show_global)
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
