@@ -328,16 +328,17 @@ class FacebookMessenger(MessageSource):
         """Load all chats from the source"""
         for folder in self.folders:
             for chat_id in os.listdir(Path(folder) / "inbox"):
-                name = str(chat_id).split("_")[0].lower()
+                if chat_id != ".DS_Store":
+                    name = str(chat_id).split("_")[0].lower()
 
-                if name not in self.chat_id_map:
-                    self.chat_id_map[name] = [str(chat_id).lower()]
-                else:
-                    previous_id = self.chat_id_map[name][0]
-                    if chat_id != previous_id:
-                        self.chat_id_map[name].append(str(chat_id).lower())
+                    if name not in self.chat_id_map:
+                        self.chat_id_map[name] = [str(chat_id).lower()]
+                    else:
+                        previous_id = self.chat_id_map[name][0]
+                        if chat_id != previous_id:
+                            self.chat_id_map[name].append(str(chat_id).lower())
 
-                self.chat_ids.append(chat_id)
+                    self.chat_ids.append(chat_id)
 
     def _check_media(self):
         """Checks if all media types are included, as for some users Facebook doesn’t include files or videos"""
