@@ -3,6 +3,7 @@ import os
 from pprint import pprint
 
 from __init__ import __version__
+from sources.message_source import MessageSource
 from chats.analyzer import Analyzer
 from program.gui import MainGUI
 from sources.messenger import FacebookMessenger
@@ -11,7 +12,10 @@ from utils.config import Config
 
 
 class Program:
-    def __init__(self):
+    gui: MainGUI | None
+    source: MessageSource | None
+
+    def __init__(self) -> None:
         self.source = None
         self.top_ten_individual = None
         self.top_five_groups = None
@@ -20,14 +24,14 @@ class Program:
         self.gui = None
         self.config = Config()
 
-    def run(self, cli: bool = False):
+    def run(self, cli: bool = False) -> None:
         if cli:
             self.cli()
         else:
             self.gui = MainGUI(self)
             self.gui.mainloop()
 
-    def to_html(self, chat_name: str):
+    def to_html(self, chat_name: str) -> None:
         """Analyzes any type of chat, creates an HTML output file and opens it in the browser."""
         chat = self.source.get_chat(chat_name)
         create_new = check_if_create_new(chat.title, len(chat.messages))
@@ -45,7 +49,7 @@ class Program:
 
         open_html(file_path)
 
-    def to_cli(self, chat_name: str):
+    def to_cli(self, chat_name: str) -> None:
         """Analyzes the chat and prints the stats to terminal"""
         chat = self.source.get_chat(chat_name)
         analyzer = Analyzer(chat)
@@ -57,7 +61,7 @@ class Program:
         pprint(analyzer.time_stats(chat.times), indent=2, sort_dicts=False)
         pprint(chat.first_message(), indent=2, sort_dicts=False)
 
-    def cli(self):
+    def cli(self) -> None:
         """CLI loop used mainly for testing purposes"""
         self.data_dir_path = os.getcwd()
         try:

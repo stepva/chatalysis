@@ -24,7 +24,7 @@ class Analyzer:
 
     # region Public API
 
-    def mrHtml(self):
+    def mrHtml(self) -> str:
         """Exports stats and other variables into HTML"""
         file_loader = FileSystemLoader(home / "resources" / "templates")
         env = Environment(loader=file_loader)
@@ -87,7 +87,7 @@ class Analyzer:
             reacts_L=self._tops_count(self.chat.reactions, "got"),
         )
 
-    def emoji_stats(self, emojis: dict, names, people) -> dict:
+    def emoji_stats(self, emojis: dict[Any, Any], names: list[str], people: Any) -> dict[Any, Any]:
         """Prepares emoji stats for terminal output
 
         :param emojis: dict with structure
@@ -121,7 +121,7 @@ class Analyzer:
 
         return stats
 
-    def time_stats(self, times: Times):
+    def time_stats(self, times: Times) -> Any:
         """Creates time stats for terminal output
 
         :param times: namedtuple of [hours, days, weekdays, months, years]
@@ -178,7 +178,7 @@ class Analyzer:
 
         return info
 
-    def reaction_stats(self, reactions: dict, names, people):
+    def reaction_stats(self, reactions: dict[str, Any], names: list[str], people: Any) -> Any:
         """Creates reaction stats for a terminal output
 
         :param reactions: dictionary with structure
@@ -246,7 +246,7 @@ class Analyzer:
                     pics[n] = "../resources/images/p"
         return pics
 
-    def _top_emojis_total(self, to_count):
+    def _top_emojis_total(self, to_count: Any) -> tuple[Any, Any]:
         """Prepares top emojis for the HTML"""
         l = sorted(to_count["types"].items(), key=lambda item: item[1], reverse=True)
         types = []
@@ -254,9 +254,9 @@ class Analyzer:
         for e in l:
             types.append(e[0])
             counts.append(e[1])
-        return [types[:10], counts[:10]]
+        return types[:10], counts[:10]
 
-    def _top_emojis_personal(self, to_count, name: str, keyword: str):
+    def _top_emojis_personal(self, to_count: Any, name: str, keyword: str) -> tuple[Any, Any]:
         """Prepares personal top emojis for the HTML"""
         l = sorted(to_count[keyword][name].items(), key=lambda item: item[1], reverse=True)
         types = []
@@ -264,9 +264,9 @@ class Analyzer:
         for e in l:
             types.append(e[0])
             counts.append(e[1])
-        return [types[1:11], counts[1:11]]
+        return types[1:11], counts[1:11]
 
-    def _top_emojis(self, to_count, keyword: str):
+    def _top_emojis(self, to_count: Any, keyword: str) -> Any:
         """Packs the overall and top emojis for the HTML"""
         fontSizesT = list(map(str, range(300, 100, -20)))
         fontSizesP = list(map(str, range(180, 80, -10)))
@@ -279,43 +279,43 @@ class Analyzer:
             )
         return tops
 
-    def _top_times(self, time):
+    def _top_times(self, time: Any) -> tuple[Any, Any]:
         """Gets the top time (year, month...) and messages in there"""
-        return [
+        return (
             sorted(time.items(), key=lambda item: item[1], reverse=True)[0][0],
-            sorted(time.items(), key=lambda item: item[1], reverse=True)[0][1],
-        ]
+            sorted(time.items(), key=lambda item: item[1], reverse=True)[0][1]
+        )
 
-    def _count_types(self, to_count, keyword: str):
+    def _count_types(self, to_count: Any, keyword: str) -> Any:
         """Gets the count of different emojis or reactions"""
         lens = {"total": len(to_count["types"])}
         for n in self.chat.names:
             lens[n] = len(to_count[keyword][n]) - 1
         return lens
 
-    def _avg_counts(self, to_count, keyword: str):
+    def _avg_counts(self, to_count: Any, keyword: str) -> Any:
         """Gets the average of sent emojis or reactions"""
         avgs = {}
         for n in self.chat.names:
             avgs[n] = round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
         return avgs
 
-    def _tops_count(self, to_count, keyword: str):
+    def _tops_count(self, to_count: Any, keyword: str) -> dict[str, int]:
         """Gets the number of top emojis or reactions up to 10"""
         count = {"total": len(self._top_emojis_total(to_count)[0])}
         for n in self.chat.names:
             count[n] = len(self._top_emojis_personal(to_count, n, keyword)[0])
         return count
 
-    def _pers_stats_count(self):
+    def _pers_stats_count(self) -> tuple[int, int]:
         """Calculates how many lines of personal stats are needed in the HTML"""
         if len(self.chat.names) > 2:
             lines = math.floor((len(self.chat.names) - 2) / 3)
             left = (len(self.chat.names) - 2) - (lines * 3)
             x = -len(self.chat.names) if left == 0 else left
-            return [lines, x]
+            return lines, x
         else:
-            return [0, 0]
+            return 0, 0
 
     def _emoji_stats_count(self) -> int:
         """Calculates how many lines of emojis and reactions stats are needed in the HTML"""

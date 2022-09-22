@@ -2,9 +2,11 @@ import abc
 import ctypes
 import os
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import Label, filedialog
+from typing import Any, Optional
 
 from tabulate import tabulate
+from program.program import Program
 
 from sources.messenger import FacebookMessenger
 
@@ -12,11 +14,11 @@ from sources.messenger import FacebookMessenger
 class Window(tk.Tk):
     """Tkinter window base class"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         tk.Tk.__init__(self)
 
     @abc.abstractmethod
-    def display_error(self, errorMessage: str):
+    def display_error(self, errorMessage: str) -> None:
         """Displays an error message in the window
 
         :param errorMessage: message to be displayed
@@ -24,7 +26,7 @@ class Window(tk.Tk):
         pass
 
     @staticmethod
-    def remove_labels(labels: "list[tk.Label]"):
+    def remove_labels(labels: "list[tk.Label]") -> None:
         """Removes labels from a given window
 
         :param labels: list of labels to remove
@@ -36,14 +38,15 @@ class Window(tk.Tk):
 
 class MainGUI(Window):
     """Main GUI for the program"""
+    label_error: Label | None
 
-    def __init__(self, program):
+    def __init__(self, program: Program):
         Window.__init__(self)
         self.label_error = None
         self.Program = program
         self.create()
 
-    def create(self):
+    def create(self) -> None:
         """Creates the GUI widgets and renders them"""
         # fix high DPI blurriness on Windows 10
         if os.name == "nt":
@@ -85,10 +88,10 @@ class MainGUI(Window):
         # get source dir from last session (or cwd if used for the first time)
         self.data_dir_last = self.Program.config.load("last_source_dir")
 
-    def display_error(self, errorMessage: str):
+    def display_error(self, errorMessage: str) -> None:
         self.label_error.config(text=errorMessage, fg="red")
 
-    def select_dir(self):
+    def select_dir(self) -> None:
         """Selects directory with the data using a dialog window"""
         self.Program.data_dir_path = filedialog.askdirectory(
             title="Select source directory", initialdir=self.data_dir_last
@@ -103,7 +106,7 @@ class MainGUI(Window):
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
-            self.display_error(e)
+            self.display_error(str(e))
             return
 
         self.Program.valid_dir = True
@@ -114,7 +117,9 @@ class MainGUI(Window):
 class WindowTopTen(Window):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
-    def __init__(self, program, gui: MainGUI):
+    label_top: Label | None
+
+    def __init__(self, program: Program, gui: MainGUI):
         if not program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
             gui.display_error("Cannot analyze until a valid directory is selected")
@@ -135,7 +140,7 @@ class WindowTopTen(Window):
 
         self.show_top()  # runs the top 10 analysis & print
 
-    def display_error(self, errorMessage: str):
+    def display_error(self, errorMessage: str) -> None:
         if not self.label_error:
             return
 
@@ -144,7 +149,7 @@ class WindowTopTen(Window):
         self.label_error = tk.Label(self, text=errorMessage, wraplength=650, fg="red")
         self.label_error.grid(column=0, row=1, padx=5, pady=5)
 
-    def show_top(self):
+    def show_top(self) -> None:
         """Analyzes and shows the top conversations"""
         # Calculate the top conversations if not done already
         if self.Program.top_ten_individual is None:
@@ -182,7 +187,7 @@ class WindowTopTen(Window):
 
 
 class WindowIndividual(Window):
-    def __init__(self, program, gui: MainGUI):
+    def __init__(self, program: Program, gui: MainGUI):
         if not program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
             gui.display_error("Cannot analyze until a valid directory is selected")
@@ -195,7 +200,7 @@ class WindowIndividual(Window):
         self.geometry("600x200")
         self.create()
 
-    def create(self):
+    def create(self) -> None:
         """Creates and renders the objects in the window"""
 
         self.grid_columnconfigure(0, weight=1)
@@ -220,10 +225,10 @@ class WindowIndividual(Window):
         self.entry_name.grid(column=0, row=1, sticky="N", padx=5, pady=5)
         self.label_under.grid(column=0, row=2, padx=5, pady=5)
 
-    def display_error(self, errorMessage: str):
+    def display_error(self, errorMessage: str) -> None:
         self.label_under.config(text=errorMessage, fg="red")
 
-    def analyze_individual(self, _event):
+    def analyze_individual(self, _event: Any) -> None:
         """Analyzes an individual conversation and prints information about the process"""
         self.label_under.config(text="Analyzing...", fg="black")
         self.update()

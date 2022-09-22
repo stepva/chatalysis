@@ -1,3 +1,4 @@
+from typing import Any
 import appdirs
 import configparser
 import os
@@ -12,7 +13,7 @@ config_file = config_dir / "config.ini"
 class Config:
     """Simple class for saving & loading config items"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._parser = configparser.ConfigParser()
 
         if os.path.exists(config_file):
@@ -20,7 +21,7 @@ class Config:
         else:
             self._create()
 
-    def save(self, item: str, value: str):
+    def save(self, item: str, value: str) -> None:
         """Save a config item
 
         :param item: name of the item
@@ -30,7 +31,7 @@ class Config:
         with open(config_file, "w") as cfg:
             self._parser.write(cfg)
 
-    def load(self, item: str, is_bool: bool = False):
+    def load(self, item: str, is_bool: bool = False) -> Any:
         """Loads a config item
 
         :param item: name of the item
@@ -42,7 +43,7 @@ class Config:
             return self._parser["DEFAULT"].getboolean(item)
         return self._parser["DEFAULT"][item]
 
-    def _create(self):
+    def _create(self) -> None:
         """Create the config file and initialize it with default values"""
         config_file.parent.mkdir(parents=True, exist_ok=True)
         config_file.touch(exist_ok=True)

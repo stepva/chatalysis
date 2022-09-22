@@ -49,17 +49,17 @@ class FacebookMessenger(MessageSource):
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
 
-    def top_ten(self):
-        chats = {}
-        groups = {}
+    def top_ten(self) -> tuple[Any, Any]:
+        chats: Any = {}
+        groups: Any = {}
         inboxes = [f"{folder}/inbox/" for folder in self.folders]
         names = [i + n for i in inboxes for n in os.listdir(i) if os.path.isdir(i + n)]
 
         for n in names:
             for file in os.listdir(n):
                 if file.startswith("message") and file.endswith(".json"):
-                    with open(n + "/" + file) as data:
-                        data = json.load(data)
+                    with open(n + "/" + file) as raw_data:
+                        data = json.load(raw_data)
 
                         # get the "real" name of the individual conversation (as opposed to the "condensed"
                         # format in the folder name (represented here by the variable "m"))
@@ -83,7 +83,7 @@ class FacebookMessenger(MessageSource):
 
     # region Chat processing
 
-    def _compile_chat_data(self, chat_name: str):
+    def _compile_chat_data(self, chat_name: str) -> None:
         """Gets all the chat data, processes it and stores it as a Chat object in the cache.
 
         :param chat_name: name of the chat to process
@@ -109,7 +109,7 @@ class FacebookMessenger(MessageSource):
 
         return paths
 
-    def _get_jsons_title_names(self, chat_paths) -> tuple[list[str], str, list[str]]:
+    def _get_jsons_title_names(self, chat_paths: list[Path]) -> tuple[list[Path], str, list[str]]:
         """Gets the json(s) with messages for a particular chat
 
         :param chat_paths: list of paths to the inbox folders of the chat
@@ -130,7 +130,7 @@ class FacebookMessenger(MessageSource):
             raise Exception("NO JSON FILES IN THIS CHAT")
         return jsons, title, names
 
-    def _get_messages(self, jsons: "list[str]") -> list:
+    def _get_messages(self, jsons: list[Path]) -> list[Any]:
         """Gets the messages for a conversation.
 
         :param jsons: JSON files containing the messages
@@ -144,7 +144,7 @@ class FacebookMessenger(MessageSource):
         self._decode_messages(messages)
         return messages
 
-    def _get_title_and_names(self, chat: dict) -> tuple[str, list[str]]:
+    def _get_title_and_names(self, chat: dict[Any, Any]) -> tuple[str, list[str]]:
         """Gets names of the participants in the chat and the title of the chat."""
         participants = []
         for i in chat["participants"]:
@@ -155,7 +155,7 @@ class FacebookMessenger(MessageSource):
         title = self._decode(chat["title"])
         return title, participants
 
-    def _process_messages(self, messages: list, names, title) -> FacebookMessengerChat:
+    def _process_messages(self, messages: list[Any], names: list[str], title: str) -> FacebookMessengerChat:
         """Processes the messages, produces raw stats and stores them in a Chat object.
 
         :param messages: list of messages to process
@@ -260,7 +260,7 @@ class FacebookMessenger(MessageSource):
 
     # region Data source processing
 
-    def _load_message_folders(self):
+    def _load_message_folders(self) -> None:
         """Load folders containing the messages"""
         for d in os.listdir(self.data_dir_path):
             if d.startswith("messages") and os.path.isdir(f"{self.data_dir_path}/{d}"):
@@ -272,7 +272,7 @@ class FacebookMessenger(MessageSource):
                 "Facebook as described in the README :)"
             )
 
-    def _load_all_chats(self):
+    def _load_all_chats(self) -> None:
         """Load all chats from the source"""
         for folder in self.folders:
             for chat_id in os.listdir(Path(folder) / "inbox"):
@@ -285,7 +285,7 @@ class FacebookMessenger(MessageSource):
                     if chat_id != previous_id:
                         self.chat_ids[name].append(str(chat_id).lower())
 
-    def _check_media(self):
+    def _check_media(self) -> None:
         """Checks if all media types are included, as for some users Facebook doesn’t include files or videos"""
         media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
 
@@ -316,7 +316,7 @@ class FacebookMessenger(MessageSource):
         return word.encode("iso-8859-1").decode("utf-8")
 
     @staticmethod
-    def _decode_messages(messages):
+    def _decode_messages(messages: list[Any]) -> list[Any]:
         """Decodes all messages from the Facebook encoding"""
         for m in messages:
             m["sender_name"] = m["sender_name"].encode("iso-8859-1").decode("utf-8")
@@ -329,7 +329,7 @@ class FacebookMessenger(MessageSource):
         return messages
 
     @staticmethod
-    def _days_list(messages: list) -> "dict[str, int]":
+    def _days_list(messages: list[Any]) -> "dict[str, int]":
         """Prepares a dictionary with all days from the first message up to the last one
 
         :param messages: list of messages in the conversation
@@ -346,7 +346,7 @@ class FacebookMessenger(MessageSource):
 
     # endregion
 
-    def _multiple_chats(self, chat_ids):
+    def _multiple_chats(self, chat_ids: list[str]) -> None:
         """Gets information about chats with the same name"""
         chat_paths = {}
         jsons = {}

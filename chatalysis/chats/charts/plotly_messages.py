@@ -1,8 +1,9 @@
+from typing import Any
 import plotly as pl
 import plotly.graph_objects as go
 
 
-def messages_pie(people: dict) -> str:
+def messages_pie(people: dict[Any, Any]) -> str:
     """Prepares the HTML code for the Messages pie chart
 
     :param people: dict of message counts of the conversation
@@ -72,7 +73,7 @@ def messages_pie(people: dict) -> str:
     return html
 
 
-def hourly_messages_line(hours: dict) -> str:
+def hourly_messages_line(hours: dict[Any, Any]) -> str:
     """Prepares the HTML code for the Hourly Messages line chart
 
     :param people: dict of message counts per hour of day of the conversation
@@ -118,7 +119,7 @@ def hourly_messages_line(hours: dict) -> str:
     return html
 
 
-def daily_messages_bar(days: dict) -> str:
+def daily_messages_bar(days: dict[Any, Any]) -> str:
     """Prepares the HTML code for the Daily Messages bar chart
 
     :param days: dict of message counts per day of the conversation

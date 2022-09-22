@@ -5,7 +5,7 @@ from __init__ import __version__
 from program.program import Program
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("-V", "-version", help="Version info", action="version", version=__version__)
 
