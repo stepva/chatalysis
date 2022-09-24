@@ -7,6 +7,7 @@ from statistics import mode
 
 import emoji
 import regex
+from chatalysis.chats.personal import PersonalStats
 
 from chats.chat import BasicStats, ChatType, FacebookMessengerChat, Times
 from sources.message_source import MessageSource
@@ -56,7 +57,7 @@ class FacebookMessenger(MessageSource):
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
 
-    def global_stats(self) -> FacebookMessengerChat:
+    def personal_stats(self) -> PersonalStats:
         messages = []
         names = []  # list of participants from all conversations
 
@@ -78,7 +79,7 @@ class FacebookMessenger(MessageSource):
 
         messages = [m for m in messages if m["sender_name"] == name]
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-        return self._process_messages(messages, [name], "Global stats", ChatType.GLOBAL)
+        return self._process_messages(messages, [name], "Personal stats", None, personal_stats=True)
 
     def top_ten(self):
         chats = {}
@@ -208,8 +209,8 @@ class FacebookMessenger(MessageSource):
         return participants
 
     def _process_messages(
-        self, messages: list, names: list[str], title: str, chat_type: ChatType
-    ) -> FacebookMessengerChat:
+        self, messages: list, names: list[str], title: str, chat_type: ChatType, personal_stats: bool = False
+    ) -> FacebookMessengerChat | PersonalStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
         :param messages: list of messages to process
         :param names: list of the chat participants
@@ -305,9 +306,14 @@ class FacebookMessenger(MessageSource):
         basic_stats = BasicStats(people, photos, gifs, stickers, videos, audios, files)
         times = Times(hours, days, weekdays, months, years)
 
-        return FacebookMessengerChat(
-            messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title, chat_type
-        )
+        if personal_stats:
+            return PersonalStats(
+                names, messages, basic_stats, reactions, emojis, times, people, from_day, to_day, title
+            )
+        else:
+            return FacebookMessengerChat(
+                messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title, chat_type
+            )
 
     # endregion
 

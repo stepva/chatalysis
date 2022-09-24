@@ -21,8 +21,8 @@ class MessageSource(abc.ABC):
         """
 
     @abc.abstractmethod
-    def global_stats(self):
-        """Extracts personal global stats (stats across all available conversations)"""
+    def personal_stats(self):
+        """Extracts overall personal stats (stats across all available conversations)"""
 
     @abc.abstractmethod
     def top_ten(self) -> "tuple[dict[str, int], dict[str, int]]":

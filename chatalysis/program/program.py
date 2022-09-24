@@ -3,6 +3,8 @@ import os
 from pprint import pprint
 
 from __init__ import __version__
+from chatalysis.chats.chat import ChatType
+from chatalysis.chats.personal import PersonalStats
 from chats.analyzer import Analyzer
 from chats.chat import Chat
 from program.gui import MainGUI
@@ -14,7 +16,7 @@ from utils.config import Config
 class Program:
     def __init__(self):
         self.source = None
-        self.global_stats = None
+        self.personal_stats = None
         self.top_ten_individual = None
         self.top_five_groups = None
         self.data_dir_path = ""
@@ -32,6 +34,14 @@ class Program:
     def to_html(self, chat_name: str):
         """Analyzes any type of chat, creates an HTML output file and opens it in the browser."""
         chat = self.source.get_chat(chat_name)
+        self.to_html(chat)
+
+    @staticmethod
+    def to_html(chat: Chat | PersonalStats):
+        """Analyzes any type of chat (or PersonalStats), creates an HTML output file and opens it in the browser.
+
+        :param chat: Chat or PersonalStats to analyze
+        """
         create_new = check_if_create_new(chat.title, len(chat.messages))
 
         if not create_new and not self.config.load("force_generate", is_bool=True):
@@ -39,7 +49,10 @@ class Program:
             return
 
         analyzer = Analyzer(chat)
-        source = analyzer.mrHtml()
+        if chat.chat_type == ChatType.PERSONAL_STATS:
+            source = analyzer.personalHtml()
+        else:
+            source = analyzer.mrHtml()
         file_path = get_file_path(chat.title)
 
         with io.open(file_path, "w", encoding="utf-8") as data:

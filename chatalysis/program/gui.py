@@ -65,7 +65,7 @@ class MainGUI(Window):
         self.button2 = tk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
-        self.button3 = tk.Button(self, text="Show your global stats", command=self.show_global)
+        self.button3 = tk.Button(self, text="Show your overall personal stats", command=self.show_personal)
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
@@ -113,18 +113,18 @@ class MainGUI(Window):
         self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
 
-    def show_global(self):
+    def show_personal(self):
         if not self.Program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
             self.display_error("Cannot analyze until a valid directory is selected")
             return
 
-        if not self.Program.global_stats:
+        if not self.Program.personal_stats:
             self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
             self.update()
-            self.Program.global_to_html()
+            self.Program.personal_to_html()
         else:
-            open_html(get_file_path("Global stats"))
+            open_html(get_file_path("Personal stats"))
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
