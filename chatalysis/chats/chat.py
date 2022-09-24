@@ -11,7 +11,7 @@ BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "
 class ChatType(Enum):
     REGULAR = 1
     GROUP = 2
-    GLOBAL = 3  # chat object storing global stats
+    PERSONAL_STATS = 3
 
 
 @dataclass

@@ -1,8 +1,11 @@
 import argparse
+import locale
 import sys
 
 from __init__ import __version__
 from program.program import Program
+
+locale.setlocale(locale.LC_ALL, "")
 
 
 def main():

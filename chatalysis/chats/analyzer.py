@@ -1,4 +1,3 @@
-import locale
 import math
 import os
 from typing import Any
@@ -6,6 +5,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from __init__ import __version__
+from chatalysis.chats.chat import ChatType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.chat import BasicStats, Chat, Times
 from utils.const import DAYS
@@ -15,9 +15,6 @@ from utils.utility import change_name, home, html_spaces
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
 
 
-locale.setlocale(locale.LC_ALL, "")
-
-
 class Analyzer:
     def __init__(self, chat: Chat) -> None:
         self.chat = chat
@@ -25,7 +22,7 @@ class Analyzer:
     # region Public API
 
     def mrHtml(self):
-        """Exports stats and other variables into HTML"""
+        """Exports chat stats and other variables into HTML"""
         file_loader = FileSystemLoader(home / "resources" / "templates")
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
@@ -33,14 +30,72 @@ class Analyzer:
         (people, photos, gifs, stickers, videos, audios, files) = self.chat.basic_stats
         (hours, days, weekdays, months, years) = self.chat.times
 
-        template = env.get_template("index.html.j2")
+        template = env.get_template("chat.html.j2")
 
         return template.render(
             # utility
-            # needs to be relative path from the output directory inside HTML
-            chartjs="../node_modules/chart.js/dist/Chart.js",
-            chartjs_labels="../node_modules/chartjs-plugin-labels/src/chartjs-plugin-labels.js",
             participants=len(self.chat.names),
+            version=__version__,
+            from_day=self.chat.from_day,
+            to_day=self.chat.to_day,
+            # names
+            title=self.chat.title,
+            names=self.chat.names,
+            splits=self._split_names(),
+            # pictures
+            pictures=self._get_pics(),
+            # stats
+            messages=people,
+            images=photos,
+            gifs=gifs,
+            videos=videos,
+            stickers=stickers,
+            audios=audios,
+            files=files,
+            # personalstats
+            lines=self._pers_stats_count()[0],
+            left=self._pers_stats_count()[1],
+            left_emojis=self._emoji_stats_count(),
+            # messagesgraph
+            messages_pie=messages_pie(people),
+            # timestats
+            top_day=self._top_times(days),
+            top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
+            top_month=self._top_times(months),
+            top_year=self._top_times(years),
+            # daysgraph
+            daily_messages_bar=daily_messages_bar(days),
+            # hourgraph
+            hourly_messages_line=hourly_messages_line(hours),
+            # emojis
+            emojis_count=self.chat.emojis,
+            diff_emojis=self._count_types(self.chat.emojis, "sent"),
+            avg_emojis=self._avg_counts(self.chat.emojis, "sent"),
+            top_emojis=self._top_emojis(self.chat.emojis, "sent"),
+            emojis_L=self._tops_count(self.chat.emojis, "sent"),
+            # reactions
+            reacts_count=self.chat.reactions,
+            diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
+            avg_reacts=self._avg_counts(self.chat.reactions, "gave"),
+            top_reacts=self._top_emojis(self.chat.reactions, "got"),
+            reacts_L=self._tops_count(self.chat.reactions, "got"),
+            # chat type
+            chat_type=self.chat.chat_type.value,
+        )
+
+    def personalHtml(self):
+        """Exports personal stats and other variables into HTML"""
+        file_loader = FileSystemLoader(home / "resources" / "templates")
+        env = Environment(loader=file_loader)
+        env.filters["space"] = html_spaces
+
+        (people, photos, gifs, stickers, videos, audios, files) = self.chat.basic_stats
+        (hours, days, weekdays, months, years) = self.chat.times
+
+        template = env.get_template("personal.html.j2")
+
+        return template.render(
+            # utility
             version=__version__,
             from_day=self.chat.from_day,
             to_day=self.chat.to_day,
