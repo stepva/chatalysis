@@ -7,7 +7,13 @@ from pathlib import Path
 from utils.const import TRANSLATE_SPECIAL_CHARS
 from __init__ import __version__
 
-home = Path(__file__).parent.parent.parent.absolute()
+try:
+    # Pyinstaller creates a temp folder and stores path in _MEIPASS
+    home = Path(sys._MEIPASS)  # type: ignore
+    output_dir = Path(os.getcwd(), "output")
+except Exception:
+    home = Path(__file__).parent.parent.parent.absolute()
+    output_dir = home / "output"
 
 
 def html_spaces(n: int) -> str | int:
@@ -35,7 +41,7 @@ def get_file_path(title: str, source_name: str) -> Path:
     :param title: name of the chat
     :param source_name: name of the message source
     """
-    file_path = home / "output" / source_name / f"{title}.html"
+    file_path = output_dir / source_name / f"{title}.html"
     file_path.parent.mkdir(parents=True, exist_ok=True)  # create source folder in "output" folder
     return file_path
 

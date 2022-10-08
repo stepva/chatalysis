@@ -32,12 +32,12 @@ class Program:
 
         :param chat: Chat or PersonalStats to analyze
         """
-        file_path = get_file_path(chat.title, self.source.__class__.__name__)
+        output_file = get_file_path(chat.title, self.source.__class__.__name__)
 
         analyzer = Analyzer(chat)
         source = analyzer.create_html()
 
-        with io.open(file_path, "w", encoding="utf-8") as data:
+        with io.open(output_file, "w", encoding="utf-8") as data:
             data.write(source)
 
         open_html(file_path)
