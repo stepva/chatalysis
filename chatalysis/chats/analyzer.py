@@ -1,4 +1,5 @@
 import math
+import os
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
@@ -9,7 +10,7 @@ from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_lin
 from chats.charts.plotly_names import groupchat_names_plot, nicknames_plot
 from chats.stats import Stats
 from utils.const import DAYS
-from utils.utility import list_folder, html_spaces, change_name, home
+from utils.utility import list_folder, html_spaces, change_name, home, output_dir
 
 # emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
@@ -164,12 +165,14 @@ class Analyzer:
         :return: dict of people and paths to their profile pics
         """
         pics = {}
+        src_name = self.chat.source_type.name.lower()
+
         for n in self.chat.participants:
             # needs to be relative path from the output directory inside HTML
-            pics[n] = "../../resources/images/placeholder.jpg"
+            pics[n] = os.path.relpath(home / "resources" / "images" / "placeholder.jpg", start=output_dir / src_name)
             for p in list_folder(home / "resources" / "images"):
                 if p.startswith(change_name(n)):
-                    pics[n] = f"../../resources/images/{p}"
+                    pics[n] = os.path.relpath(home / "resources" / "images" / p, start=output_dir / src_name)
         return pics
 
     @staticmethod
