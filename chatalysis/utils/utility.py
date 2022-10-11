@@ -75,4 +75,4 @@ def get_file_path(title: str) -> Path:
 
 def change_name(name: str) -> str:
     """Removes non-english characters from a name"""
-    return name.translate(TRANSLATION_TABLE).lower()
+    return name.translate(name.maketrans(TRANSLATION_TABLE)).lower()

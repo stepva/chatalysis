@@ -31,13 +31,16 @@ class Program:
             self.gui = MainGUI(self)
             self.gui.mainloop()
 
-    def to_html(self, chat_name: str):
-        """Analyzes any type of chat, creates an HTML output file and opens it in the browser."""
-        chat = self.source.get_chat(chat_name)
+    def chat_to_html(self, name):
+        chat = self.source.get_chat(name)
         self.to_html(chat)
 
-    @staticmethod
-    def to_html(chat: Chat | PersonalStats):
+    def personal_to_html(self):
+        if not self.personal_stats:
+            self.personal_stats = self.source.personal_stats()
+        self.to_html(self.personal_stats)
+
+    def to_html(self, chat: Chat | PersonalStats):
         """Analyzes any type of chat (or PersonalStats), creates an HTML output file and opens it in the browser.
 
         :param chat: Chat or PersonalStats to analyze
