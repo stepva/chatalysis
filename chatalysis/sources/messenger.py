@@ -17,6 +17,12 @@ chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "
 
 
 class FacebookMessenger(MessageSource):
+    folders: list[str]
+    chat_ids: list[str]
+    chat_id_map: dict[str, list[chat_id_str]]
+    messages_cache: dict[chat_id_str, tuple[list, list, str, ChatType]]
+    chats_cache: dict[chat_id_str, FacebookMessengerChat]
+
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
         self.folders = []
@@ -24,15 +30,15 @@ class FacebookMessenger(MessageSource):
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
         # can represent multiple chats, the chat IDs are stored in a list.
-        self.chat_id_map: dict[str, list[chat_id_str]] = {}
+        self.chat_id_map = {}
 
         # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
         # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
         # they are removed from this cache as they can be accessed via the Chat object.
-        self.messages_cache: dict[chat_id_str, tuple[list, list, str, ChatType]] = {}
+        self.messages_cache = {}
 
         # cache of Chat objects
-        self.chats_cache: dict[chat_id_str, FacebookMessengerChat] = {}
+        self.chats_cache = {}
 
         self._load_message_folders()
         self._load_all_chats()
@@ -142,8 +148,8 @@ class FacebookMessenger(MessageSource):
 
         first = True
         for json_file in jsons:
-            with open(json_file, "r") as data:
-                data = json.load(data)
+            with open(json_file, "r") as data_file:
+                data = json.load(data_file)
                 messages.extend(data["messages"])
 
                 if first:

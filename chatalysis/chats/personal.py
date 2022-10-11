@@ -7,7 +7,7 @@ from chatalysis.chats.chat import ChatType
 Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
 BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])
 
-# todo tohtml in analyzer, probably separate fce for personal_html
+
 @dataclass
 class PersonalStats:
     names: list[str]  # will only include one name, but it is easier when using other methods for chat
