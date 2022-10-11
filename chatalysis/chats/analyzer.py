@@ -102,7 +102,6 @@ class Analyzer:
             # names
             title=self.chat.title,
             names=self.chat.names,
-            splits=self._split_names(),
             # pictures
             pictures=self._get_pics(),
             # stats
@@ -113,12 +112,6 @@ class Analyzer:
             stickers=stickers,
             audios=audios,
             files=files,
-            # personalstats
-            lines=self._pers_stats_count()[0],
-            left=self._pers_stats_count()[1],
-            left_emojis=self._emoji_stats_count(),
-            # messagesgraph
-            messages_pie=messages_pie(people),
             # timestats
             top_day=self._top_times(days),
             top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
@@ -131,17 +124,13 @@ class Analyzer:
             # emojis
             emojis_count=self.chat.emojis,
             diff_emojis=self._count_types(self.chat.emojis, "sent"),
-            avg_emojis=self._avg_counts(self.chat.emojis, "sent"),
             top_emojis=self._top_emojis(self.chat.emojis, "sent"),
             emojis_L=self._tops_count(self.chat.emojis, "sent"),
             # reactions
             reacts_count=self.chat.reactions,
             diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
-            avg_reacts=self._avg_counts(self.chat.reactions, "gave"),
             top_reacts=self._top_emojis(self.chat.reactions, "got"),
             reacts_L=self._tops_count(self.chat.reactions, "got"),
-            # chat type
-            chat_type=self.chat.chat_type.value,
         )
 
     def emoji_stats(self, emojis: dict, names, people) -> dict:
@@ -300,7 +289,7 @@ class Analyzer:
             pics[n] = "../resources/images/placeholder.jpg"
             for p in os.listdir(home / "resources" / "images"):
                 if p.startswith(change_name(n)):
-                    pics[n] = "../resources/images/p"
+                    pics[n] = f"../resources/images/{p}"
         return pics
 
     def _top_emojis_total(self, to_count):
