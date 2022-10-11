@@ -11,10 +11,9 @@ BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "
 class ChatType(Enum):
     REGULAR = 1
     GROUP = 2
-    PERSONAL_STATS = 3
 
 
-@dataclass
+@dataclass(frozen=True)
 class Chat(abc.ABC):
     messages: list
     basic_stats: BasicStats

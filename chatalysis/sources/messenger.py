@@ -215,7 +215,7 @@ class FacebookMessenger(MessageSource):
         return participants
 
     def _process_messages(
-        self, messages: list, names: list[str], title: str, chat_type: ChatType, personal_stats: bool = False
+        self, messages: list, names: list[str], title: str, chat_type: ChatType = None, personal_stats: bool = False
     ) -> FacebookMessengerChat | PersonalStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
         :param messages: list of messages to process

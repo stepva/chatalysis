@@ -2,13 +2,10 @@ from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
 
-from chatalysis.chats.chat import ChatType
-
-Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
-BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])
+from chatalysis.chats.chat import Times, BasicStats
 
 
-@dataclass
+@dataclass(frozen=True)
 class PersonalStats:
     names: list[str]  # will only include one name, but it is easier when using other methods for chat
     messages: list
@@ -20,4 +17,3 @@ class PersonalStats:
     from_day: date
     to_day: date
     title: str
-    chat_type: ChatType = ChatType.PERSONAL_STATS

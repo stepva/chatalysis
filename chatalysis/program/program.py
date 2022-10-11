@@ -3,7 +3,6 @@ import os
 from pprint import pprint
 
 from __init__ import __version__
-from chatalysis.chats.chat import ChatType
 from chatalysis.chats.personal import PersonalStats
 from chats.analyzer import Analyzer
 from chats.chat import Chat
@@ -52,7 +51,7 @@ class Program:
             return
 
         analyzer = Analyzer(chat)
-        if chat.chat_type == ChatType.PERSONAL_STATS:
+        if isinstance(chat, PersonalStats):
             source = analyzer.personalHtml()
         else:
             source = analyzer.mrHtml()
