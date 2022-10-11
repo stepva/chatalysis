@@ -56,7 +56,7 @@ class MainGUI(Window):
 
         # Configure grids & columns
         self.grid_columnconfigure(0, weight=1)
-        for i in range(2, 5):
+        for i in range(2, 6):
             self.grid_rowconfigure(i, weight=1)
 
         # Create buttons
@@ -77,13 +77,13 @@ class MainGUI(Window):
         self.entry_data_dir.config(background="#f02663")  # display directory path in red until a valid path is entered
 
         # Render objects onto a grid
-        self.label_select_dir.grid(column=0, row=0, padx=5, pady=5)
-        self.button_select_dir.grid(column=0, row=1, padx=5, pady=5)
+        self.label_select_dir.grid(column=0, row=0, pady=5)
+        self.button_select_dir.grid(column=0, row=1)
         self.entry_data_dir.grid(column=0, row=2)
         self.button1.grid(column=0, row=3, sticky="S")
         self.button2.grid(column=0, row=4)
         self.button3.grid(column=0, row=5, sticky="N")
-        self.label_under.grid(column=0, row=6, padx=5, pady=5)
+        self.label_under.grid(column=0, row=6, pady=5)
 
         # get source dir from last session (or cwd if used for the first time)
         self.data_dir_last = self.Program.config.load("last_source_dir")
