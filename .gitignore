@@ -8,6 +8,7 @@
 *.jpg
 !placeholder.jpg
 !preview_v1.jpg
+!preview_personal.png
 /node_modules
 !package.json
 .DS_Store
