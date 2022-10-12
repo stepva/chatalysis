@@ -2,7 +2,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
 
-from chatalysis.chats.chat import Times, BasicStats
+from chats.chat import Times, BasicStats
 
 
 @dataclass(frozen=True)

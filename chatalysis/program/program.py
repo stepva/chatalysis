@@ -3,7 +3,7 @@ import os
 from pprint import pprint
 
 from __init__ import __version__
-from chatalysis.chats.personal import PersonalStats
+from chats.personal import PersonalStats
 from chats.analyzer import Analyzer
 from chats.chat import Chat
 from program.gui import MainGUI

@@ -7,7 +7,7 @@ from statistics import mode
 
 import emoji
 import regex
-from chatalysis.chats.personal import PersonalStats
+from chats.personal import PersonalStats
 
 from chats.chat import BasicStats, ChatType, FacebookMessengerChat, Times
 from sources.message_source import MessageSource
