@@ -25,6 +25,7 @@ def get_messages_from_html(path: str | Path) -> int:
             field.text.replace(" ", "")
             .replace("\u202f", "")  # \u202f is a no-break space
             .replace(",", "")
+            .replace(".", "")
         )
     else:
         messages = 0

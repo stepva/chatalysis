@@ -341,7 +341,7 @@ class FacebookMessenger(MessageSource):
         """Load all chats from the source"""
         for folder in self.folders:
             for chat_id in os.listdir(Path(folder) / "inbox"):
-                if chat_id != ".DS_Store":
+                if str(chat_id).find(".DS_Store") == -1 and not str(chat_id).startswith("._"):
                     name = str(chat_id).split("_")[0].lower()
 
                     if name not in self.chat_id_map:
