@@ -57,6 +57,7 @@ class Config:
     def _create(self):
         """Create the config file and initialize it with default values"""
         config_versions = sorted(os.listdir(config_dir))
+        config_versions = [cv for cv in config_versions if str(cv).find(".DS_Store") == -1]
 
         if len(config_versions) > 1:
             # take config values from config file for previous version of chatalysis
