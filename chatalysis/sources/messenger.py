@@ -7,11 +7,11 @@ from statistics import mode
 
 import emoji
 import regex
-from chats.personal import PersonalStats
 
-from chats.chat import BasicStats, ChatType, FacebookMessengerChat, Times
+from chats.stats import StatsType, FacebookMessengerStats, Times
 from sources.message_source import MessageSource
 from utils.const import HOURS_DICT
+from utils.utility import listdir
 
 chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "johnsmith_djnas32owkldm")
 
@@ -20,8 +20,8 @@ class FacebookMessenger(MessageSource):
     folders: list[str]
     chat_ids: list[str]
     chat_id_map: dict[str, list[chat_id_str]]
-    messages_cache: dict[chat_id_str, tuple[list, list, str, ChatType]]
-    chats_cache: dict[chat_id_str, FacebookMessengerChat]
+    messages_cache: dict[chat_id_str, tuple[list, list, str, StatsType]]
+    chats_cache: dict[chat_id_str, FacebookMessengerStats]
 
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
@@ -46,7 +46,7 @@ class FacebookMessenger(MessageSource):
 
     # region Public API
 
-    def get_chat(self, chat_name: str) -> FacebookMessengerChat:
+    def get_chat(self, chat_name: str) -> FacebookMessengerStats:
         possible_chat_ids = self.chat_id_map[chat_name]
 
         # Check for chat collisions
@@ -63,14 +63,14 @@ class FacebookMessenger(MessageSource):
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
 
-    def personal_stats(self) -> PersonalStats:
+    def personal_stats(self) -> FacebookMessengerStats:
         messages = []
         names = []  # list of participants from all conversations
 
         for chat_id in self.chat_ids:
             if chat_id in self.chats_cache:
                 messages.extend(self.chats_cache[chat_id].messages)
-                names.extend(self.chats_cache[chat_id].names)
+                names.extend(self.chats_cache[chat_id].participants)
             elif chat_id in self.messages_cache:
                 messages.extend(self.messages_cache[chat_id][0])
                 names.extend(self.messages_cache[chat_id][1])
@@ -85,7 +85,7 @@ class FacebookMessenger(MessageSource):
 
         messages = [m for m in messages if m["sender_name"] == name]
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-        return self._process_messages(messages, [name], "Personal stats", None, personal_stats=True)
+        return self._process_messages(messages, [name], "Personal stats", StatsType.PERSONAL)
 
     def top_ten(self):
         chats = {}
@@ -94,7 +94,7 @@ class FacebookMessenger(MessageSource):
         for chat_id in self.chat_ids:
             if chat_id in self.chats_cache:
                 title = self.chats_cache[chat_id].title
-                chat_type = self.chats_cache[chat_id].chat_type
+                chat_type = self.chats_cache[chat_id].stats_type
                 messages = self.chats_cache[chat_id].messages
             elif chat_id in self.messages_cache:
                 messages, _, title, chat_type = self.messages_cache[chat_id]
@@ -106,9 +106,9 @@ class FacebookMessenger(MessageSource):
             # remove emoji because it ruins the aligning of the output text
             title = emoji.replace_emoji(title, "")
 
-            if chat_type == ChatType.REGULAR:
+            if chat_type == StatsType.REGULAR:
                 chats[title] = len(messages)
-            elif chat_type == ChatType.GROUP:
+            elif chat_type == StatsType.GROUP:
                 groups[title] = len(messages)
 
         top_individual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
@@ -133,7 +133,7 @@ class FacebookMessenger(MessageSource):
 
         self.chats_cache[chat_id] = self._process_messages(messages, participants, title, chat_type)
 
-    def _prepare_chat_data(self, chat_id: str) -> tuple[list, list, str, ChatType]:
+    def _prepare_chat_data(self, chat_id: str) -> tuple[list, list, str, StatsType]:
         """Extracts the chat data (messages, names of the participants, chat title and chat type)
 
         :param chat_id: name of the chat to process
@@ -158,9 +158,9 @@ class FacebookMessenger(MessageSource):
                     participants = self._get_participants(data)
 
                     if data["thread_type"] == "RegularGroup":
-                        chat_type = ChatType.GROUP
+                        chat_type = StatsType.GROUP
                     else:
-                        chat_type = ChatType.REGULAR
+                        chat_type = StatsType.REGULAR
 
                     first = False
 
@@ -193,9 +193,9 @@ class FacebookMessenger(MessageSource):
         jsons = []
 
         for ch in chat_paths:
-            for file in os.listdir(ch):
-                if str(file).startswith("message") and str(file).endswith(".json"):
-                    jsons.append(ch / str(file))
+            for file in listdir(ch):
+                if file.startswith("message") and file.endswith(".json"):
+                    jsons.append(ch / file)
         if not jsons:
             raise Exception("No JSON files in this chat")
 
@@ -215,8 +215,8 @@ class FacebookMessenger(MessageSource):
         return participants
 
     def _process_messages(
-        self, messages: list, names: list[str], title: str, chat_type: ChatType = None, personal_stats: bool = False
-    ) -> FacebookMessengerChat | PersonalStats:
+        self, messages: list, names: list[str], title: str, chat_type: StatsType = None
+    ) -> FacebookMessengerStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
         :param messages: list of messages to process
         :param names: list of the chat participants
@@ -309,17 +309,26 @@ class FacebookMessenger(MessageSource):
                             reactions["gave"][r["actor"]]["total"] += 1
                             reactions["gave"][r["actor"]][reaction] = 1 + reactions["gave"][r["actor"]].get(reaction, 0)
 
-        basic_stats = BasicStats(people, photos, gifs, stickers, videos, audios, files)
         times = Times(hours, days, weekdays, months, years)
 
-        if personal_stats:
-            return PersonalStats(
-                names, messages, basic_stats, reactions, emojis, times, people, from_day, to_day, title
-            )
-        else:
-            return FacebookMessengerChat(
-                messages, basic_stats, reactions, emojis, times, people, from_day, to_day, names, title, chat_type
-            )
+        return FacebookMessengerStats(
+            messages,
+            photos,
+            gifs,
+            stickers,
+            videos,
+            audios,
+            files,
+            reactions,
+            emojis,
+            times,
+            from_day,
+            to_day,
+            people,
+            names,
+            title,
+            chat_type,
+        )
 
     # endregion
 
@@ -327,7 +336,7 @@ class FacebookMessenger(MessageSource):
 
     def _load_message_folders(self):
         """Load folders containing the messages"""
-        for d in os.listdir(self.data_dir_path):
+        for d in listdir(self.data_dir_path):
             if d.startswith("messages") and os.path.isdir(f"{self.data_dir_path}/{d}"):
                 self.folders.append(f"{self.data_dir_path}/{d}")
 
@@ -340,16 +349,16 @@ class FacebookMessenger(MessageSource):
     def _load_all_chats(self):
         """Load all chats from the source"""
         for folder in self.folders:
-            for chat_id in os.listdir(Path(folder) / "inbox"):
-                if str(chat_id).find(".DS_Store") == -1 and not str(chat_id).startswith("._"):
-                    name = str(chat_id).split("_")[0].lower()
+            for chat_id in listdir(Path(folder) / "inbox"):
+                if chat_id.find(".DS_Store") == -1 and not chat_id.startswith("._"):
+                    name = chat_id.split("_")[0].lower()
 
                     if name not in self.chat_id_map:
-                        self.chat_id_map[name] = [str(chat_id).lower()]
+                        self.chat_id_map[name] = [chat_id.lower()]
                     else:
                         previous_id = self.chat_id_map[name][0]
                         if chat_id != previous_id:
-                            self.chat_id_map[name].append(str(chat_id).lower())
+                            self.chat_id_map[name].append(chat_id.lower())
 
                     self.chat_ids.append(chat_id)
 

@@ -77,3 +77,7 @@ def get_file_path(title: str) -> Path:
 def change_name(name: str) -> str:
     """Removes non-english characters from a name"""
     return name.translate(name.maketrans(TRANSLATION_TABLE)).lower()
+
+
+def listdir(path: Path) -> list[str]:
+    return [str(folder) for folder in os.listdir(path) if str(folder).find("DS_Store") == -1]

@@ -5,27 +5,32 @@ from datetime import date
 from enum import Enum
 
 Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
-BasicStats = namedtuple("BasicStats", ["people", "photos", "gifs", "stickers", "videos", "audios", "files"])
 
 
-class ChatType(Enum):
+class StatsType(Enum):
     REGULAR = 1
     GROUP = 2
+    PERSONAL = 3
 
 
 @dataclass(frozen=True)
-class Chat(abc.ABC):
+class Stats(abc.ABC):
     messages: list
-    basic_stats: BasicStats
+    photos: dict
+    gifs: dict
+    stickers: dict
+    videos: dict
+    audios: dict
+    files: dict
     reactions: dict
     emojis: dict
     times: Times
-    people: dict[str, int]  # dict of people who sent messages in the chat and the number of their messages
     from_day: date
     to_day: date
-    names: list[str]  # list of chat participants
+    people: dict[str, int]  # dict of people who sent messages in the chat and the number of their messages
+    participants: list[str]  # list of chat participants
     title: str
-    chat_type: ChatType
+    stats_type: StatsType
 
     @abc.abstractmethod
     def first_message(self) -> dict:
@@ -36,7 +41,7 @@ class Chat(abc.ABC):
         pass
 
 
-class FacebookMessengerChat(Chat):
+class FacebookMessengerStats(Stats):
     def first_message(self):
         author = self.messages[0]["sender_name"]
         texts = {}

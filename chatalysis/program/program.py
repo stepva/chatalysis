@@ -3,9 +3,8 @@ import os
 from pprint import pprint
 
 from __init__ import __version__
-from chats.personal import PersonalStats
 from chats.analyzer import Analyzer
-from chats.chat import Chat
+from chats.stats import Stats, StatsType
 from program.gui import MainGUI
 from sources.messenger import FacebookMessenger
 from utils.utility import check_if_create_new, get_file_path, open_html
@@ -39,7 +38,7 @@ class Program:
             self.personal_stats = self.source.personal_stats()
         self.to_html(self.personal_stats)
 
-    def to_html(self, chat: Chat | PersonalStats):
+    def to_html(self, chat: Stats):
         """Analyzes any type of chat (or PersonalStats), creates an HTML output file and opens it in the browser.
 
         :param chat: Chat or PersonalStats to analyze
@@ -51,7 +50,7 @@ class Program:
             return
 
         analyzer = Analyzer(chat)
-        if isinstance(chat, PersonalStats):
+        if chat.stats_type == StatsType.PERSONAL:
             source = analyzer.personalHtml()
         else:
             source = analyzer.mrHtml()
@@ -68,7 +67,7 @@ class Program:
         analyzer = Analyzer(chat)
 
         print(f"Chat: {chat.title}, from {chat.from_day} to {chat.to_day}")
-        pprint(analyzer.chat_stats(chat.basic_stats, chat.names), indent=2, sort_dicts=True)
+        pprint(analyzer.chat_stats(chat.participants), indent=2, sort_dicts=True)
         pprint(analyzer.reaction_stats(chat.reactions, chat.names, chat.people), indent=2, sort_dicts=False)
         pprint(analyzer.emoji_stats(chat.emojis, chat.names, chat.people), indent=2, sort_dicts=False)
         pprint(analyzer.time_stats(chat.times), indent=2, sort_dicts=False)

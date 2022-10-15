@@ -1,6 +1,6 @@
 import abc
 
-from chats.chat import Chat
+from chats.stats import Stats
 
 
 class MessageSource(abc.ABC):
@@ -12,7 +12,7 @@ class MessageSource(abc.ABC):
         self.data_dir_path = path
 
     @abc.abstractmethod
-    def get_chat(self, chat_name: str) -> Chat:
+    def get_chat(self, chat_name: str) -> Stats:
         """Extracts an individual chat. If there are colliding chats with the same name,
         extracts one of the possible chats, based on the user's choice.
 

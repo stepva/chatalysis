@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from __init__ import __version__
+from utils.utility import listdir
 
 config_dir = Path(appdirs.user_config_dir("Chatalysis"))
 config_dir_current = config_dir / __version__
@@ -56,8 +57,7 @@ class Config:
 
     def _create(self):
         """Create the config file and initialize it with default values"""
-        config_versions = sorted(os.listdir(config_dir))
-        config_versions = [cv for cv in config_versions if str(cv).find(".DS_Store") == -1]
+        config_versions = sorted(listdir(config_dir))
 
         if len(config_versions) > 1:
             # take config values from config file for previous version of chatalysis
