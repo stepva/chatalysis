@@ -13,8 +13,8 @@ from utils.config import Config
 
 class Program:
     def __init__(self):
-        self.source = None
         self.personal_stats = None
+        self.source: FacebookMessenger = None
         self.top_ten_individual = None
         self.top_five_groups = None
         self.data_dir_path = ""

@@ -32,7 +32,7 @@ def get_messages_from_html(path: str | Path) -> int:
     return messages
 
 
-def html_spaces(n: int) -> str:
+def html_spaces(n: int):
     """Splits number by thousands with a space"""
     return "{0:n}".format(n) if n != 1 else n
 

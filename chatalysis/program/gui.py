@@ -204,46 +204,77 @@ class WindowIndividual(Window):
             return
 
         self.Program = program
-
         Window.__init__(self)
         self.title("Analyze individual conversations")
-        self.geometry("600x200")
+        self.geometry("600x400")
         self.create()
 
     def create(self):
         """Creates and renders the objects in the window"""
-
         self.grid_columnconfigure(0, weight=1)
-        for i in range(0, 2):
-            self.grid_rowconfigure(i, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(3, weight=1)
 
         self.label_instructions = tk.Label(
             self,
-            text="Please enter conversation name in the format 'namesurname' without special characters (for example: johnsmith)",
-            wraplength=450,
+            text="Please enter conversation name in the format 'namesurname'\nwithout special characters (for example: johnsmith)",
+            justify="center",
         )
 
-        # add an invisible label so that the labels indicating success or error stay in the same place
-        # the entire time without the rest of the objects "jumping" around
-        self.label_under = tk.Label(self, text="", wraplength=650, fg="red")
+        self.label_under = tk.Label(self, text="", wraplength=650, fg="red", justify="center")
 
-        # Entry for entering the conversation name. It's bound to start the analysis when the user hits Enter.
-        self.entry_name = tk.Entry(self, width=50)
-        self.entry_name.bind("<Return>", self.analyze_individual)
+        # set searched_name var to trace any writing action
+        self.searched_name = tk.StringVar(self)
+        self.searched_name.trace("w", self.filter_name_list)
 
-        self.label_instructions.grid(column=0, row=0, sticky="S", padx=5, pady=5)
-        self.entry_name.grid(column=0, row=1, sticky="N", padx=5, pady=5)
-        self.label_under.grid(column=0, row=2, padx=5, pady=5)
+        # Entry for entering the conversation name, it's bound to start the analysis when the user hits Enter.
+        # Also sets focus on name_entry for immediate writing action.
+        self.name_entry = tk.Entry(self, width=56, textvariable=self.searched_name)
+        self.name_entry.bind("<Return>", self.analyze_individual)
+        self.name_entry.bind("<Down>", lambda x: self.name_box.focus_set())
+        self.name_entry.focus_set()
+
+        self.original_names = sorted(self.Program.source.chat_id_map.keys())
+        string_names = " ".join(self.original_names)
+        self.name_list = tk.StringVar(self, value=string_names)
+
+        self.name_box = tk.Listbox(self, listvariable=self.name_list, height=8, width=56)
+        self.name_box.bind("<Double-1>", self.listbox_name_selected)
+        self.name_box.bind("<Return>", self.listbox_name_selected)
+
+        self.label_instructions.grid(column=0, row=0)
+        self.name_entry.grid(column=0, row=1, pady=(5, 0))
+        self.name_box.grid(column=0, row=2, pady=(0, 5))
+        self.label_under.grid(column=0, row=3, pady=5)
+
+    def filter_name_list(self, *args):
+        """Updates the listbox to show names starting with the searched string"""
+        self.label_under.config(text="")
+        new_names = []
+
+        for n in self.original_names:
+            if n.startswith(self.searched_name.get()):
+                new_names.append(n)
+
+        string_new_names = " ".join(new_names)
+        self.name_list.set(string_new_names)
+
+    def listbox_name_selected(self, *args):
+        """Takes the selected name from the listbox and runs the analysis"""
+        current_selection = self.name_box.curselection()
+        selected_name = self.name_box.get(current_selection).lower()
+        self.searched_name.set(selected_name)
+        self.analyze_individual()
 
     def display_error(self, errorMessage: str):
         self.label_under.config(text=errorMessage, fg="red")
 
-    def analyze_individual(self, _event):
+    def analyze_individual(self, _event: tk.Event = None):
         """Analyzes an individual conversation and prints information about the process"""
         self.label_under.config(text="Analyzing...", fg="black")
         self.update()
 
-        name = self.entry_name.get()  # get the name of the conversation to analyze
+        name = self.name_entry.get()  # get the name of the conversation to analyze
 
         try:
             self.Program.chat_to_html(name)
