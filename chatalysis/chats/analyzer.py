@@ -25,8 +25,6 @@ class Analyzer:
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
-        (hours, days, weekdays, months, years) = self.chat.times
-
         template = env.get_template("chat.html.j2")
 
         return template.render(
@@ -56,14 +54,17 @@ class Analyzer:
             # messages graph
             messages_pie=messages_pie(self.chat.people),
             # time stats
-            top_day=self._top_times(days),
-            top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
-            top_month=self._top_times(months),
-            top_year=self._top_times(years),
+            top_day=self._top_times(self.chat.times.days),
+            top_weekday=[
+                DAYS[self._top_times(self.chat.times.weekdays)[0]],
+                self._top_times(self.chat.times.weekdays)[1],
+            ],
+            top_month=self._top_times(self.chat.times.months),
+            top_year=self._top_times(self.chat.times.years),
             # days graph
-            daily_messages_bar=daily_messages_bar(days),
+            daily_messages_bar=daily_messages_bar(self.chat.times.days),
             # hour graph
-            hourly_messages_line=hourly_messages_line(hours),
+            hourly_messages_line=hourly_messages_line(self.chat.times.hours),
             # emojis
             emojis_count=self.chat.emojis,
             diff_emojis=self._count_types(self.chat.emojis, "sent"),
@@ -86,8 +87,6 @@ class Analyzer:
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
-        (hours, days, weekdays, months, years) = self.chat.times
-
         template = env.get_template("personal.html.j2")
 
         return template.render(
@@ -109,14 +108,17 @@ class Analyzer:
             audios=self.chat.audios,
             files=self.chat.files,
             # time stats
-            top_day=self._top_times(days),
-            top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
-            top_month=self._top_times(months),
-            top_year=self._top_times(years),
+            top_day=self._top_times(self.chat.times.days),
+            top_weekday=[
+                DAYS[self._top_times(self.chat.times.weekdays)[0]],
+                self._top_times(self.chat.times.weekdays)[1],
+            ],
+            top_month=self._top_times(self.chat.times.months),
+            top_year=self._top_times(self.chat.times.years),
             # days graph
-            daily_messages_bar=daily_messages_bar(days),
+            daily_messages_bar=daily_messages_bar(self.chat.times.days),
             # hour graph
-            hourly_messages_line=hourly_messages_line(hours),
+            hourly_messages_line=hourly_messages_line(self.chat.times.hours),
             # emojis
             emojis_count=self.chat.emojis,
             diff_emojis=self._count_types(self.chat.emojis, "sent"),
