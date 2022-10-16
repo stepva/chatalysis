@@ -60,7 +60,7 @@ class MainGUI(Window):
             self.grid_rowconfigure(i, weight=1)
 
         # Create buttons
-        self.button_select_dir = tk.Button(self, text="Select directory", command=self.select_dir)
+        self.button_select_dir = tk.Button(self, text="Select folder", command=self.select_dir)
         self.button1 = tk.Button(self, text="Show top conversations", command=lambda: WindowTopTen(self.Program, self))
         self.button2 = tk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
@@ -69,7 +69,7 @@ class MainGUI(Window):
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
-        self.label_select_dir = tk.Label(self, text="Please select directory with the messages:")
+        self.label_select_dir = tk.Label(self, text="Please select folder with the messages:")
 
         # Create entry widgets
         self.data_dir_path_tk = tk.StringVar()
@@ -91,7 +91,7 @@ class MainGUI(Window):
     def select_dir(self):
         """Selects directory with the data using a dialog window"""
         self.Program.data_dir_path = filedialog.askdirectory(
-            title="Select source directory", initialdir=self.Program.config.load("last_source_dir")
+            title="Select source folder", initialdir=self.Program.config.load("last_source_dir")
         )
         self.data_dir_path_tk.set(self.Program.data_dir_path)
 
@@ -132,7 +132,7 @@ class WindowTopTen(Window):
     def __init__(self, program, gui: MainGUI):
         if not program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
-            gui.display_error("Cannot analyze until a valid directory is selected")
+            gui.display_error("Cannot analyze until a valid folder is selected")
             return
 
         self.Program = program
@@ -200,7 +200,7 @@ class WindowIndividual(Window):
     def __init__(self, program, gui: MainGUI):
         if not program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
-            gui.display_error("Cannot analyze until a valid directory is selected")
+            gui.display_error("Cannot analyze until a valid folder is selected")
             return
 
         self.Program = program

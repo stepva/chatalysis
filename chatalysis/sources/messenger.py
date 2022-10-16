@@ -11,7 +11,7 @@ import regex
 from chats.stats import StatsType, FacebookMessengerStats, Times
 from sources.message_source import MessageSource
 from utils.const import HOURS_DICT
-from utils.utility import listdir
+from utils.utility import list_folder
 
 chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "johnsmith_djnas32owkldm")
 
@@ -54,10 +54,7 @@ class FacebookMessenger(MessageSource):
             chat_id = possible_chat_ids[0]
         else:
             # TODO create a GUI dialog for this case
-            print(f"There are {len(possible_chat_ids)} different chats with this name:")
-            self._multiple_chats(possible_chat_ids)
-            i = int(input("Which one do you want? ")) - 1
-            chat_id = possible_chat_ids[i]
+            chat_id = possible_chat_ids[0]
 
         if chat_id not in self.chats_cache:
             self._compile_chat_data(chat_id)
@@ -193,7 +190,7 @@ class FacebookMessenger(MessageSource):
         jsons = []
 
         for ch in chat_paths:
-            for file in listdir(ch):
+            for file in list_folder(ch):
                 if file.startswith("message") and file.endswith(".json"):
                     jsons.append(ch / file)
         if not jsons:
@@ -336,7 +333,7 @@ class FacebookMessenger(MessageSource):
 
     def _load_message_folders(self):
         """Load folders containing the messages"""
-        for d in listdir(self.data_dir_path):
+        for d in list_folder(self.data_dir_path):
             if d.startswith("messages") and os.path.isdir(f"{self.data_dir_path}/{d}"):
                 self.folders.append(f"{self.data_dir_path}/{d}")
 
@@ -349,8 +346,8 @@ class FacebookMessenger(MessageSource):
     def _load_all_chats(self):
         """Load all chats from the source"""
         for folder in self.folders:
-            for chat_id in listdir(Path(folder) / "inbox"):
-                if chat_id.find(".DS_Store") == -1 and not chat_id.startswith("._"):
+            for chat_id in list_folder(Path(folder) / "inbox"):
+                if not chat_id.startswith("._"):
                     name = chat_id.split("_")[0].lower()
 
                     if name not in self.chat_id_map:
@@ -422,18 +419,3 @@ class FacebookMessenger(MessageSource):
         return days
 
     # endregion
-
-    def _multiple_chats(self, chat_ids):
-        """Gets information about chats with the same name"""
-        chat_paths = {}
-        jsons = {}
-        names = {}
-        lengths = {}
-
-        for chat_id in chat_ids:
-            chat_paths[chat_id] = self._get_paths(chat_id)
-            jsons[chat_id], _, names[chat_id], _ = self._get_jsons_title_names(chat_paths[chat_id])
-            lengths[chat_id] = [(len(jsons[chat_id]) - 1) * 10000, len(jsons[chat_id]) * 10000]
-            print(
-                f"{chat_ids.index(chat_id)+1}) with {names[chat_id]} and {lengths[chat_id][0]}-{lengths[chat_id][1]} messages"
-            )

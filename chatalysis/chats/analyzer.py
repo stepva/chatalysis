@@ -7,7 +7,7 @@ from __init__ import __version__
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.stats import Stats, Times
 from utils.const import DAYS
-from utils.utility import listdir, html_spaces, change_name, home
+from utils.utility import list_folder, html_spaces, change_name, home
 
 # emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
@@ -49,20 +49,20 @@ class Analyzer:
             stickers=self.chat.stickers,
             audios=self.chat.audios,
             files=self.chat.files,
-            # personalstats
+            # personal stats
             lines=self._pers_stats_count()[0],
             left=self._pers_stats_count()[1],
             left_emojis=self._emoji_stats_count(),
-            # messagesgraph
+            # messages graph
             messages_pie=messages_pie(self.chat.people),
-            # timestats
+            # time stats
             top_day=self._top_times(days),
             top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
             top_month=self._top_times(months),
             top_year=self._top_times(years),
-            # daysgraph
+            # days graph
             daily_messages_bar=daily_messages_bar(days),
-            # hourgraph
+            # hour graph
             hourly_messages_line=hourly_messages_line(hours),
             # emojis
             emojis_count=self.chat.emojis,
@@ -108,14 +108,14 @@ class Analyzer:
             stickers=self.chat.stickers,
             audios=self.chat.audios,
             files=self.chat.files,
-            # timestats
+            # time stats
             top_day=self._top_times(days),
             top_weekday=[DAYS[self._top_times(weekdays)[0]], self._top_times(weekdays)[1]],
             top_month=self._top_times(months),
             top_year=self._top_times(years),
-            # daysgraph
+            # days graph
             daily_messages_bar=daily_messages_bar(days),
-            # hourgraph
+            # hour graph
             hourly_messages_line=hourly_messages_line(hours),
             # emojis
             emojis_count=self.chat.emojis,
@@ -285,7 +285,7 @@ class Analyzer:
         for n in self.chat.participants:
             # needs to be relative path from the output directory inside HTML
             pics[n] = "../resources/images/placeholder.jpg"
-            for p in listdir(home / "resources" / "images"):
+            for p in list_folder(home / "resources" / "images"):
                 if p.startswith(change_name(n)):
                     pics[n] = f"../resources/images/{p}"
         return pics

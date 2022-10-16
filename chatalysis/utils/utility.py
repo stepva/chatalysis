@@ -79,5 +79,10 @@ def change_name(name: str) -> str:
     return name.translate(name.maketrans(TRANSLATION_TABLE)).lower()
 
 
-def listdir(path: Path) -> list[str]:
+def list_folder(path: Path) -> list[str]:
+    """Lists the names of all files / subdirectories in a directory excluding the 'DS_Store' files from macOS.
+
+    :param path: path to the directory
+    :return: list of strings with the file names
+    """
     return [str(folder) for folder in os.listdir(path) if str(folder).find("DS_Store") == -1]
