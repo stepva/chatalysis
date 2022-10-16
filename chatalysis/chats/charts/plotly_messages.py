@@ -75,7 +75,7 @@ def messages_pie(people: dict) -> str:
 def hourly_messages_line(hours: dict) -> str:
     """Prepares the HTML code for the Hourly Messages line chart
 
-    :param people: dict of message counts per hour of day of the conversation
+    :param hours: dict of message counts per hour of day of the conversation
     :return: HTML code of the chart"""
     data = list(hours.values())
 

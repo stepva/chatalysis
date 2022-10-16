@@ -1,4 +1,5 @@
 import abc
+from pathlib import Path
 
 from chats.stats import Stats
 
@@ -9,7 +10,7 @@ class MessageSource(abc.ABC):
 
     def __init__(self, path: str):
         super().__init__()
-        self.data_dir_path = path
+        self.data_dir_path = Path(path)
 
     @abc.abstractmethod
     def get_chat(self, chat_name: str) -> Stats:
