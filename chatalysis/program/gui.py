@@ -90,15 +90,15 @@ class MainGUI(Window):
 
     def select_dir(self):
         """Selects directory with the data using a dialog window"""
-        self.Program.data_dir_path = filedialog.askdirectory(
+        self.Program._data_dir_path = filedialog.askdirectory(
             title="Select source folder", initialdir=self.Program.config.load("last_source_dir")
         )
-        self.data_dir_path_tk.set(self.Program.data_dir_path)
+        self.data_dir_path_tk.set(self.Program._data_dir_path)
 
-        self.Program.config.save("last_source_dir", self.Program.data_dir_path)  # save last used dir
+        self.Program.config.save("last_source_dir", self.Program._data_dir_path)  # save last used dir
 
         try:
-            self.Program.source = FacebookMessenger(self.Program.data_dir_path)
+            self.Program.source = FacebookMessenger(self.Program._data_dir_path)
         except Exception as e:
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red

@@ -17,28 +17,22 @@ chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "
 
 
 class FacebookMessenger(MessageSource):
-    folders: list[str]
-    chat_ids: list[str]
-    chat_id_map: dict[str, list[chat_id_str]]
-    messages_cache: dict[chat_id_str, tuple[list, list, str, StatsType]]
-    chats_cache: dict[chat_id_str, FacebookMessengerStats]
-
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self.folders = []
-        self.chat_ids = []  # list of all conversations identified by their chat ID
+        self.folders: list[str] = []
+        self.chat_ids: list[str] = []  # list of all conversations identified by their chat ID
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
         # can represent multiple chats, the chat IDs are stored in a list.
-        self.chat_id_map = {}
+        self.chat_id_map: dict[str, list[chat_id_str]] = {}
 
         # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
         # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
         # they are removed from this cache as they can be accessed via the Chat object.
-        self.messages_cache = {}
+        self.messages_cache: dict[chat_id_str, tuple[list, list, str, StatsType]] = {}
 
-        # cache of Chat objects
-        self.chats_cache = {}
+        # cache of Stats objects
+        self.chats_cache: dict[chat_id_str, FacebookMessengerStats] = {}
 
         self._load_message_folders()
         self._load_all_chats()
@@ -212,12 +206,13 @@ class FacebookMessenger(MessageSource):
         return participants
 
     def _process_messages(
-        self, messages: list, participants: list[str], title: str, chat_type: StatsType = None
+        self, messages: list, participants: list[str], title: str, stats_type: StatsType = None
     ) -> FacebookMessengerStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
         :param messages: list of messages to process
         :param participants: list of the chat participants
         :param title: title of the chat
+        :param stats_type: type of stats (regular / group chat / overall personal)
         :return: FacebookMessengerChat with the processed chats
         """
         from_day = date.fromtimestamp(messages[0]["timestamp_ms"] // 1000)
@@ -324,7 +319,7 @@ class FacebookMessenger(MessageSource):
             people,
             participants,
             title,
-            chat_type,
+            stats_type,
         )
 
     # endregion
@@ -333,9 +328,9 @@ class FacebookMessenger(MessageSource):
 
     def _load_message_folders(self):
         """Load folders containing the messages"""
-        for d in list_folder(self.data_dir_path):
-            if d.startswith("messages") and os.path.isdir(f"{self.data_dir_path}/{d}"):
-                self.folders.append(f"{self.data_dir_path}/{d}")
+        for d in list_folder(self._data_dir_path):
+            if d.startswith("messages") and os.path.isdir(f"{self._data_dir_path}/{d}"):
+                self.folders.append(f"{self._data_dir_path}/{d}")
 
         if not self.folders:
             raise Exception(
@@ -390,7 +385,7 @@ class FacebookMessenger(MessageSource):
         return word.encode("iso-8859-1").decode("utf-8")
 
     @staticmethod
-    def _decode_messages(messages):
+    def _decode_messages(messages: list) -> list:
         """Decodes all messages from the Facebook encoding"""
         for m in messages:
             m["sender_name"] = m["sender_name"].encode("iso-8859-1").decode("utf-8")
