@@ -62,23 +62,23 @@ class FacebookMessenger(MessageSource):
 
     def personal_stats(self) -> FacebookMessengerStats:
         messages = []
-        names = []  # list of participants from all conversations
+        participants = []  # list of participants from all conversations
 
         for chat_id in self.chat_ids:
             if chat_id in self.chats_cache:
                 messages.extend(self.chats_cache[chat_id].messages)
-                names.extend(self.chats_cache[chat_id].participants)
+                participants.extend(self.chats_cache[chat_id].participants)
             elif chat_id in self.messages_cache:
                 messages.extend(self.messages_cache[chat_id][0])
-                names.extend(self.messages_cache[chat_id][1])
+                participants.extend(self.messages_cache[chat_id][1])
             else:
                 # extract data for the chat and cache it
                 self.messages_cache[chat_id] = self._prepare_chat_data(chat_id)
                 messages.extend(self.messages_cache[chat_id][0])
-                names.extend(self.messages_cache[chat_id][1])
+                participants.extend(self.messages_cache[chat_id][1])
 
         # find the user's name (the one that appears in all conversations)
-        name = mode(names)
+        name = mode(participants)
 
         messages = [m for m in messages if m["sender_name"] == name]
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
@@ -212,11 +212,11 @@ class FacebookMessenger(MessageSource):
         return participants
 
     def _process_messages(
-        self, messages: list, names: list[str], title: str, chat_type: StatsType = None
+        self, messages: list, participants: list[str], title: str, chat_type: StatsType = None
     ) -> FacebookMessengerStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
         :param messages: list of messages to process
-        :param names: list of the chat participants
+        :param participants: list of the chat participants
         :param title: title of the chat
         :return: FacebookMessengerChat with the processed chats
         """
@@ -237,7 +237,7 @@ class FacebookMessenger(MessageSource):
         weekdays: dict[int, int] = {}
         hours = HOURS_DICT.copy()
 
-        for n in names:
+        for n in participants:
             people[n] = 0
             reactions["gave"][n] = {"total": 0}
             reactions["got"][n] = {"total": 0}
@@ -256,10 +256,10 @@ class FacebookMessenger(MessageSource):
             hour = datetime.fromtimestamp(m["timestamp_ms"] // 1000).hour
             hours[hour] += 1
             people["total"] += 1
-            if name in names:
+            if name in participants:
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
-                if name in names:
+                if name in participants:
                     data = regex.findall(r"\X", m["content"])
                     for c in data:
                         if c in emoji.EMOJI_DATA:
@@ -269,27 +269,27 @@ class FacebookMessenger(MessageSource):
                             emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
             elif "photos" in m:
                 photos["total"] += 1
-                if name in names:
+                if name in participants:
                     photos[name] = 1 + photos.get(name, 0)
             elif "gifs" in m:
                 gifs["total"] += 1
-                if name in names:
+                if name in participants:
                     gifs[name] = 1 + gifs.get(name, 0)
             elif "sticker" in m:
                 stickers["total"] += 1
-                if name in names:
+                if name in participants:
                     stickers[name] = 1 + stickers.get(name, 0)
             elif "videos" in m:
                 videos["total"] += 1
-                if name in names:
+                if name in participants:
                     videos[name] = 1 + videos.get(name, 0)
             elif "audio_files" in m:
                 audios["total"] += 1
-                if name in names:
+                if name in participants:
                     audios[name] = 1 + audios.get(name, 0)
             elif "files" in m:
                 files["total"] += 1
-                if name in names:
+                if name in participants:
                     files[name] = 1 + files.get(name, 0)
             if "reactions" in m:
                 for r in m["reactions"]:
@@ -299,10 +299,10 @@ class FacebookMessenger(MessageSource):
                         reaction = r["reaction"]
                     reactions["total"] += 1
                     reactions["types"][reaction] = 1 + reactions["types"].get(reaction, 0)
-                    if name in names:
+                    if name in participants:
                         reactions["got"][name]["total"] += 1
                         reactions["got"][name][reaction] = 1 + reactions["got"][name].get(reaction, 0)
-                        if r["actor"] in names:
+                        if r["actor"] in participants:
                             reactions["gave"][r["actor"]]["total"] += 1
                             reactions["gave"][r["actor"]][reaction] = 1 + reactions["gave"][r["actor"]].get(reaction, 0)
 
@@ -322,7 +322,7 @@ class FacebookMessenger(MessageSource):
             from_day,
             to_day,
             people,
-            names,
+            participants,
             title,
             chat_type,
         )
