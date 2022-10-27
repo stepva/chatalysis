@@ -1,6 +1,6 @@
 # Chatalysis
 
-Chatalysis lets you analyse and, more importantly, visualise stats from your own Facebook Messenger chats in a nice and clean way (see below), which is easily shareable with your friends. It works for group chats, too, and includes emojis and reactions as well. All on your computer, without giving your messages and data to any third-party apps. Not even to me.
+Chatalysis lets you analyse and, more importantly, visualise stats from your own Facebook Messenger and Instagram chats in a nice and clean way (see below), which is easily shareable with your friends. It works for group chats, too, and includes emojis and reactions as well. All on your computer, without giving your messages and data to any third-party apps. Not even to me.
 
 <p align="center">
 <img height="650" src="output/preview_v1.jpg">
@@ -14,10 +14,10 @@ Recently, we have also added the option to generate your own Personal stats - ov
 
 ## Installation
 
-1. Download your messages from <https://www.facebook.com/dyi/>. You only need to select **Messages** and make sure to choose **JSON** as the Format and **Low** for Media Quality (you can select higher media quality but it will make the files larger and it is not necessary for Chatalysis). It will take Facebook some time (several hours) to prepare your file and you can expect it to be a few gigabytes large. You will get a notification when it's ready to download.
+1. Download your messages from [Facebook](https://www.facebook.com/dyi/) or from [Instagram](https://www.instagram.com/download/request/). Make sure to choose **JSON** as the output format. For Messenger, you only need to download **Messages** with **Low** media quality (you can select higher media quality, but it will make the files larger and it is not necessary for Chatalysis). It will take Facebook some time (several hours) to prepare your file and you can expect it to be a few gigabytes large. You will get a notification when it's ready to download.
 2. [Download chatalysis in a zip folder](https://github.com/stepva/chatalysis/archive/refs/tags/v1.0.10.zip) and extract it wherever you want to.
-3. Move the "messages" folder which you downloaded from Facebook into the extracted (chatalysis-1.0.10) folder. It is possible that Facebook splits your data into multiple files. Download all of them then, one of them will probably be called "messages" while you might have to get the "messages" folder out of the other files you downloaded. Move all the "messages" folders into one folder, naming them "messages-2", "messages-3" etc. for example.
-4. Download and install [Python](https://www.python.org/downloads/) (remember to add it to PATH when installing it) if you do not have it.
+3. Extract the downloaded data into any folder you like. It is possible that Facebook splits your data into multiple files. Download all of them then, one of them will probably be called "messages" while you might have to get the "messages" folder out of the other files you downloaded. Move all the "messages" folders into one folder, naming them "messages-2", "messages-3" etc. for example.
+4. Download and install [Python](https://www.python.org/downloads/) (remember to add it to PATH when installing it) if you don't have it. On Linux you might also need to install tkinter for Python, which can be done via `sudo apt-get install python-tk`.
 5. In your terminal, navigate to the chatalysis folder, for example:
 
 ```
@@ -42,7 +42,7 @@ or, for example,
     python Desktop/chatalysis-1.0.10/chatalysis
 ```
 
-_(Note, that you’ll probably have to call `python3` instead of `python` on MacOS)_
+_(You’ll probably have to call `python3` instead of `python` on MacOS)_
 
 ## Tips
 

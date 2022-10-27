@@ -52,15 +52,16 @@ def open_html(path: str | Path) -> None:
     wb.open(path_to_open)
 
 
-def check_if_create_new(title: str, messages_count: int) -> bool:
+def check_if_create_new(title: str, messages_count: int, source_name: str) -> bool:
     """Checks if the HTML output file for a given chat exists and compares it with the chat's messages
 
     :param title: name of the chat
     :param messages_count: current number of messages in the chat
+    :param source_name: name of the message source
     :return: True if the HTML file doesn't exist or the number of messages differs (a new file should be created),
              False if the existing HTML file exists and has current data
     """
-    file_path = get_file_path(title)
+    file_path = get_file_path(title, source_name)
 
     if os.path.exists(file_path):
         html_messages_count = get_messages_from_html(file_path)
@@ -69,9 +70,14 @@ def check_if_create_new(title: str, messages_count: int) -> bool:
     return True
 
 
-def get_file_path(title: str) -> Path:
-    """Returns a file_path of the chosen chat title"""
-    return home / "output" / f"{title}.html"
+def get_file_path(title: str, source_name: str) -> Path:
+    """Returns a file_path of the chosen chat title
+    :param title: name of the chat
+    :param source_name: name of the message source
+    """
+    file_path = home / "output" / source_name / f"{title}.html"
+    file_path.parent.mkdir(parents=True, exist_ok=True)  # create source folder in "output" folder
+    return file_path
 
 
 def change_name(name: str) -> str:

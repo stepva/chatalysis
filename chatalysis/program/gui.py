@@ -2,11 +2,14 @@ import abc
 import ctypes
 import os
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import ttk, filedialog
+from typing import Type
 
 from tabulate import tabulate
 
-from sources.messenger import FacebookMessenger
+from sources.message_source import MessageSource
+from sources.instagram import Instagram
+from sources.messenger import Messenger
 from utils.utility import get_file_path, open_html
 
 
@@ -42,10 +45,10 @@ class MainGUI(Window):
         Window.__init__(self)
         self.label_under = None
         self.Program = program
-        self.create()
+        self._create_source_selection()
 
-    def create(self):
-        """Creates the GUI widgets and renders them"""
+    def _create_source_selection(self):
+        """Creates a menu for selecting the message source"""
         # fix high DPI blurriness on Windows 10
         if os.name == "nt":
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
@@ -54,18 +57,43 @@ class MainGUI(Window):
         self.title("Chatalysis")
         self.geometry("700x350")
 
+        self.grid_columnconfigure(0, weight=1)
+        for i in range(3):
+            self.grid_rowconfigure(i, weight=1)
+
+        self.label_select_source = ttk.Label(
+            self, text="Welcome to Chatalysis!\nPlease select message source:", justify=tk.CENTER
+        )
+        self.button_messenger = ttk.Button(
+            self, text="Facebook Messenger", command=lambda: self._create_main(Messenger)
+        )
+        self.button_instagram = ttk.Button(self, text="Instagram", command=lambda: self._create_main(Instagram))
+
+        self.label_select_source.grid(column=0, row=0, padx=5, pady=5)
+        self.button_messenger.grid(column=0, row=1, sticky="S", padx=5, pady=5)
+        self.button_instagram.grid(column=0, row=2, sticky="N", padx=5, pady=(5, 50))
+
+    def _create_main(self, source_class: Type[MessageSource]):
+        """Creates the main menu
+        :param source_class: class of the selected message source
+        """
+        # Clear source selection menu
+        self.label_select_source.destroy()
+        self.button_messenger.destroy()
+        self.button_instagram.destroy()
+
         # Configure grids & columns
         self.grid_columnconfigure(0, weight=1)
         for i in range(2, 6):
             self.grid_rowconfigure(i, weight=1)
 
         # Create buttons
-        self.button_select_dir = tk.Button(self, text="Select folder", command=self.select_dir)
-        self.button1 = tk.Button(self, text="Show top conversations", command=lambda: WindowTopTen(self.Program, self))
-        self.button2 = tk.Button(
+        self.button_select_dir = ttk.Button(self, text="Select folder", command=lambda: self.select_dir(source_class))
+        self.button1 = ttk.Button(self, text="Show top conversations", command=lambda: WindowTopTen(self.Program, self))
+        self.button2 = ttk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
-        self.button3 = tk.Button(self, text="Show your overall personal stats", command=self.show_personal)
+        self.button3 = ttk.Button(self, text="Show your overall personal stats", command=self.show_personal)
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
@@ -88,22 +116,27 @@ class MainGUI(Window):
     def display_error(self, errorMessage: str):
         self.label_under.config(text=errorMessage, fg="red")
 
-    def select_dir(self):
-        """Selects directory with the data using a dialog window"""
-        self.Program._data_dir_path = filedialog.askdirectory(
-            title="Select source folder", initialdir=self.Program.config.load("last_source_dir")
-        )
-        self.data_dir_path_tk.set(self.Program._data_dir_path)
+    def select_dir(self, source_class: Type[MessageSource]):
+        """Selects directory with the data using a dialog window and creates an instance of the message source.
 
-        self.Program.config.save("last_source_dir", self.Program._data_dir_path)  # save last used dir
+        :param source_class: class of the selected message source
+        """
+        self.Program.data_dir_path = filedialog.askdirectory(
+            title="Select source directory", initialdir=self.Program.config.load(source_class.__name__, "Source_dirs")
+        )
+        self.data_dir_path_tk.set(self.Program.data_dir_path)
+
+        # save last used dir
+        self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")
 
         try:
-            self.Program.source = FacebookMessenger(self.Program._data_dir_path)
+            # create message source instance filled with data from the selected dir
+            self.Program.source = source_class(self.Program.data_dir_path)
         except Exception as e:
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
-            self.display_error(e)
+            self.display_error(str(e))
             return
 
         self.Program.valid_dir = True
@@ -172,9 +205,12 @@ class WindowTopTen(Window):
                 topIndividual.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
             )
 
-            self.Program.top_five_groups = tabulate(
-                topGroup.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
-            )
+            if len(topGroup) > 0:
+                self.Program.top_five_groups = tabulate(
+                    topGroup.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
+                )
+            else:
+                self.Program.top_five_groups = "No group chats available"
 
         self.remove_labels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
 

@@ -4,12 +4,12 @@ from typing import Any
 import emoji
 import regex
 
-from chats.stats import StatsType, FacebookStats, Times
+from chats.stats import FacebookStats, Times, StatsType
 from sources.facebook_source import FacebookSource
 from utils.const import HOURS_DICT
 
 
-class Messenger(FacebookSource):
+class Instagram(FacebookSource):
     def __init__(self, path: str):
         FacebookSource.__init__(self, path)
 
@@ -75,14 +75,11 @@ class Messenger(FacebookSource):
                 photos["total"] += 1
                 if name in participants:
                     photos[name] = 1 + photos.get(name, 0)
-            elif "gifs" in m:
-                gifs["total"] += 1
-                if name in participants:
-                    gifs[name] = 1 + gifs.get(name, 0)
-            elif "sticker" in m:
-                stickers["total"] += 1
-                if name in participants:
-                    stickers[name] = 1 + stickers.get(name, 0)
+            elif "share" in m:
+                if "link" in m["share"] and m["share"]["link"].endswith("gif"):
+                    gifs["total"] += 1
+                    if name in participants:
+                        gifs[name] = 1 + gifs.get(name, 0)
             elif "videos" in m:
                 videos["total"] += 1
                 if name in participants:
@@ -91,10 +88,6 @@ class Messenger(FacebookSource):
                 audios["total"] += 1
                 if name in participants:
                     audios[name] = 1 + audios.get(name, 0)
-            elif "files" in m:
-                files["total"] += 1
-                if name in participants:
-                    files[name] = 1 + files.get(name, 0)
             if "reactions" in m:
                 reactions = self._process_reactions(m, name, participants, reactions)
 
