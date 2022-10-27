@@ -4,7 +4,7 @@ from typing import Any
 import emoji
 import regex
 
-from chats.stats import FacebookStats, Times, StatsType
+from chats.stats import FacebookStats, Times, StatsType, SourceType
 from sources.facebook_source import FacebookSource
 from utils.const import HOURS_DICT
 
@@ -12,6 +12,7 @@ from utils.const import HOURS_DICT
 class Instagram(FacebookSource):
     def __init__(self, path: str):
         FacebookSource.__init__(self, path)
+        self.source_type = SourceType.INSTAGRAM
 
     def _process_messages(
         self, messages: list, participants: list[str], title: str, stats_type: StatsType = None
@@ -110,4 +111,5 @@ class Instagram(FacebookSource):
             participants,
             title,
             stats_type,
+            self.source_type,
         )

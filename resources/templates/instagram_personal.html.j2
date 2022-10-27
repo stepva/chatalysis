@@ -57,10 +57,11 @@
             </div>
             <div style="padding-bottom: 15px; text-align: left; padding-left: 25px">
                 <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} - {{ title }}</h1>
-                <b>{{ from_day }}</b> - <b>{{ to_day }}</b>
+                <b>{{ from_day }}</b> - <b>{{ to_day }}</b><br>
+                <b>Instagram</b>
             </div>
         </section>
-        <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
+        <section id="total stats" style="display: grid; grid-template-columns: repeat(5, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
             <div style="display: flex; justify-content: center;">
                 <div style="align-self: center">
                     <p class="stats-num">{{ images["total"]|space }}</p>
@@ -74,34 +75,22 @@
                 </div>
             </div>
             <div style="display: flex; justify-content: center;">
-                <div style="align-self: center">
-                    <p class="stats-num">{{ stickers["total"]|space }}</p>
-                    <p class="stats-text">{{ "stickers" if stickers["total"] != 1 else "sticker"}}</p>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
                 <div style="align-self: center; padding-bottom: 8px; min-width: 250px;">
                     <p id="total messages" style="margin: 0; font-size: 55; font-weight: 250;">{{ messages["total"]|space }}</p>
                     <p style="margin: 0; font-weight: 450;">total messages</p>
                 </div>
             </div>
             <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ videos["total"]|space }}</p>
-                <p class="stats-text">{{ "videos" if videos["total"] != 1 else "video"}}</p>
-            </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ audios["total"]|space }}</p>
-                <p class="stats-text">{{ "audios" if audios["total"] != 1 else "audio"}}</p>
-            </div>
+                <div style="align-self: center">
+                    <p class="stats-num">{{ videos["total"]|space }}</p>
+                    <p class="stats-text">{{ "videos" if videos["total"] != 1 else "video"}}</p>
+                </div>
             </div>
             <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ files["total"]|space }}</p>
-                <p class="stats-text">{{ "files" if files["total"] != 1 else "file"}}</p>
-            </div>
+                <div style="align-self: center">
+                    <p class="stats-num">{{ audios["total"]|space }}</p>
+                    <p class="stats-text">{{ "audios" if audios["total"] != 1 else "audio"}}</p>
+                </div>
             </div>
         </section>
         <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">

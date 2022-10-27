@@ -4,6 +4,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from __init__ import __version__
+from chats.stats import StatsType, SourceType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.stats import Stats, Times
 from utils.const import DAYS
@@ -19,13 +20,33 @@ class Analyzer:
 
     # region Public API
 
-    def mrHtml(self):
+    def create_html(self):
+        """Determines which HTML template is best suitable for the stats and proceeds with creating the HTML file"""
+
+        match self.chat.stats_type:
+            case StatsType.PERSONAL:
+                match self.chat.source_type:
+                    case SourceType.MESSENGER:
+                        template = "messenger_personal"
+                    case SourceType.INSTAGRAM:
+                        template = "instagram_personal"
+                return self.personalHtml(template)
+
+            case StatsType.REGULAR | StatsType.GROUP:
+                match self.chat.source_type:
+                    case SourceType.MESSENGER:
+                            template = "messenger_chat"
+                    case SourceType.INSTAGRAM:
+                        template = "instagram_chat"
+                return self.mrHtml(template)
+
+    def mrHtml(self, template_name: str):
         """Exports chat stats and other variables into HTML"""
         file_loader = FileSystemLoader(home / "resources" / "templates")
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
-        template = env.get_template("chat.html.j2")
+        template = env.get_template(f"{template_name}.html.j2")
 
         return template.render(
             # utility
@@ -81,13 +102,13 @@ class Analyzer:
             chat_type=self.chat.stats_type.value,
         )
 
-    def personalHtml(self):
+    def personalHtml(self, template_name: str):
         """Exports personal stats and other variables into HTML"""
         file_loader = FileSystemLoader(home / "resources" / "templates")
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
-        template = env.get_template("personal.html.j2")
+        template = env.get_template(f"{template_name}.html.j2")
 
         return template.render(
             # utility

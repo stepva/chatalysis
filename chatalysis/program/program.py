@@ -51,10 +51,7 @@ class Program:
             return
 
         analyzer = Analyzer(chat)
-        if chat.stats_type == StatsType.PERSONAL:
-            source = analyzer.personalHtml()
-        else:
-            source = analyzer.mrHtml()
+        source = analyzer.create_html()
 
         with io.open(file_path, "w", encoding="utf-8") as data:
             data.write(source)

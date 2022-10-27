@@ -13,6 +13,11 @@ class StatsType(Enum):
     PERSONAL = 3
 
 
+class SourceType(Enum):
+    MESSENGER = 1
+    INSTAGRAM = 2
+
+
 @dataclass(frozen=True)
 class Stats(abc.ABC):
     messages: list
@@ -31,6 +36,7 @@ class Stats(abc.ABC):
     participants: list[str]  # list of chat participants
     title: str
     stats_type: StatsType
+    source_type: SourceType
 
     @abc.abstractmethod
     def first_message(self) -> dict:
