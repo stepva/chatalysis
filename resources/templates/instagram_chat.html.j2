@@ -58,7 +58,8 @@
                 </div>
                 <div style="padding-top: 10px;">
                     <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} and {{ names[1] }}</h1>
-                    <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b>
+                    <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b><br>
+                    <b>Instagram</b>
                 </div> 
                 <div style="text-align: left; padding-top: 10px;">
                     <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture">
@@ -67,12 +68,13 @@
                 <div></div>
                 <div style="padding-bottom: 15px;">
                     <h1 style="font-size: 30; margin-bottom: 5;">{{ title }}</h1>
-                    <b>{{ from_day }}</b> - <b>{{ to_day }}</b>
+                    <b>{{ from_day }}</b> - <b>{{ to_day }}</b><br>
+                    <b>Instagram</b>
                 </div>
                 <div></div>
             {% endif %}
         </section>
-        <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
+        <section id="total stats" style="display: grid; grid-template-columns: repeat(5, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
             <div style="display: flex; justify-content: center;">
                 <div style="align-self: center">
                     <p class="stats-num">{{ images["total"]|space }}</p>
@@ -86,34 +88,22 @@
                 </div>
             </div>
             <div style="display: flex; justify-content: center;">
-                <div style="align-self: center">
-                    <p class="stats-num">{{ stickers["total"]|space }}</p>
-                    <p class="stats-text">{{ "stickers" if stickers["total"] != 1 else "sticker"}}</p>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
                 <div style="align-self: center; padding-bottom: 8px; min-width: 200px;">
                     <p id="total messages" style="margin: 0; font-size: 55; font-weight: 250;">{{ messages["total"]|space }}</p>
                     <p style="margin: 0; font-weight: 450;">total messages</p>
                 </div>
             </div>
             <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ videos["total"]|space }}</p>
-                <p class="stats-text">{{ "videos" if videos["total"] != 1 else "video"}}</p>
-            </div>
-            </div>
-            <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ audios["total"]|space }}</p>
-                <p class="stats-text">{{ "audios" if audios["total"] != 1 else "audio"}}</p>
-            </div>
+                <div style="align-self: center">
+                    <p class="stats-num">{{ videos["total"]|space }}</p>
+                    <p class="stats-text">{{ "videos" if videos["total"] != 1 else "video"}}</p>
+                </div>
             </div>
             <div style="display: flex; justify-content: center;">
-            <div style="align-self: center">
-                <p class="stats-num">{{ files["total"]|space }}</p>
-                <p class="stats-text">{{ "files" if files["total"] != 1 else "file"}}</p>
-            </div>
+                <div style="align-self: center">
+                    <p class="stats-num">{{ audios["total"]|space }}</p>
+                    <p class="stats-text">{{ "audios" if audios["total"] != 1 else "audio"}}</p>
+                </div>
             </div>
         </section>
         <section id="personal stats" style="display: grid; grid-template-columns: 1fr 200px 1fr; padding-bottom: 30px; padding-top: 20px; grid-gap: 2px;">
@@ -134,10 +124,8 @@
                             <b>{{ messages.get(names[0], 0)|space }}</b> messages<br>
                             <b>{{ images.get(names[0], 0)|space }}</b> {{ "images" if images.get(names[0], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[0], 0)|space }}</b> {{ "gifs" if gifs.get(names[0], 0) != 1 else "gif"}}<br>
-                            <b>{{ stickers.get(names[0], 0)|space }}</b> {{ "stickers" if stickers.get(names[0], 0) != 1 else "sticker"}}<br>
                             <b>{{ videos.get(names[0], 0)|space }}</b> {{ "videos" if videos.get(names[0], 0) != 1 else "video"}}<br>
-                            <b>{{ audios.get(names[0], 0)|space }}</b> {{ "audios" if audios.get(names[0], 0) != 1 else "audio"}}<br>
-                            <b>{{ files.get(names[0], 0)|space }}</b> {{ "files" if files.get(names[0], 0) != 1 else "file"}}
+                            <b>{{ audios.get(names[0], 0)|space }}</b> {{ "audios" if audios.get(names[0], 0) != 1 else "audio"}}
                         </p>
                     </div>
                 </div>
@@ -160,10 +148,8 @@
                             <b>{{ messages.get(names[1], 0)|space }}</b> messages<br>
                             <b>{{ images.get(names[1], 0)|space }}</b> {{ "images" if images.get(names[1], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[1], 0)|space }}</b> {{ "gifs" if gifs.get(names[1], 0) != 1 else "gif"}}<br>
-                            <b>{{ stickers.get(names[1], 0)|space }}</b> {{ "stickers" if stickers.get(names[1], 0) != 1 else "sticker"}}<br>
                             <b>{{ videos.get(names[1], 0)|space }}</b> {{ "videos" if videos.get(names[1], 0) != 1 else "video"}}<br>
-                            <b>{{ audios.get(names[1], 0)|space }}</b> {{ "audios" if audios.get(names[1], 0) != 1 else "audio"}}<br>
-                            <b>{{ files.get(names[1], 0)|space }}</b> {{ "files" if files.get(names[1], 0) != 1 else "file"}}
+                            <b>{{ audios.get(names[1], 0)|space }}</b> {{ "audios" if audios.get(names[1], 0) != 1 else "audio"}}
                         </p>
                     </div>
                 </div>
@@ -190,10 +176,8 @@
                                         <b>{{ messages.get(n, 0)|space }}</b> messages<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
-                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
                                         <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
-                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
-                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
+                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}
                                     </p>
                                 </div>
                             </div>
@@ -221,10 +205,8 @@
                                         <b>{{ messages.get(n, 0)|space }}</b> messages<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
-                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
                                         <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
-                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
-                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
+                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}
                                     </p>
                                 </div>
                             </div>
