@@ -6,7 +6,7 @@ from __init__ import __version__
 from chats.analyzer import Analyzer
 from chats.stats import Stats, StatsType
 from program.gui import MainGUI
-from sources.messenger import FacebookMessenger
+from sources.messenger import Messenger
 from utils.utility import check_if_create_new, get_file_path, open_html
 from utils.config import Config
 
@@ -14,7 +14,7 @@ from utils.config import Config
 class Program:
     def __init__(self):
         self.personal_stats = None
-        self.source: FacebookMessenger = None
+        self.source = None
         self.top_ten_individual = None
         self.top_five_groups = None
         self.data_dir_path = ""
@@ -43,10 +43,11 @@ class Program:
 
         :param chat: Chat or PersonalStats to analyze
         """
-        create_new = check_if_create_new(chat.title, len(chat.messages))
+        create_new = check_if_create_new(chat.title, len(chat.messages), self.source.__class__.__name__)
+        file_path = get_file_path(chat.title, self.source.__class__.__name__)
 
         if not create_new and not self.config.load("force_generate", is_bool=True):
-            open_html(get_file_path(chat.title))
+            open_html(file_path)
             return
 
         analyzer = Analyzer(chat)
@@ -54,7 +55,6 @@ class Program:
             source = analyzer.personalHtml()
         else:
             source = analyzer.mrHtml()
-        file_path = get_file_path(chat.title)
 
         with io.open(file_path, "w", encoding="utf-8") as data:
             data.write(source)
@@ -77,7 +77,7 @@ class Program:
         """CLI loop used mainly for testing purposes"""
         self.data_dir_path = os.getcwd()
         try:
-            self.source = FacebookMessenger(self.data_dir_path)
+            self.source = Messenger(self.data_dir_path)
         except Exception as e:
             print(f"Not a valid source - {e}")
             return

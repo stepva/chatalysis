@@ -286,10 +286,10 @@ class Analyzer:
         pics = {}
         for n in self.chat.participants:
             # needs to be relative path from the output directory inside HTML
-            pics[n] = "../resources/images/placeholder.jpg"
+            pics[n] = "../../resources/images/placeholder.jpg"
             for p in list_folder(home / "resources" / "images"):
                 if p.startswith(change_name(n)):
-                    pics[n] = f"../resources/images/{p}"
+                    pics[n] = f"../../resources/images/{p}"
         return pics
 
     @staticmethod

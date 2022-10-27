@@ -41,7 +41,9 @@ class Stats(abc.ABC):
         pass
 
 
-class FacebookMessengerStats(Stats):
+class FacebookStats(Stats):
+    """Facebook Messenger / Instagram stats"""
+
     def first_message(self):
         author = self.messages[0]["sender_name"]
         texts = {}

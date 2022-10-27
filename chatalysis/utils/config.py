@@ -15,7 +15,10 @@ config_file = config_dir_current / "config.ini"
 class Config:
     """Simple class for saving & loading config items"""
 
-    DEFAULT_CONFIG = {"General": {"last_source_dir": os.getcwd(), "force_generate": "no"}}
+    DEFAULT_CONFIG = {
+        "General": {"force_generate": "no"},
+        "Source_dirs": {"Messenger": os.getcwd(), "Instagram": os.getcwd()},
+    }
 
     def __init__(self):
         self._parser = configparser.ConfigParser()
