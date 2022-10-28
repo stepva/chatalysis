@@ -312,13 +312,16 @@ class WindowIndividual(Window):
         :param original_names: list of all available conversations, stored as tuples (name, chat_id)
         :return: dict with conversation names
         """
-        conversations = OrderedDict()
+        conversations: OrderedDict[str, str] = OrderedDict()
 
         for name, chat_id in original_names:
             if name in conversations:
-                chat_id_2 = conversations.get(name)
-                new_name_1 = f"{name}_({self.Program.source.conversation_size(chat_id)}_messages)"
-                new_name_2 = f"{name}_({self.Program.source.conversation_size(chat_id_2)}_messages)"
+                src = self.Program.source
+                chat_id_2 = str(conversations.get(name))
+
+                # the listbox splits entries by spaces, therefore a no-break space has to be used here
+                new_name_1 = f"{name}\u00a0({src.conversation_size(chat_id)}\u00a0messages)"
+                new_name_2 = f"{name}\u00a0({src.conversation_size(chat_id_2)}\u00a0messages)"
 
                 conversations.pop(name)
                 conversations[new_name_1] = chat_id
