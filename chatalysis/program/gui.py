@@ -5,7 +5,7 @@ import tkmacosx as tkm
 import traceback
 from collections import OrderedDict
 from tkinter import ttk, filedialog, messagebox
-from typing import Type
+from typing import Any, Type
 
 from tabulate import tabulate
 
@@ -15,7 +15,7 @@ from sources.messenger import Messenger
 from utils.utility import get_file_path, open_html
 
 
-def show_error(window: tk.Tk | tk.Toplevel, err_message: str):
+def show_error(window: tk.Tk | tk.Toplevel, err_message: str) -> None:
     """Shows an error and places the last open GUI window back on top
 
     :param window: last open GUI window
@@ -28,13 +28,15 @@ def show_error(window: tk.Tk | tk.Toplevel, err_message: str):
 class MainGUI(tk.Tk):
     """Main GUI for the program"""
 
-    def __init__(self, program):
+    label_under: Any
+
+    def __init__(self, program: Any) -> None:
         tk.Tk.__init__(self)
         self.label_under = None
         self.Program = program
         self._create_source_selection()
 
-    def _create_source_selection(self):
+    def _create_source_selection(self) -> None:
         """Creates a menu for selecting the message source"""
         # fix high DPI blurriness on Windows 10
         if sys.platform == "win32" or sys.platform == "cygwin":
@@ -72,7 +74,7 @@ class MainGUI(tk.Tk):
             column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=0 if sys.platform == "darwin" else 10, ipadx=10
         )
 
-    def _create_main(self, source_class: Type[MessageSource]):
+    def _create_main(self, source_class: Type[MessageSource]) -> None:
         """Creates the main menu
         :param source_class: class of the selected message source
         """
@@ -116,7 +118,7 @@ class MainGUI(tk.Tk):
         self.button3.grid(column=0, row=5, sticky="N")
         self.label_under.grid(column=0, row=6, pady=5)
 
-    def select_dir(self, source_class: Type[MessageSource]):
+    def select_dir(self, source_class: Type[MessageSource]) -> None:
         """Selects directory with the data using a dialog window and creates an instance of the message source.
 
         :param source_class: class of the selected message source
@@ -145,7 +147,7 @@ class MainGUI(tk.Tk):
         self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
 
-    def show_personal(self, source_class: Type[MessageSource]):
+    def show_personal(self, source_class: Type[MessageSource]) -> None:
         """Opens (and creates if necessary) personal stats.
 
         :param source_class: class of the selected message source
@@ -164,7 +166,7 @@ class MainGUI(tk.Tk):
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
-    def _try_create_window(self, window_class: Type[tk.Toplevel]):
+    def _try_create_window(self, window_class: Type[tk.Toplevel]) -> None:
         if self.Program.valid_dir:
             window_class(self.Program)
         else:
@@ -174,7 +176,9 @@ class MainGUI(tk.Tk):
 class WindowTopTen(tk.Toplevel):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
-    def __init__(self, program):
+    label_top: Any
+
+    def __init__(self, program: Any):
         tk.Toplevel.__init__(self)
         self.Program = program
 
@@ -190,7 +194,7 @@ class WindowTopTen(tk.Toplevel):
 
         self.show_top()  # runs the top 10 analysis & print
 
-    def show_top(self):
+    def show_top(self) -> None:
         """Analyzes and shows the top conversations"""
         # Calculate the top conversations if not done already
         if self.Program.top_ten_individual is None:
@@ -231,7 +235,9 @@ class WindowTopTen(tk.Toplevel):
 
 
 class WindowIndividual(tk.Toplevel):
-    def __init__(self, program):
+    name_box: Any
+
+    def __init__(self, program: Any) -> None:
         tk.Toplevel.__init__(self)
         self.Program = program
 
@@ -239,7 +245,7 @@ class WindowIndividual(tk.Toplevel):
         self.geometry("600x400")
         self._create()
 
-    def _create(self):
+    def _create(self) -> None:
         """Creates and renders the objects in the window"""
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -256,7 +262,7 @@ class WindowIndividual(tk.Toplevel):
 
         # set searched_name var to trace any writing action
         self.searched_name = tk.StringVar(self)
-        self.searched_name.trace("w", self._filter_name_list)
+        self.searched_name.trace("w", self._filter_name_list) # type: ignore
 
         original_names = [(chat_id.split("_")[0].lower(), chat_id) for chat_id in sorted(self.Program.source.chat_ids)]
         self.conversation_names = self._create_name_dict(original_names)
@@ -280,7 +286,7 @@ class WindowIndividual(tk.Toplevel):
         self.name_box.grid(column=0, row=2, pady=(0, 5))
         self.label_under.grid(column=0, row=3, pady=5)
 
-    def _create_name_dict(self, original_names: list[tuple]) -> dict:
+    def _create_name_dict(self, original_names: list[Any]) -> dict[Any, Any]:
         """Creates a dict with names of conversations and their chat IDs. If two conversations have the same name,
         the number of messages is added to the conversation name, to distinguish between them.
 
@@ -306,7 +312,7 @@ class WindowIndividual(tk.Toplevel):
 
         return conversations
 
-    def _filter_name_list(self, *_args):
+    def _filter_name_list(self, *_args: Any) -> None:
         """Updates the listbox to show names starting with the searched string"""
         self.label_under.config(text="")
         new_names = []
@@ -318,13 +324,13 @@ class WindowIndividual(tk.Toplevel):
         string_new_names = " ".join(new_names)
         self.name_list.set(string_new_names)
 
-    def _listbox_name_selected(self, *_args):
+    def _listbox_name_selected(self, *_args: Any) -> None:
         """Takes the selected name from the listbox and runs the analysis"""
         current_selection = self.name_box.curselection()
         selected_name = self.conversation_names[self.name_box.get(current_selection)]
         self.analyze_individual(selected_name)
 
-    def analyze_individual(self, name: str = "", _event: tk.Event = None):
+    def analyze_individual(self, name: str = "", _event: None|tk.Event[Any] = None) -> None:
         """Analyzes an individual conversation and prints information about the process
 
         :param name: name of the conversation to analyze

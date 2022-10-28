@@ -26,4 +26,4 @@ jobs:
                   pip install -r requirements-dev.txt
 
             - name: Execute mypy
-              run: mypy chatalysis
+              run: mypy

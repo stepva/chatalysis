@@ -1,6 +1,7 @@
 import abc
 import json
 import os
+from typing import Any
 import regex
 from datetime import date, timedelta
 from pathlib import Path
@@ -29,7 +30,7 @@ class FacebookSource(MessageSource):
         # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
         # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
         # they are removed from this cache as they can be accessed via the Chat object.
-        self.messages_cache: dict[chat_id_str, tuple[list, list, str, StatsType]] = {}
+        self.messages_cache: dict[chat_id_str, tuple[list[Any], list[Any], str, StatsType]] = {}
 
         # cache of Stats objects
         self.chats_cache: dict[chat_id_str, FacebookStats] = {}
@@ -68,7 +69,7 @@ class FacebookSource(MessageSource):
         messages = sorted(messages, key=lambda k: k["timestamp_ms"])
         return self._process_messages(messages, [name], "Personal stats", StatsType.PERSONAL)
 
-    def top_ten(self):
+    def top_ten(self) -> tuple[Any, Any]:
         chats = {}
         groups = {}
 
@@ -104,7 +105,7 @@ class FacebookSource(MessageSource):
 
     # region Chat processing
 
-    def _compile_chat_data(self, chat_id: str):
+    def _compile_chat_data(self, chat_id: str) -> None:
         """Gets all the chat data, processes it and stores it as a Chat object in the cache.
 
         :param chat_id: name of the chat to process
@@ -118,7 +119,7 @@ class FacebookSource(MessageSource):
 
         self.chats_cache[chat_id] = self._process_messages(messages, participants, title, chat_type)
 
-    def _prepare_chat_data(self, chat_id: chat_id_str) -> tuple[list, list, str, StatsType]:
+    def _prepare_chat_data(self, chat_id: chat_id_str) -> tuple[list[Any], list[Any], str, StatsType]:
         """Extracts the chat data and decodes the messages
 
         :param chat_id: ID of the chat to process
@@ -165,7 +166,7 @@ class FacebookSource(MessageSource):
 
         return jsons
 
-    def _get_participants(self, chat: dict) -> list[str]:
+    def _get_participants(self, chat: dict[Any, Any]) -> list[str]:
         """Gets names of the participants in the chat.
 
         :param chat: raw chat data
@@ -178,7 +179,7 @@ class FacebookSource(MessageSource):
             participants.append(participants[0])
         return participants
 
-    def _get_messages(self, chat_id: chat_id_str) -> tuple[list[dict], list[str], str, StatsType]:
+    def _get_messages(self, chat_id: chat_id_str) -> tuple[list[dict[Any, Any]], list[str], str, StatsType]:
         """Gets the chat data (messages, names of the participants, chat title and chat type)
 
         :param chat_id: ID of the chat to process
@@ -212,7 +213,7 @@ class FacebookSource(MessageSource):
 
     @abc.abstractmethod
     def _process_messages(
-        self, messages: list, participants: list[str], title: str, stats_type: StatsType = None
+        self, messages: list[Any], participants: list[str], title: str, stats_type: StatsType = None
     ) -> FacebookStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
 
@@ -223,7 +224,7 @@ class FacebookSource(MessageSource):
         :return: FacebookMessengerChat with the processed chats
         """
 
-    def _process_reactions(self, message: dict, name: str, participants: list[str], reactions: dict):
+    def _process_reactions(self, message: dict[Any, Any], name: str, participants: list[str], reactions: dict[Any, Any]) -> Any:
         """Extracts reactions from a message and expands the reaction stats.
 
         :param message: message to analyze
@@ -249,7 +250,7 @@ class FacebookSource(MessageSource):
         return reactions
 
     @staticmethod
-    def _extract_emojis(message: dict, emojis: dict) -> dict:
+    def _extract_emojis(message: dict[Any, Any], emojis: dict[Any, Any]) -> dict[Any, Any]:
         """Extracts both actual Unicode emojis and text emojis (such as ":D") from a message.
 
         :param message: message to analyze
@@ -278,13 +279,13 @@ class FacebookSource(MessageSource):
 
     # region Data source processing
 
-    def _load_message_folders(self):
+    def _load_message_folders(self) -> None:
         """Load folders containing the messages"""
         self.folders = [Path(root, d) for root, dirs, _ in os.walk(self._data_dir_path) for d in dirs if d == "inbox"]
         if not self.folders:
             raise NoMessageFilesError('Looks like there is no "inbox" folder with the messages here.')
 
-    def _load_all_chats(self):
+    def _load_all_chats(self) -> None:
         """Load all chats from the source"""
         for folder in self.folders:
             for chat_id in list_folder(folder):
@@ -301,7 +302,7 @@ class FacebookSource(MessageSource):
         return word.encode("iso-8859-1").decode("utf-8")
 
     @staticmethod
-    def _decode_messages(messages: list) -> list:
+    def _decode_messages(messages: list[Any]) -> list[Any]:
         """Decodes all messages from the Facebook encoding"""
         for m in messages:
             m["sender_name"] = m["sender_name"].encode("iso-8859-1").decode("utf-8")
@@ -314,7 +315,7 @@ class FacebookSource(MessageSource):
         return messages
 
     @staticmethod
-    def _days_list(messages: list) -> "dict[str, int]":
+    def _days_list(messages: list[Any]) -> dict[str, int]:
         """Prepares a dictionary with all days from the first message up to the last one
 
         :param messages: list of messages in the conversation
