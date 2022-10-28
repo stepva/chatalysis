@@ -5,3 +5,4 @@ plotly==5.10.0
 jinja2
 regex
 tabulate
+tkmacosx

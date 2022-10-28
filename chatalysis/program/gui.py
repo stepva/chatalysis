@@ -1,7 +1,9 @@
 import abc
 import ctypes
 import os
+import sys
 import tkinter as tk
+import tkmacosx as tkm
 from tkinter import ttk, filedialog
 from typing import Type
 
@@ -64,14 +66,26 @@ class MainGUI(Window):
         self.label_select_source = ttk.Label(
             self, text="Welcome to Chatalysis!\nPlease select a message source:", justify=tk.CENTER
         )
-        self.button_messenger = ttk.Button(
-            self, text="Facebook Messenger", command=lambda: self._create_main(Messenger)
-        )
-        self.button_instagram = ttk.Button(self, text="Instagram", command=lambda: self._create_main(Instagram))
+        if sys.platform == "darwin":
+            self.button_messenger = tkm.Button(
+                self, text="Facebook Messenger", command=lambda: self._create_main(Messenger), height=50
+            )
+            self.button_instagram = tkm.Button(
+                self, text="Instagram", command=lambda: self._create_main(Instagram), height=50
+            )
+        else:
+            self.button_messenger = ttk.Button(
+                self, text="Facebook Messenger", command=lambda: self._create_main(Messenger)
+            )
+            self.button_instagram = ttk.Button(self, text="Instagram", command=lambda: self._create_main(Instagram))
 
         self.label_select_source.grid(column=0, row=0, padx=5, pady=5)
-        self.button_messenger.grid(column=0, row=1, sticky="S", padx=5, pady=5, ipady=10, ipadx=10)
-        self.button_instagram.grid(column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=10, ipadx=10)
+        self.button_messenger.grid(
+            column=0, row=1, sticky="S", padx=5, pady=5, ipady=0 if sys.platform == "darwin" else 10, ipadx=10
+        )
+        self.button_instagram.grid(
+            column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=0 if sys.platform == "darwin" else 10, ipadx=10
+        )
 
     def _create_main(self, source_class: Type[MessageSource]):
         """Creates the main menu
