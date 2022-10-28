@@ -337,7 +337,7 @@ class Analyzer:
 
     def _top_emojis(self, to_count, keyword: str):
         """Packs the overall and top emojis for the HTML"""
-        fontSizesT = list(map(str, range(300, 100, -20)))
+        fontSizesT = list(map(str, range(300, 150, -15)))
         fontSizesP = list(map(str, range(180, 80, -10)))
         tops = {"total": zip(self._top_emojis_total(to_count)[0], self._top_emojis_total(to_count)[1], fontSizesT)}
         for n in self.chat.participants:

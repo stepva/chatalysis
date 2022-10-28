@@ -254,7 +254,7 @@
                     {% for emoji, n, f in top_emojis["total"] %}
                     <div style="display: flex; justify-content: center;">
                         <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                        ({{ n|space }})</p>
+                        {{ n|space }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -297,7 +297,7 @@
                             {% for emoji, num, f in top_emojis[n] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                                    ({{ num|space }})</p>
+                                    {{ num|space }}</p>
                             </div>
                             {% endfor %}
                         </div>
@@ -336,7 +336,7 @@
                                 {% for emoji, num, f in top_emojis[names[-1]] %}
                                 <div style="display: flex; justify-content: center;">
                                     <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                                        ({{ num|space }})</p>
+                                        {{ num|space }}</p>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -358,7 +358,7 @@
                         {% for reac, n, f in top_reacts["total"] %}
                         <div style="display: flex; justify-content: center;">
                             <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                ({{ n|space }})</p>
+                                {{ n|space }}</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -403,7 +403,7 @@
                             {% for reac, num, f in top_reacts[n] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                    ({{ num|space }})</p>
+                                    {{ num|space }}</p>
                             </div>
                             {% endfor %}
                         </div>
@@ -444,7 +444,7 @@
                             {% for reac, num, f in top_reacts[names[-1]] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                    ({{ num|space }})</p>
+                                    {{ num|space }}</p>
                             </div>
                             {% endfor %}
                         </div>
