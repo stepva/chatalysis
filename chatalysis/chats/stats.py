@@ -19,7 +19,7 @@ class SourceType(Enum):
     INSTAGRAM = 2
 
 
-@dataclass(frozen=True) # type: ignore
+@dataclass(frozen=True)
 class Stats(abc.ABC):
     messages: list[Any]
     photos: dict[Any, Any]
