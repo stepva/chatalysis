@@ -22,7 +22,7 @@ class Config:
         "dev": {"print_stacktrace": "no"},
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._parser = configparser.ConfigParser()
 
         if os.path.exists(config_file):
@@ -30,7 +30,7 @@ class Config:
         else:
             self._create()
 
-    def save(self, item: str, value: str, section: str = "General"):
+    def save(self, item: str, value: str, section: str = "General") -> None:
         """Save a config item
 
         :param item: name of the item
@@ -44,7 +44,7 @@ class Config:
         with open(config_file, "w") as cfg:
             self._parser.write(cfg)
 
-    def load(self, item: str, section: str = "General", is_bool: bool = False):
+    def load(self, item: str, section: str = "General", is_bool: bool = False) -> Any:
         """Loads a config item
 
         :param item: name of the item
@@ -60,7 +60,7 @@ class Config:
             val = self._parser[section].getboolean(item) if is_bool else self._parser[section][item]
         return val
 
-    def _create(self):
+    def _create(self) -> None:
         """Create the config file and initialize it with default values"""
         config_versions = sorted(list_folder(config_dir))
 
@@ -71,7 +71,7 @@ class Config:
             prev_parser = configparser.ConfigParser()
             prev_parser.read(prev_config)
 
-            config = dict()
+            config: Any = dict()
             for section in [sec for sec in prev_parser.sections() if sec in self.DEFAULT_CONFIG]:
                 config.update({section: {}})
                 for item in [it for it in prev_parser.options(section) if it in self.DEFAULT_CONFIG[section]]:

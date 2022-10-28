@@ -8,7 +8,7 @@ from utils.const import TRANSLATION_TABLE
 home = Path(__file__).parent.parent.parent.absolute()
 
 
-def html_spaces(n: int):
+def html_spaces(n: int) -> str|int:
     """Splits number by thousands with a space"""
     return "{0:n}".format(n) if n != 1 else n
 

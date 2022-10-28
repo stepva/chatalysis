@@ -12,7 +12,7 @@ class Messenger(FacebookSource):
         self.source_type = SourceType.MESSENGER
 
     def _process_messages(
-        self, messages: list, participants: list[str], title: str, stats_type: StatsType = None
+        self, messages: list[Any], participants: list[str], title: str, stats_type: StatsType = None
     ) -> FacebookStats:
         """Processes the messages, produces raw stats and stores them in a Chat object.
 

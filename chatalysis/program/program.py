@@ -1,6 +1,7 @@
 import io
 import os
 from pprint import pprint
+from typing import Any
 
 from __init__ import __version__
 from chats.analyzer import Analyzer
@@ -12,7 +13,10 @@ from utils.config import Config
 
 
 class Program:
-    def __init__(self):
+    gui: Any
+    source: Any
+
+    def __init__(self) -> None:
         self.personal_stats = None
         self.source = None
         self.top_ten_individual = None
@@ -22,23 +26,23 @@ class Program:
         self.gui = None
         self.config = Config()
 
-    def run(self, cli: bool = False):
+    def run(self, cli: bool = False) -> None:
         if cli:
             self.cli()
         else:
             self.gui = MainGUI(self)
             self.gui.mainloop()
 
-    def chat_to_html(self, name):
+    def chat_to_html(self, name: str) -> Any:
         chat = self.source.get_chat(name)
         self.to_html(chat)
 
-    def personal_to_html(self):
+    def personal_to_html(self) -> None:
         if not self.personal_stats:
             self.personal_stats = self.source.personal_stats()
         self.to_html(self.personal_stats)
 
-    def to_html(self, chat: Stats):
+    def to_html(self, chat: Stats) -> None:
         """Analyzes any type of chat (or PersonalStats), creates an HTML output file and opens it in the browser.
 
         :param chat: Chat or PersonalStats to analyze
@@ -53,7 +57,7 @@ class Program:
 
         open_html(file_path)
 
-    def to_cli(self, chat_name: str):
+    def to_cli(self, chat_name: str) -> None:
         """Analyzes the chat and prints the stats to terminal"""
         chat = self.source.get_chat(chat_name)
         analyzer = Analyzer(chat)
@@ -65,7 +69,7 @@ class Program:
         pprint(analyzer.time_stats(chat.times), indent=2, sort_dicts=False)
         pprint(chat.first_message(), indent=2, sort_dicts=False)
 
-    def cli(self):
+    def cli(self) -> None:
         """CLI loop used mainly for testing purposes"""
         self.data_dir_path = os.getcwd()
         try:
