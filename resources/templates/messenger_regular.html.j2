@@ -52,27 +52,17 @@
             <i>Chatalysis {{ version }}</i>
         </section>
         <section id="names" style="display: grid; grid-template-columns: repeat(3, auto); padding-top: 20px; padding-bottom: 30px;">
-            {% if participants == 2 %}
-                <div style="text-align: right; padding-top: 10px;">
-                    <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture">
-                </div>
-                <div style="padding-top: 10px;">
-                    <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} and {{ names[1] }}</h1>
-                    <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b><br>
-                    <b>Messenger</b>
-                </div> 
-                <div style="text-align: left; padding-top: 10px;">
-                    <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture">
-                </div>
-            {% else %}
-                <div></div>
-                <div style="padding-bottom: 15px;">
-                    <h1 style="font-size: 30; margin-bottom: 5;">{{ title }}</h1>
-                    <b>{{ from_day }}</b> - <b>{{ to_day }}</b><br>
-                    <b>Messenger</b>
-                </div>
-                <div></div>
-            {% endif %}
+            <div style="text-align: right; padding-top: 10px;">
+                <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture">
+            </div>
+            <div style="padding-top: 10px;">
+                <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} and {{ names[1] }}</h1>
+                <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b><br>
+                <b>Messenger</b>
+            </div> 
+            <div style="text-align: left; padding-top: 10px;">
+                <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture">
+            </div>
         </section>
         <section id="total stats" style="display: grid; grid-template-columns: repeat(7, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
             <div style="display: flex; justify-content: center;">
@@ -171,70 +161,6 @@
                 </div>
             </div>
         </section>
-        {% if participants > 2 %}
-            {% if lines > 0 %}     
-                <section id="more personal stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-gap: 2px;">
-                    {% for n in names[2:-left] %}
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px; padding-bottom: 20px;">  
-                            <div style="display: flex; align-items: center; justify-self: end;">
-                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                                    <div>
-                                    <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
-                                    </div>
-                                    <p style="margin-top: 5px; margin-bottom: 0;">
-                                    <b>{{ splits[n] }}</b>
-                                    </p>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-self: start;">
-                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                                    <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
-                                        <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
-                                        <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
-                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
-                                        <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
-                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
-                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </section>
-            {% endif %}
-            {% if left > 0 %}
-                <section id="extra personal stats" style="display: grid; grid-template-columns: repeat({{left}}, 1fr); padding-bottom: 30px; grid-gap: 2px; padding-right: 150px; padding-left: 150px">
-                    {% for n in names[-left:] %}           
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px; margin: auto;">  
-                            <div style="display: flex; align-items: center; justify-self: end;">
-                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                                    <div>
-                                    <img src="{{ pictures[n] }}" alt="Profile picture" class="profile-picture-small">
-                                    </div>
-                                    <p style="margin-top: 5px; margin-bottom: 0;">
-                                    <b>{{ splits[n] }}</b>
-                                    </p>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-self: start;">
-                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                                    <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
-                                        <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
-                                        <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
-                                        <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
-                                        <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
-                                        <b>{{ audios.get(n, 0)|space }}</b> {{ "audios" if audios.get(n, 0) != 1 else "audio"}}<br>
-                                        <b>{{ files.get(n, 0)|space }}</b> {{ "files" if files.get(n, 0) != 1 else "file"}}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </section>
-            {% endif %}
-        {% endif %}
         <section id="time stats" style="display: grid; grid-template-columns: repeat(4, 1fr); padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
             <div>
                 <p class="stats-num">{{ top_day[0] }}</p>
@@ -325,45 +251,6 @@
                 </div>
             {% endfor %}
             </section>
-            {% if left_emojis == 1 %}
-                <section id="extra emoji personal" style="padding-bottom: 15px;">
-                    <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
-                            <div style="display: flex; align-items: center; justify-self: end;">
-                                <div style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                                    <div>
-                                        <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
-                                    </div>
-                                    <p style="margin-top: 5px; margin-bottom: 0;">
-                                        <b>{{ splits[names[-1]] }}</b>
-                                    </p>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-self: start;">
-                                <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                                    <p class="stats">
-                                        <b>{{ emojis_count["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
-                                        <b>{{ diff_emojis[names[-1]]|space }}</b> different emojis<br>
-                                        <b>{{ avg_emojis[names[-1]] }}</b> emojis per message<br>
-                                        <br>
-                                        top emojis:
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                            <div style="display: grid; grid-template-columns: repeat({{ emojis_L[names[-1]] }}, 50px);">
-                                {% for emoji, num, f in top_emojis[names[-1]] %}
-                                <div style="display: flex; justify-content: center;">
-                                    <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
-                                        {{ num|space }}</p>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            {% endif %}
         {% endif %}
         {% if reacts_count["total"] > 0 %}
             <section id="reacts stats" style="display: grid; grid-template-columns: 1fr 58.5% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
@@ -390,7 +277,7 @@
                     </div>
                 </div>
             </section>
-            <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
+            <section id="reacts personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
             {% for n in names[:-left_emojis] %}
                 <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
@@ -430,48 +317,6 @@
                     </div>
                 </div>
             {% endfor %}
-            </section>
-            {% if left_emojis == 1 %}
-                <section id="extra reacs personal" style="padding-bottom: 15px;">
-                    <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
-                        <div style="display: flex; align-items: center; justify-self: end;">
-                            <div
-                                style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
-                                <div>
-                                    <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
-                                </div>
-                                <p style="margin-top: 5px; margin-bottom: 0;">
-                                    <b>{{ splits[names[-1]] }}</b>
-                                </p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-self: start;">
-                            <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
-                                <p class="stats">
-                                    <b>{{ reacts_count["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
-                                    <b>{{ diff_reacts_gave[names[-1]]|space }}</b> different reactions given<br>
-                                    <b>{{ reacts_count["got"][names[-1]]["total"]|space }}</b> reactions received<br>
-                                    <b>{{ avg_reacts[names[-1]] }}</b> reactions per message<br>
-                                    <br>
-                                    top reactions received:
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{reacts_L[names[-1]]}}, 50px);">
-                            {% for reac, num, f in top_reacts[names[-1]] %}
-                            <div style="display: flex; justify-content: center;">
-                                <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
-                                    {{ num|space }}</p>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                </section>
-            {% endif %}
             </section>
         {% endif %}       
         <section id="footer" style="background-clip: padding-box; padding-top: 5px; padding-bottom: 5px; background-color: #F2F2F2;">
