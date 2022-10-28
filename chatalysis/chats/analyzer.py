@@ -336,7 +336,7 @@ class Analyzer:
         return types[:10], counts[:10]
 
     @staticmethod
-    def _top_emojis_personal(to_count: Any, name: str, keyword: str) -> Any:
+    def _top_emojis_personal(to_count: Any, name: str, keyword: str) -> tuple[Any, Any]:
         """Prepares personal top emojis for the HTML"""
         l = sorted(to_count[keyword][name].items(), key=lambda item: item[1], reverse=True)
         types = []
@@ -344,7 +344,7 @@ class Analyzer:
         for e in l:
             types.append(e[0])
             counts.append(e[1])
-        return [types[1:11], counts[1:11]]
+        return types[1:11], counts[1:11]
 
     def _top_emojis(self, to_count: Any, keyword: str) -> Any:
         """Packs the overall and top emojis for the HTML"""
@@ -361,12 +361,12 @@ class Analyzer:
         return tops
 
     @staticmethod
-    def _top_times(time: Any) -> list[Any]:
+    def _top_times(time: Any) -> tuple[Any, Any]:
         """Gets the top time (year, month...) and messages in there"""
-        return [
+        return (
             sorted(time.items(), key=lambda item: item[1], reverse=True)[0][0],
             sorted(time.items(), key=lambda item: item[1], reverse=True)[0][1],
-        ]
+        )
 
     def _count_types(self, to_count: dict[Any, Any], keyword: str) -> dict[str, int]:
         """Gets the count of different emojis or reactions"""
