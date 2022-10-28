@@ -23,7 +23,7 @@ class FacebookSource(MessageSource):
 
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self.folders: list[str] = []
+        self.folders: list[Path] = []
         self.chat_ids: list[str] = []  # list of all conversations identified by their chat ID
 
         # Mapping of condensed conversation names (user input) to chat IDs. Since a conversation name
@@ -197,7 +197,7 @@ class FacebookSource(MessageSource):
         paths = []
 
         for folder in self.folders:
-            path_name = f"{folder}/inbox/{chat_id}"
+            path_name = f"{folder}/{chat_id}"
             if os.path.isdir(path_name):
                 paths.append(Path(path_name))
 
@@ -278,20 +278,14 @@ class FacebookSource(MessageSource):
 
     def _load_message_folders(self):
         """Load folders containing the messages"""
-        for d in list_folder(self._data_dir_path):
-            if d.startswith("messages") and os.path.isdir(f"{self._data_dir_path}/{d}"):
-                self.folders.append(f"{self._data_dir_path}/{d}")
-
+        self.folders = [Path(root, d) for root, dirs, _ in os.walk(self._data_dir_path) for d in dirs if d == "inbox"]
         if not self.folders:
-            raise Exception(
-                'Looks like there is no "messages" folder here. Make sure to add the "messages" folder downloaded from '
-                "Facebook as described in the README :)"
-            )
+            raise Exception('Looks like there is no "inbox" folder here.')
 
     def _load_all_chats(self):
         """Load all chats from the source"""
         for folder in self.folders:
-            for chat_id in list_folder(Path(folder) / "inbox"):
+            for chat_id in list_folder(folder):
                 if not chat_id.startswith("._"):
                     name = chat_id.split("_")[0].lower()
 
