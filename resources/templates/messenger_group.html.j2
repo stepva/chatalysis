@@ -119,7 +119,7 @@
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
-                            <b>{{ messages.get(names[0], 0)|space }}</b> messages<br>
+                            <b>{{ messages.get(names[0], 0)|space }}</b> {{ "messages" if messages.get(names[0], 0) != 1 else "message"}}<br>
                             <b>{{ images.get(names[0], 0)|space }}</b> {{ "images" if images.get(names[0], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[0], 0)|space }}</b> {{ "gifs" if gifs.get(names[0], 0) != 1 else "gif"}}<br>
                             <b>{{ stickers.get(names[0], 0)|space }}</b> {{ "stickers" if stickers.get(names[0], 0) != 1 else "sticker"}}<br>
@@ -145,7 +145,7 @@
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
-                            <b>{{ messages.get(names[1], 0)|space }}</b> messages<br>
+                            <b>{{ messages.get(names[1], 0)|space }}</b> {{ "messages" if messages.get(names[1], 0) != 1 else "message"}}<br>
                             <b>{{ images.get(names[1], 0)|space }}</b> {{ "images" if images.get(names[1], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[1], 0)|space }}</b> {{ "gifs" if gifs.get(names[1], 0) != 1 else "gif"}}<br>
                             <b>{{ stickers.get(names[1], 0)|space }}</b> {{ "stickers" if stickers.get(names[1], 0) != 1 else "sticker"}}<br>
@@ -175,7 +175,7 @@
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ messages.get(n, 0)|space }}</b> {{ "messages" if messages.get(n, 0) != 1 else "message"}}<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
                                         <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
@@ -206,7 +206,7 @@
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ messages.get(n, 0)|space }}</b> {{ "messages" if messages.get(n, 0) != 1 else "message"}}<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
                                         <b>{{ stickers.get(n, 0)|space }}</b> {{ "stickers" if stickers.get(n, 0) != 1 else "sticker"}}<br>
@@ -321,16 +321,16 @@
                                         <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                     </div>
                                     <p style="margin-top: 5px; margin-bottom: 0;">
-                                        <b>{{ splits[names[-1]] }}</b>
+                                        <b>{{ splits[emojis_names[-1]] }}</b>
                                     </p>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ emojis_count["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
-                                        <b>{{ diff_emojis[names[-1]]|space }}</b> different emojis<br>
-                                        <b>{{ avg_emojis[names[-1]] }}</b> emojis per message<br>
+                                        <b>{{ emojis_count["sent"][emojis_names[-1]]["total"]|space }}</b> total emojis<br>
+                                        <b>{{ diff_emojis[emojis_names[-1]]|space }}</b> different emojis<br>
+                                        <b>{{ avg_emojis[emojis_names[-1]] }}</b> emojis per message<br>
                                         <br>
                                         top emojis:
                                     </p>
@@ -428,17 +428,17 @@
                                     <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                 </div>
                                 <p style="margin-top: 5px; margin-bottom: 0;">
-                                    <b>{{ splits[names[-1]] }}</b>
+                                    <b>{{ splits[reacts_names[-1]] }}</b>
                                 </p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ reacts_count["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
-                                    <b>{{ diff_reacts_gave[names[-1]]|space }}</b> different reactions given<br>
-                                    <b>{{ reacts_count["got"][names[-1]]["total"]|space }}</b> reactions received<br>
-                                    <b>{{ avg_reacts[names[-1]] }}</b> reactions per message<br>
+                                    <b>{{ reacts_count["gave"][reacts_names[-1]]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diff_reacts_gave[reacts_names[-1]]|space }}</b> different reactions given<br>
+                                    <b>{{ reacts_count["got"][reacts_names[-1]]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avg_reacts[reacts_names[-1]] }}</b> reactions per message<br>
                                     <br>
                                     top reactions received:
                                 </p>

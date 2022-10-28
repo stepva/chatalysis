@@ -107,7 +107,7 @@
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
-                            <b>{{ messages.get(names[0], 0)|space }}</b> messages<br>
+                            <b>{{ messages.get(names[0], 0)|space }}</b> {{ "messages" if messages.get(names[0], 0) != 1 else "message"}}<br>
                             <b>{{ images.get(names[0], 0)|space }}</b> {{ "images" if images.get(names[0], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[0], 0)|space }}</b> {{ "gifs" if gifs.get(names[0], 0) != 1 else "gif"}}<br>
                             <b>{{ videos.get(names[0], 0)|space }}</b> {{ "videos" if videos.get(names[0], 0) != 1 else "video"}}<br>
@@ -131,7 +131,7 @@
                 <div style="display: flex; align-items: center; justify-self: start;">
                     <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                         <p class="stats">
-                            <b>{{ messages.get(names[1], 0)|space }}</b> messages<br>
+                            <b>{{ messages.get(names[1], 0)|space }}</b> {{ "messages" if messages.get(names[1], 0) != 1 else "message"}}<br>
                             <b>{{ images.get(names[1], 0)|space }}</b> {{ "images" if images.get(names[1], 0) != 1 else "image"}}<br>
                             <b>{{ gifs.get(names[1], 0)|space }}</b> {{ "gifs" if gifs.get(names[1], 0) != 1 else "gif"}}<br>
                             <b>{{ videos.get(names[1], 0)|space }}</b> {{ "videos" if videos.get(names[1], 0) != 1 else "video"}}<br>
@@ -159,7 +159,7 @@
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ messages.get(n, 0)|space }}</b> {{ "messages" if messages.get(n, 0) != 1 else "message"}}<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
                                         <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>
@@ -188,7 +188,7 @@
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ messages.get(n, 0)|space }}</b> messages<br>
+                                        <b>{{ messages.get(n, 0)|space }}</b> {{ "messages" if messages.get(n, 0) != 1 else "message"}}<br>
                                         <b>{{ images.get(n, 0)|space }}</b> {{ "images" if images.get(n, 0) != 1 else "image"}}<br>
                                         <b>{{ gifs.get(n, 0)|space }}</b> {{ "gifs" if gifs.get(n, 0) != 1 else "gif"}}<br>
                                         <b>{{ videos.get(n, 0)|space }}</b> {{ "videos" if videos.get(n, 0) != 1 else "video"}}<br>

@@ -1,5 +1,5 @@
 import math
-from typing import Any
+from typing import Any, Dict
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -405,22 +405,25 @@ class Analyzer:
 
     def _emoji_stats_count(self, emojis_reacts: dict, keyword: str) -> int:
         """Calculates how many lines of emojis and reactions stats are needed in the HTML"""
-        if len(emojis_reacts[keyword]) % 2 == 0:
-            return -len(emojis_reacts[keyword])
+        active = self._active_names_emojis_reacts(emojis_reacts, keyword)
+        if len(active) % 2 == 0:
+            return -len(active)
         else:
             return 1
 
     def _active_names(self):
         """Get the names of active participants who have sent at least one message"""
         if self.chat.stats_type == StatsType.GROUP:
-            return [n for n in self.chat.participants if self.chat.people[n] > 0]
+            sorted_names = {k: v for k, v in sorted(self.chat.people.items(), key=lambda item: item[1], reverse=True)}
+            return [n for n in sorted_names if sorted_names[n] > 0 and n != 'total']
         else:
             return self.chat.participants
 
     def _active_names_emojis_reacts(self, to_check: dict, keyword: str) -> list:
         """Get the names of participants who have sent emojis or reactions"""
         if self.chat.stats_type == StatsType.GROUP:
-            return [n for n in to_check[keyword] if to_check[keyword][n]['total'] != 0]
+            sorted_names = dict(sorted(to_check[keyword].items(), key=lambda k_v: k_v[1]['total'], reverse=True))
+            return [n for n in sorted_names if sorted_names[n]['total'] != 0]
         else:
             return [n for n in to_check[keyword]]
         
