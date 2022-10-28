@@ -2,6 +2,7 @@ import appdirs
 import configparser
 import os
 from pathlib import Path
+from typing import Dict, Any
 
 from __init__ import __version__
 from utils.utility import list_folder
@@ -15,10 +16,10 @@ config_file = config_dir_current / "config.ini"
 class Config:
     """Simple class for saving & loading config items"""
 
-    DEFAULT_CONFIG = {
-        "General": {"force_generate": "no"},
+    DEFAULT_CONFIG: Dict[str, Any] = {
+        "General": {},
         "Source_dirs": {"Messenger": os.getcwd(), "Instagram": os.getcwd()},
-        "Dev": {"print_stacktrace": "no"},
+        "dev": {"print_stacktrace": "no"},
     }
 
     def __init__(self):

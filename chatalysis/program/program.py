@@ -7,7 +7,7 @@ from chats.analyzer import Analyzer
 from chats.stats import Stats
 from program.gui import MainGUI
 from sources.messenger import Messenger
-from utils.utility import check_if_create_new, get_file_path, open_html
+from utils.utility import get_file_path, open_html
 from utils.config import Config
 
 
@@ -43,12 +43,7 @@ class Program:
 
         :param chat: Chat or PersonalStats to analyze
         """
-        create_new = check_if_create_new(chat.title, len(chat.messages), self.source.__class__.__name__)
         file_path = get_file_path(chat.title, self.source.__class__.__name__)
-
-        if not create_new and not self.config.load("force_generate", is_bool=True):
-            open_html(file_path)
-            return
 
         analyzer = Analyzer(chat)
         source = analyzer.create_html()

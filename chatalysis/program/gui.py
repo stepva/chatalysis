@@ -134,7 +134,7 @@ class MainGUI(tk.Tk):
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
 
-            if self.Program.config.load("print_stacktrace", "Dev", is_bool=True):
+            if self.Program.config.load("print_stacktrace", "dev", is_bool=True):
                 show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
             else:
                 show_error(self, repr(e))
@@ -341,7 +341,7 @@ class WindowIndividual(tk.Toplevel):
             show_error(self, f"Sorry, conversation {self.name_entry.get()} doesn't exist")
             return
         except NoMessageFilesError as e:
-            if self.Program.config.load("print_stacktrace", "Dev", is_bool=True):
+            if self.Program.config.load("print_stacktrace", "dev", is_bool=True):
                 show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
             else:
                 show_error(self, repr(e))
