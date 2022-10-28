@@ -1,7 +1,6 @@
 import abc
 import json
 import os
-import warnings
 from datetime import date, timedelta
 from pathlib import Path
 from statistics import mode
@@ -39,7 +38,6 @@ class FacebookSource(MessageSource):
 
         self._load_message_folders()
         self._load_all_chats()
-        self._check_media()
 
     # region Public API
 
@@ -277,27 +275,6 @@ class FacebookSource(MessageSource):
                             self.chat_id_map[name].append(chat_id.lower())
 
                     self.chat_ids.append(chat_id)
-
-    def _check_media(self):
-        """Checks if all media types are included, as for some users Facebook doesn’t include files or videos"""
-        media = {"photos": 0, "videos": 0, "files": 0, "gifs": 0, "audio": 0}
-
-        for folder in self.folders:
-            everything = []
-            for _, dirs, _ in os.walk(folder):
-                everything.extend(dirs)
-            for i in media.keys():
-                if i in everything:
-                    media[i] = 1
-
-        no_media = [m for m in media.keys() if media[m] == 0]
-
-        no_media_str = ", ".join(no_media)
-        if no_media:
-            warnings.warn(
-                f"These media types are not included in your messages for some reason: {no_media_str}. "
-                "I can’t do anything about it.\n"
-            )
 
     # endregion
 
