@@ -1,5 +1,4 @@
 appdirs
-beautifulsoup4
 emoji==2.0.0
 plotly==5.10.0
 jinja2
