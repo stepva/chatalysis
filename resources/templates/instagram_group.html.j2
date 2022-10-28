@@ -52,27 +52,13 @@
             <i>Chatalysis {{ version }}</i>
         </section>
         <section id="names" style="display: grid; grid-template-columns: repeat(3, auto); padding-top: 20px; padding-bottom: 30px;">
-            {% if participants == 2 %}
-                <div style="text-align: right; padding-top: 10px;">
-                    <img src="{{ pictures[names[0]] }}" alt="Profile picture 1" class="profile-picture">
-                </div>
-                <div style="padding-top: 10px;">
-                    <h1 style="font-size: 30; margin-bottom: 5;">{{ names[0] }} and {{ names[1] }}</h1>
-                    <b>{{ from_day }}</b>   -   <b>{{ to_day }}</b><br>
-                    <b>Instagram</b>
-                </div> 
-                <div style="text-align: left; padding-top: 10px;">
-                    <img src="{{ pictures[names[1]] }}" alt="Profile picture 2" class="profile-picture">
-                </div>
-            {% else %}
-                <div></div>
-                <div style="padding-bottom: 15px;">
-                    <h1 style="font-size: 30; margin-bottom: 5;">{{ title }}</h1>
-                    <b>{{ from_day }}</b> - <b>{{ to_day }}</b><br>
-                    <b>Instagram</b>
-                </div>
-                <div></div>
-            {% endif %}
+            <div></div>
+            <div style="padding-bottom: 15px;">
+                <h1 style="font-size: 30; margin-bottom: 5;">{{ title }}</h1>
+                <b>{{ from_day }}</b> - <b>{{ to_day }}</b><br>
+                <b>Instagram</b>
+            </div>
+            <div></div>
         </section>
         <section id="total stats" style="display: grid; grid-template-columns: repeat(5, 1fr); padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: #F2F2F2;">
             <div style="display: flex; justify-content: center;">
@@ -267,7 +253,7 @@
                 </div>
             </section>
             <section id="emoji personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-            {% for n in names[:-left_emojis] %}
+            {% for n in emojis_names[:-left_emojis] %}
                 <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                         <div style="display: flex; align-items: center; justify-self: end;">
@@ -371,7 +357,7 @@
                 </div>
             </section>
             <section id="reacs personal" style="display: grid; grid-template-columns: 50% 50%; padding-top: 25px;">
-            {% for n in names[:-left_emojis] %}
+            {% for n in reacts_names[:-left_reacts] %}
                 <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 35px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">
                         <div style="display: flex; align-items: center; justify-self: end;">
@@ -411,7 +397,7 @@
                 </div>
             {% endfor %}
             </section>
-            {% if left_emojis == 1 %}
+            {% if left_reacts == 1 %}
                 <section id="extra reacs personal" style="padding-bottom: 15px;">
                     <div style="display: grid; grid-template-rows: auto auto; padding-bottom: 25px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 2px;">

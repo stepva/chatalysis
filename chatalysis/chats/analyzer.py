@@ -32,12 +32,20 @@ class Analyzer:
                         template = "instagram_personal"
                 return self.personalHtml(template)
 
-            case StatsType.REGULAR | StatsType.GROUP:
+            case StatsType.REGULAR:
                 match self.chat.source_type:
                     case SourceType.MESSENGER:
-                        template = "messenger_chat"
+                        template = "messenger_regular"
                     case SourceType.INSTAGRAM:
-                        template = "instagram_chat"
+                        template = "instagram_regular"
+                return self.mrHtml(template)
+            
+            case StatsType.GROUP:
+                match self.chat.source_type:
+                    case SourceType.MESSENGER:
+                        template = "messenger_group"
+                    case SourceType.INSTAGRAM:
+                        template = "instagram_group"
                 return self.mrHtml(template)
 
     def mrHtml(self, template_name: str):
@@ -56,7 +64,7 @@ class Analyzer:
             to_day=self.chat.to_day,
             # names
             title=self.chat.title,
-            names=self.chat.participants,
+            names=self._active_names(),
             splits=self._split_names(),
             # pictures
             pictures=self._get_pics(),
@@ -71,7 +79,6 @@ class Analyzer:
             # personal stats
             lines=self._pers_stats_count()[0],
             left=self._pers_stats_count()[1],
-            left_emojis=self._emoji_stats_count(),
             # messages graph
             messages_pie=messages_pie(self.chat.people),
             # time stats
@@ -92,12 +99,16 @@ class Analyzer:
             avg_emojis=self._avg_counts(self.chat.emojis, "sent"),
             top_emojis=self._top_emojis(self.chat.emojis, "sent"),
             emojis_L=self._tops_count(self.chat.emojis, "sent"),
+            left_emojis=self._emoji_stats_count(self.chat.emojis, "sent"),
+            emojis_names=self._active_names_emojis_reacts(self.chat.emojis, "sent"),
             # reactions
             reacts_count=self.chat.reactions,
             diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
             avg_reacts=self._avg_counts(self.chat.reactions, "gave"),
             top_reacts=self._top_emojis(self.chat.reactions, "got"),
             reacts_L=self._tops_count(self.chat.reactions, "got"),
+            left_reacts=self._emoji_stats_count(self.chat.reactions, "gave"),
+            reacts_names=self._active_names_emojis_reacts(self.chat.reactions, "gave"),
             # chat type
             chat_type=self.chat.stats_type.value,
         )
@@ -341,11 +352,12 @@ class Analyzer:
         fontSizesP = list(map(str, range(180, 80, -10)))
         tops = {"total": zip(self._top_emojis_total(to_count)[0], self._top_emojis_total(to_count)[1], fontSizesT)}
         for n in self.chat.participants:
-            tops[n] = zip(
-                self._top_emojis_personal(to_count, n, keyword)[0],
-                self._top_emojis_personal(to_count, n, keyword)[1],
-                fontSizesP,
-            )
+            if n in to_count[keyword]:
+                tops[n] = zip(
+                    self._top_emojis_personal(to_count, n, keyword)[0],
+                    self._top_emojis_personal(to_count, n, keyword)[1],
+                    fontSizesP,
+                )
         return tops
 
     @staticmethod
@@ -356,42 +368,60 @@ class Analyzer:
             sorted(time.items(), key=lambda item: item[1], reverse=True)[0][1],
         ]
 
-    def _count_types(self, to_count, keyword: str):
+    def _count_types(self, to_count: dict, keyword: str):
         """Gets the count of different emojis or reactions"""
         lens = {"total": len(to_count["types"])}
         for n in self.chat.participants:
-            lens[n] = len(to_count[keyword][n]) - 1
+            if n in to_count[keyword]:
+                lens[n] = len(to_count[keyword][n]) - 1
         return lens
 
-    def _avg_counts(self, to_count, keyword: str):
+    def _avg_counts(self, to_count: dict, keyword: str):
         """Gets the average of sent emojis or reactions"""
         avgs = {}
         for n in self.chat.participants:
-            avgs[n] = round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
+            if n in to_count[keyword]:
+                avgs[n] = round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
         return avgs
 
-    def _tops_count(self, to_count, keyword: str):
+    def _tops_count(self, to_count: dict, keyword: str):
         """Gets the number of top emojis or reactions up to 10"""
         count = {"total": len(self._top_emojis_total(to_count)[0])}
         for n in self.chat.participants:
-            count[n] = len(self._top_emojis_personal(to_count, n, keyword)[0])
+            if n in to_count[keyword]:
+                count[n] = len(self._top_emojis_personal(to_count, n, keyword)[0])
         return count
 
     def _pers_stats_count(self):
         """Calculates how many lines of personal stats are needed in the HTML"""
-        if len(self.chat.participants) > 2:
-            lines = math.floor((len(self.chat.participants) - 2) / 3)
-            left = (len(self.chat.participants) - 2) - (lines * 3)
-            x = -len(self.chat.participants) if left == 0 else left
+        active = self._active_names()
+        if len(active) > 2:
+            lines = math.floor((len(active) - 2) / 3)
+            left = (len(active) - 2) - (lines * 3)
+            x = -len(active) if left == 0 else left
             return [lines, x]
         else:
             return [0, 0]
 
-    def _emoji_stats_count(self) -> int:
+    def _emoji_stats_count(self, emojis_reacts: dict, keyword: str) -> int:
         """Calculates how many lines of emojis and reactions stats are needed in the HTML"""
-        if len(self.chat.participants) % 2 == 0:
-            return -len(self.chat.participants)
+        if len(emojis_reacts[keyword]) % 2 == 0:
+            return -len(emojis_reacts[keyword])
         else:
             return 1
 
+    def _active_names(self):
+        """Get the names of active participants who have sent at least one message"""
+        if self.chat.stats_type == StatsType.GROUP:
+            return [n for n in self.chat.participants if self.chat.people[n] > 0]
+        else:
+            return self.chat.participants
+
+    def _active_names_emojis_reacts(self, to_check: dict, keyword: str) -> list:
+        """Get the names of participants who have sent emojis or reactions"""
+        if self.chat.stats_type == StatsType.GROUP:
+            return [n for n in to_check[keyword] if to_check[keyword][n]['total'] != 0]
+        else:
+            return [n for n in to_check[keyword]]
+        
     # endregion
