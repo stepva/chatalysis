@@ -18,6 +18,7 @@ class Config:
     DEFAULT_CONFIG = {
         "General": {"force_generate": "no"},
         "Source_dirs": {"Messenger": os.getcwd(), "Instagram": os.getcwd()},
+        "Dev": {"print_stacktrace": "no"},
     }
 
     def __init__(self):

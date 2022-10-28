@@ -4,6 +4,10 @@ from pathlib import Path
 from chats.stats import Stats
 
 
+class NoMessageFilesError(RuntimeError):
+    pass
+
+
 class MessageSource(abc.ABC):
     """Abstract class for a message source, which loads all available conversations
     and extracts them into Chat objects upon request."""

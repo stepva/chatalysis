@@ -1,51 +1,35 @@
-import abc
 import ctypes
-import os
 import sys
 import tkinter as tk
 import tkmacosx as tkm
+import traceback
 from collections import OrderedDict
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 from typing import Type
 
 from tabulate import tabulate
 
-from sources.message_source import MessageSource
+from sources.message_source import MessageSource, NoMessageFilesError
 from sources.instagram import Instagram
 from sources.messenger import Messenger
 from utils.utility import get_file_path, open_html
 
 
-class Window(tk.Tk):
-    """Tkinter window base class"""
+def show_error(window: tk.Tk | tk.Toplevel, err_message: str):
+    """Shows an error and places the last open GUI window back on top
 
-    def __init__(self):
-        tk.Tk.__init__(self)
-
-    @abc.abstractmethod
-    def display_error(self, errorMessage: str):
-        """Displays an error message in the window
-
-        :param errorMessage: message to be displayed
-        """
-        pass
-
-    @staticmethod
-    def remove_labels(labels: "list[tk.Label]"):
-        """Removes labels from a given window
-
-        :param labels: list of labels to remove
-        """
-        for label in labels:
-            if label is not None:
-                label.destroy()
+    :param window: last open GUI window
+    :param err_message: error message to display
+    """
+    tk.messagebox.showerror("Error", err_message)
+    window.lift()
 
 
-class MainGUI(Window):
+class MainGUI(tk.Tk):
     """Main GUI for the program"""
 
     def __init__(self, program):
-        Window.__init__(self)
+        tk.Tk.__init__(self)
         self.label_under = None
         self.Program = program
         self._create_source_selection()
@@ -53,7 +37,7 @@ class MainGUI(Window):
     def _create_source_selection(self):
         """Creates a menu for selecting the message source"""
         # fix high DPI blurriness on Windows 10
-        if os.name == "nt":
+        if sys.platform == "win32" or sys.platform == "cygwin":
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
 
@@ -104,9 +88,11 @@ class MainGUI(Window):
 
         # Create buttons
         self.button_select_dir = ttk.Button(self, text="Select folder", command=lambda: self.select_dir(source_class))
-        self.button1 = ttk.Button(self, text="Show top conversations", command=lambda: WindowTopTen(self.Program, self))
+        self.button1 = ttk.Button(
+            self, text="Show top conversations", command=lambda: self._try_create_window(WindowTopTen)
+        )
         self.button2 = ttk.Button(
-            self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
+            self, text="Analyze individual conversations", command=lambda: self._try_create_window(WindowIndividual)
         )
         self.button3 = ttk.Button(
             self, text="Show your overall personal stats", command=lambda: self.show_personal(source_class)
@@ -130,9 +116,6 @@ class MainGUI(Window):
         self.button3.grid(column=0, row=5, sticky="N")
         self.label_under.grid(column=0, row=6, pady=5)
 
-    def display_error(self, errorMessage: str):
-        self.label_under.config(text=errorMessage, fg="red")
-
     def select_dir(self, source_class: Type[MessageSource]):
         """Selects directory with the data using a dialog window and creates an instance of the message source.
 
@@ -150,7 +133,11 @@ class MainGUI(Window):
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
-            self.display_error(str(e))
+
+            if self.Program.config.load("print_stacktrace", "Dev", is_bool=True):
+                show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
+            else:
+                show_error(self, repr(e))
             return
 
         self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")  # save last used dir
@@ -163,10 +150,9 @@ class MainGUI(Window):
 
         :param source_class: class of the selected message source
         """
-
         if not self.Program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
-            self.display_error("Cannot analyze until a valid directory is selected")
+            show_error(self, "Cannot analyze until a valid directory is selected")
             return
 
         if not self.Program.personal_stats:
@@ -178,45 +164,37 @@ class MainGUI(Window):
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
+    def _try_create_window(self, window_class: Type[tk.Toplevel]):
+        if self.Program.valid_dir:
+            window_class(self.Program)
+        else:
+            show_error(self, "Cannot analyze until a valid directory is selected")
 
-class WindowTopTen(Window):
+
+class WindowTopTen(tk.Toplevel):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
-    def __init__(self, program, gui: MainGUI):
-        if not program.valid_dir:
-            # don't do anything if source directory is invalid to avoid errors
-            gui.display_error("Cannot analyze until a valid folder is selected")
-            return
-
+    def __init__(self, program):
+        tk.Toplevel.__init__(self)
         self.Program = program
 
-        Window.__init__(self)
         self.title("Top conversations")
         self.geometry("600x600")
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.labelAnalyzing = tk.Label(self, text="Analyzing...")
+        self.label_analyzing = tk.Label(self, text="Analyzing...")
         self.label_error = None
         self.label_top = None
 
         self.show_top()  # runs the top 10 analysis & print
 
-    def display_error(self, errorMessage: str):
-        if not self.label_error:
-            return
-
-        self.remove_labels([self.label_error])
-
-        self.label_error = tk.Label(self, text=errorMessage, wraplength=650, fg="red")
-        self.label_error.grid(column=0, row=1, padx=5, pady=5)
-
     def show_top(self):
         """Analyzes and shows the top conversations"""
         # Calculate the top conversations if not done already
         if self.Program.top_ten_individual is None:
-            self.labelAnalyzing.grid(column=0, row=0, padx=5, pady=5)
+            self.label_analyzing.grid(column=0, row=0, padx=5, pady=5)
             self.update()
 
             topIndividual, topGroup = self.Program.source.top_ten()
@@ -232,7 +210,7 @@ class WindowTopTen(Window):
             else:
                 self.Program.top_five_groups = "No group chats available"
 
-        self.remove_labels([self.labelAnalyzing])  # remove the "Analyzing..." label if present
+        self.label_analyzing.destroy()
 
         # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
         self.label_top = tk.Label(
@@ -252,20 +230,16 @@ class WindowTopTen(Window):
         self.label_top.grid(column=0, row=0)
 
 
-class WindowIndividual(Window):
-    def __init__(self, program, gui: MainGUI):
-        if not program.valid_dir:
-            # don't do anything if source directory is invalid to avoid errors
-            gui.display_error("Cannot analyze until a valid folder is selected")
-            return
-
+class WindowIndividual(tk.Toplevel):
+    def __init__(self, program):
+        tk.Toplevel.__init__(self)
         self.Program = program
-        Window.__init__(self)
+
         self.title("Analyze individual conversations")
         self.geometry("600x400")
-        self.create()
+        self._create()
 
-    def create(self):
+    def _create(self):
         """Creates and renders the objects in the window"""
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -273,7 +247,8 @@ class WindowIndividual(Window):
 
         self.label_instructions = tk.Label(
             self,
-            text="Please enter conversation name in the format 'namesurname'\nwithout special characters (for example: johnsmith)",
+            text="Please enter conversation name in the format 'namesurname'\n"
+            "without special characters (for example: johnsmith)",
             justify="center",
         )
 
@@ -281,7 +256,7 @@ class WindowIndividual(Window):
 
         # set searched_name var to trace any writing action
         self.searched_name = tk.StringVar(self)
-        self.searched_name.trace("w", self.filter_name_list)
+        self.searched_name.trace("w", self._filter_name_list)
 
         original_names = [(chat_id.split("_")[0].lower(), chat_id) for chat_id in sorted(self.Program.source.chat_ids)]
         self.conversation_names = self._create_name_dict(original_names)
@@ -297,8 +272,8 @@ class WindowIndividual(Window):
         self.name_list = tk.StringVar(self, value=string_names)
 
         self.name_box = tk.Listbox(self, listvariable=self.name_list, height=8, width=56)
-        self.name_box.bind("<Double-1>", self.listbox_name_selected)
-        self.name_box.bind("<Return>", self.listbox_name_selected)
+        self.name_box.bind("<Double-1>", self._listbox_name_selected)
+        self.name_box.bind("<Return>", self._listbox_name_selected)
 
         self.label_instructions.grid(column=0, row=0)
         self.name_entry.grid(column=0, row=1, pady=(5, 0))
@@ -331,7 +306,7 @@ class WindowIndividual(Window):
 
         return conversations
 
-    def filter_name_list(self, *args):
+    def _filter_name_list(self, *_args):
         """Updates the listbox to show names starting with the searched string"""
         self.label_under.config(text="")
         new_names = []
@@ -343,14 +318,11 @@ class WindowIndividual(Window):
         string_new_names = " ".join(new_names)
         self.name_list.set(string_new_names)
 
-    def listbox_name_selected(self, *args):
+    def _listbox_name_selected(self, *_args):
         """Takes the selected name from the listbox and runs the analysis"""
         current_selection = self.name_box.curselection()
         selected_name = self.conversation_names[self.name_box.get(current_selection)]
         self.analyze_individual(selected_name)
-
-    def display_error(self, errorMessage: str):
-        self.label_under.config(text=errorMessage, fg="red")
 
     def analyze_individual(self, name: str = "", _event: tk.Event = None):
         """Analyzes an individual conversation and prints information about the process
@@ -366,7 +338,13 @@ class WindowIndividual(Window):
                 name = self.conversation_names[self.name_entry.get()]
             self.Program.chat_to_html(name)
         except KeyError:  # chat wasn't found
-            self.display_error("Sorry, this conversation doesn't exist")
+            show_error(self, f"Sorry, conversation {self.name_entry.get()} doesn't exist")
+            return
+        except NoMessageFilesError as e:
+            if self.Program.config.load("print_stacktrace", "Dev", is_bool=True):
+                show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
+            else:
+                show_error(self, repr(e))
             return
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")

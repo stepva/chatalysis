@@ -10,7 +10,7 @@ import emoji
 
 from utils.const import EMOJIS_REGEX, EMOJIS_DICT
 from chats.stats import StatsType, FacebookStats
-from sources.message_source import MessageSource
+from sources.message_source import MessageSource, NoMessageFilesError
 from utils.utility import list_folder
 
 chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "johnsmith_djnas32owkldm")
@@ -161,7 +161,7 @@ class FacebookSource(MessageSource):
                 if file.startswith("message") and file.endswith(".json"):
                     jsons.append(ch / file)
         if not jsons:
-            raise Exception("No JSON files in this chat")
+            raise NoMessageFilesError(f"{chat_id} - no JSON files in this chat")
 
         return jsons
 
@@ -282,7 +282,7 @@ class FacebookSource(MessageSource):
         """Load folders containing the messages"""
         self.folders = [Path(root, d) for root, dirs, _ in os.walk(self._data_dir_path) for d in dirs if d == "inbox"]
         if not self.folders:
-            raise Exception('Looks like there is no "inbox" folder here.')
+            raise NoMessageFilesError('Looks like there is no "inbox" folder with the messages here.')
 
     def _load_all_chats(self):
         """Load all chats from the source"""
