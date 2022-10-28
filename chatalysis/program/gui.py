@@ -62,7 +62,7 @@ class MainGUI(Window):
             self.grid_rowconfigure(i, weight=1)
 
         self.label_select_source = ttk.Label(
-            self, text="Welcome to Chatalysis!\nPlease select message source:", justify=tk.CENTER
+            self, text="Welcome to Chatalysis!\nPlease select a message source:", justify=tk.CENTER
         )
         self.button_messenger = ttk.Button(
             self, text="Facebook Messenger", command=lambda: self._create_main(Messenger)
@@ -70,8 +70,8 @@ class MainGUI(Window):
         self.button_instagram = ttk.Button(self, text="Instagram", command=lambda: self._create_main(Instagram))
 
         self.label_select_source.grid(column=0, row=0, padx=5, pady=5)
-        self.button_messenger.grid(column=0, row=1, sticky="S", padx=5, pady=5)
-        self.button_instagram.grid(column=0, row=2, sticky="N", padx=5, pady=(5, 50))
+        self.button_messenger.grid(column=0, row=1, sticky="S", padx=5, pady=5, ipady=10, ipadx=10)
+        self.button_instagram.grid(column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=10, ipadx=10)
 
     def _create_main(self, source_class: Type[MessageSource]):
         """Creates the main menu
@@ -93,7 +93,9 @@ class MainGUI(Window):
         self.button2 = ttk.Button(
             self, text="Analyze individual conversations", command=lambda: WindowIndividual(self.Program, self)
         )
-        self.button3 = ttk.Button(self, text="Show your overall personal stats", command=self.show_personal)
+        self.button3 = ttk.Button(
+            self, text="Show your overall personal stats", command=lambda: self.show_personal(source_class)
+        )
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
@@ -126,9 +128,6 @@ class MainGUI(Window):
         )
         self.data_dir_path_tk.set(self.Program.data_dir_path)
 
-        # save last used dir
-        self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")
-
         try:
             # create message source instance filled with data from the selected dir
             self.Program.source = source_class(self.Program.data_dir_path)
@@ -139,11 +138,17 @@ class MainGUI(Window):
             self.display_error(str(e))
             return
 
+        self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")  # save last used dir
         self.Program.valid_dir = True
         self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
 
-    def show_personal(self):
+    def show_personal(self, source_class: Type[MessageSource]):
+        """Opens (and creates if necessary) personal stats.
+
+        :param source_class: class of the selected message source
+        """
+
         if not self.Program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
             self.display_error("Cannot analyze until a valid directory is selected")
@@ -154,7 +159,7 @@ class MainGUI(Window):
             self.update()
             self.Program.personal_to_html()
         else:
-            open_html(get_file_path("Personal stats"))
+            open_html(get_file_path("Personal stats", source_class.__name__))
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
