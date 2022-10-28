@@ -65,13 +65,7 @@ class Instagram(FacebookSource):
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
                 if name in participants:
-                    data = regex.findall(r"\X", m["content"])
-                    for c in data:
-                        if c in emoji.EMOJI_DATA:
-                            emojis["total"] += 1
-                            emojis["types"][c] = 1 + emojis["types"].get(c, 0)
-                            emojis["sent"][name]["total"] += 1
-                            emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
+                    emojis = self._extract_emojis(m, emojis)
             elif "photos" in m:
                 photos["total"] += 1
                 if name in participants:

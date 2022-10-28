@@ -1,12 +1,14 @@
 import abc
 import json
 import os
+import regex
 from datetime import date, timedelta
 from pathlib import Path
 from statistics import mode
 
 import emoji
 
+from utils.const import EMOJIS_REGEX, EMOJIS_DICT
 from chats.stats import StatsType, FacebookStats
 from sources.message_source import MessageSource
 from utils.utility import list_folder
@@ -106,6 +108,32 @@ class FacebookSource(MessageSource):
         top_individual = dict(sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10])
         top_group = dict(sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5])
         return top_individual, top_group
+
+    @staticmethod
+    def _extract_emojis(message: dict, emojis: dict) -> dict:
+        """Extracts both actual Unicode emojis and text emojis (such as ":D") from a message.
+
+        :param message: message to analyze
+        :param emojis: emojis dict to which the extracted emoji should be added
+        :return: expanded emojis dict
+        """
+        # don't touch this, hours of academic research have been spent on this function and I don't want to deal with it again any time soon
+
+        name = message["sender_name"]
+        data = regex.findall(r"\X", regex.sub(r"[a-z]+", "", message["content"]))
+
+        text_emoji = regex.search(EMOJIS_REGEX, message["content"])
+        if text_emoji:
+            data.extend([EMOJIS_DICT[e] for e in text_emoji.groups()])
+
+        for c in data:
+            if c in emoji.EMOJI_DATA:
+                emojis["total"] += 1
+                emojis["types"][c] = 1 + emojis["types"].get(c, 0)
+                emojis["sent"][name]["total"] += 1
+                emojis["sent"][name][c] = 1 + emojis["sent"][name].get(c, 0)
+
+        return emojis
 
     # endregion
 
