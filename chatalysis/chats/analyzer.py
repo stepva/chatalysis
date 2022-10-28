@@ -35,7 +35,7 @@ class Analyzer:
             case StatsType.REGULAR | StatsType.GROUP:
                 match self.chat.source_type:
                     case SourceType.MESSENGER:
-                            template = "messenger_chat"
+                        template = "messenger_chat"
                     case SourceType.INSTAGRAM:
                         template = "instagram_chat"
                 return self.mrHtml(template)
