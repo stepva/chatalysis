@@ -4,7 +4,7 @@ from pprint import pprint
 
 from __init__ import __version__
 from chats.analyzer import Analyzer
-from chats.stats import Stats, StatsType
+from chats.stats import Stats
 from program.gui import MainGUI
 from sources.messenger import Messenger
 from utils.utility import check_if_create_new, get_file_path, open_html

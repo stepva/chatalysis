@@ -1,9 +1,6 @@
 from datetime import date, datetime
 from typing import Any
 
-import emoji
-import regex
-
 from chats.stats import StatsType, FacebookStats, Times, SourceType
 from sources.facebook_source import FacebookSource
 from utils.const import HOURS_DICT
