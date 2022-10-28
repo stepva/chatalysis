@@ -4,6 +4,7 @@ import os
 import sys
 import tkinter as tk
 import tkmacosx as tkm
+from collections import OrderedDict
 from tkinter import ttk, filedialog
 from typing import Type
 
@@ -221,12 +222,12 @@ class WindowTopTen(Window):
             topIndividual, topGroup = self.Program.source.top_ten()
 
             self.Program.top_ten_individual = tabulate(
-                topIndividual.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
+                topIndividual, headers=["Conversation", "Messages"], colalign=("left", "right")
             )
 
             if len(topGroup) > 0:
                 self.Program.top_five_groups = tabulate(
-                    topGroup.items(), headers=["Conversation", "Messages"], colalign=("left", "right")
+                    topGroup, headers=["Conversation", "Messages"], colalign=("left", "right")
                 )
             else:
                 self.Program.top_five_groups = "No group chats available"
@@ -282,15 +283,17 @@ class WindowIndividual(Window):
         self.searched_name = tk.StringVar(self)
         self.searched_name.trace("w", self.filter_name_list)
 
+        original_names = [(chat_id.split("_")[0].lower(), chat_id) for chat_id in sorted(self.Program.source.chat_ids)]
+        self.conversation_names = self._create_name_dict(original_names)
+
         # Entry for entering the conversation name, it's bound to start the analysis when the user hits Enter.
         # Also sets focus on name_entry for immediate writing action.
         self.name_entry = tk.Entry(self, width=56, textvariable=self.searched_name)
-        self.name_entry.bind("<Return>", self.analyze_individual)
+        self.name_entry.bind("<Return>", lambda x: self.analyze_individual())
         self.name_entry.bind("<Down>", lambda x: self.name_box.focus_set())
         self.name_entry.focus_set()
 
-        self.original_names = sorted(self.Program.source.chat_id_map.keys())
-        string_names = " ".join(self.original_names)
+        string_names = " ".join(self.conversation_names.keys())
         self.name_list = tk.StringVar(self, value=string_names)
 
         self.name_box = tk.Listbox(self, listvariable=self.name_list, height=8, width=56)
@@ -302,12 +305,35 @@ class WindowIndividual(Window):
         self.name_box.grid(column=0, row=2, pady=(0, 5))
         self.label_under.grid(column=0, row=3, pady=5)
 
+    def _create_name_dict(self, original_names: list[tuple]) -> dict:
+        """Creates a dict with names of conversations and their chat IDs. If two conversations have the same name,
+        the number of messages is added to the conversation name, to distinguish between them.
+
+        :param original_names: list of all available conversations, stored as tuples (name, chat_id)
+        :return: dict with conversation names
+        """
+        conversations = OrderedDict()
+
+        for name, chat_id in original_names:
+            if name in conversations:
+                chat_id_2 = conversations.get(name)
+                new_name_1 = f"{name}_({self.Program.source.conversation_size(chat_id)}_messages)"
+                new_name_2 = f"{name}_({self.Program.source.conversation_size(chat_id_2)}_messages)"
+
+                conversations.pop(name)
+                conversations[new_name_1] = chat_id
+                conversations[new_name_2] = chat_id_2
+            else:
+                conversations[name] = chat_id
+
+        return conversations
+
     def filter_name_list(self, *args):
         """Updates the listbox to show names starting with the searched string"""
         self.label_under.config(text="")
         new_names = []
 
-        for n in self.original_names:
+        for n in self.conversation_names.keys():
             if n.startswith(self.searched_name.get()):
                 new_names.append(n)
 
@@ -317,21 +343,24 @@ class WindowIndividual(Window):
     def listbox_name_selected(self, *args):
         """Takes the selected name from the listbox and runs the analysis"""
         current_selection = self.name_box.curselection()
-        selected_name = self.name_box.get(current_selection).lower()
-        self.searched_name.set(selected_name)
-        self.analyze_individual()
+        selected_name = self.conversation_names[self.name_box.get(current_selection)]
+        self.analyze_individual(selected_name)
 
     def display_error(self, errorMessage: str):
         self.label_under.config(text=errorMessage, fg="red")
 
-    def analyze_individual(self, _event: tk.Event = None):
-        """Analyzes an individual conversation and prints information about the process"""
+    def analyze_individual(self, name: str = "", _event: tk.Event = None):
+        """Analyzes an individual conversation and prints information about the process
+
+        :param name: name of the conversation to analyze
+        :param _event: tkinter event
+        """
         self.label_under.config(text="Analyzing...", fg="black")
         self.update()
 
-        name = self.name_entry.get()  # get the name of the conversation to analyze
-
         try:
+            if not name:
+                name = self.conversation_names[self.name_entry.get()]
             self.Program.chat_to_html(name)
         except KeyError:  # chat wasn't found
             self.display_error("Sorry, this conversation doesn't exist")

@@ -33,3 +33,10 @@ class MessageSource(abc.ABC):
         :return: dictionary of top 10 individual conversations & top 5 group chats
                  with the structure {conversation name: number of messages}
         """
+
+    @abc.abstractmethod
+    def conversation_size(self, chat: str) -> int:
+        """Gets amount of messages in a conversation.
+
+        :param chat: name of the conversation / chat ID
+        """
