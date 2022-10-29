@@ -45,6 +45,7 @@ class MainGUI(tk.Tk):
 
         self.title("Chatalysis")
         self.geometry("700x350")
+        self.resizable(False, False)  # disable maximize button
 
         self.grid_columnconfigure(0, weight=1)
         for i in range(3):
@@ -184,6 +185,7 @@ class WindowTopTen(tk.Toplevel):
 
         self.title("Top conversations")
         self.geometry("600x600")
+        self.resizable(False, False)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -243,6 +245,7 @@ class WindowIndividual(tk.Toplevel):
 
         self.title("Analyze individual conversations")
         self.geometry("600x400")
+        self.resizable(False, False)
         self._create()
 
     def _create(self) -> None:
