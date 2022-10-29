@@ -13,18 +13,17 @@ from utils.config import Config
 
 
 class Program:
-    gui: Any
-    source: Any
-
     def __init__(self) -> None:
-        self.personal_stats = None
-        self.source = None
-        self.top_ten_individual = None
-        self.top_five_groups = None
+        self.source: Any = None
+        self.gui: Any = None
+        self.config = Config()
+
+        self.top_ten_individual: Any = None
+        self.top_five_groups: Any = None
+        self.personal_stats: Any = None
+
         self.data_dir_path = ""
         self.valid_dir = False
-        self.gui = None
-        self.config = Config()
 
     def run(self, cli: bool = False) -> None:
         if cli:
