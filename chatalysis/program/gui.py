@@ -28,11 +28,9 @@ def show_error(window: tk.Tk | tk.Toplevel, err_message: str) -> None:
 class MainGUI(tk.Tk):
     """Main GUI for the program"""
 
-    label_under: Any
-
     def __init__(self, program: Any) -> None:
         tk.Tk.__init__(self)
-        self.label_under = None
+        self.label_under: Any = None
         self.Program = program
         self._create_source_selection()
 
@@ -177,8 +175,6 @@ class MainGUI(tk.Tk):
 class WindowTopTen(tk.Toplevel):
     """Window showing the top 10 individual conversations & top 5 group chats"""
 
-    label_top: Any
-
     def __init__(self, program: Any):
         tk.Toplevel.__init__(self)
         self.Program = program
@@ -191,8 +187,8 @@ class WindowTopTen(tk.Toplevel):
         self.grid_rowconfigure(0, weight=1)
 
         self.label_analyzing = tk.Label(self, text="Analyzing...")
-        self.label_error = None
-        self.label_top = None
+        self.label_error: tk.Label | None = None
+        self.label_top: tk.Label | None = None
 
         self.show_top()  # runs the top 10 analysis & print
 
@@ -237,8 +233,6 @@ class WindowTopTen(tk.Toplevel):
 
 
 class WindowIndividual(tk.Toplevel):
-    name_box: Any
-
     def __init__(self, program: Any) -> None:
         tk.Toplevel.__init__(self)
         self.Program = program
@@ -280,7 +274,7 @@ class WindowIndividual(tk.Toplevel):
         string_names = " ".join(self.conversation_names.keys())
         self.name_list = tk.StringVar(self, value=string_names)
 
-        self.name_box = tk.Listbox(self, listvariable=self.name_list, height=8, width=56)
+        self.name_box: tk.Listbox = tk.Listbox(self, listvariable=self.name_list, height=8, width=56)
         self.name_box.bind("<Double-1>", self._listbox_name_selected)
         self.name_box.bind("<Return>", self._listbox_name_selected)
 
@@ -329,7 +323,7 @@ class WindowIndividual(tk.Toplevel):
 
     def _listbox_name_selected(self, *_args: Any) -> None:
         """Takes the selected name from the listbox and runs the analysis"""
-        current_selection = self.name_box.curselection()
+        current_selection = self.name_box.curselection()  # type: ignore
         selected_name = self.conversation_names[self.name_box.get(current_selection)]
         self.analyze_individual(selected_name)
 
