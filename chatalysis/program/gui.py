@@ -262,7 +262,7 @@ class WindowIndividual(tk.Toplevel):
 
         # set searched_name var to trace any writing action
         self.searched_name = tk.StringVar(self)
-        self.searched_name.trace("w", self._filter_name_list) # type: ignore
+        self.searched_name.trace("w", self._filter_name_list)  # type: ignore
 
         original_names = [(chat_id.split("_")[0].lower(), chat_id) for chat_id in sorted(self.Program.source.chat_ids)]
         self.conversation_names = self._create_name_dict(original_names)
@@ -330,7 +330,7 @@ class WindowIndividual(tk.Toplevel):
         selected_name = self.conversation_names[self.name_box.get(current_selection)]
         self.analyze_individual(selected_name)
 
-    def analyze_individual(self, name: str = "", _event: None|tk.Event[Any] = None) -> None:
+    def analyze_individual(self, name: str = "", _event: None | tk.Event = None) -> None:  # type: ignore
         """Analyzes an individual conversation and prints information about the process
 
         :param name: name of the conversation to analyze
