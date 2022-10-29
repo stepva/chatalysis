@@ -6,6 +6,7 @@ import regex
 from datetime import date, timedelta
 from pathlib import Path
 from statistics import mode
+import unicodedata as ud
 
 import emoji
 
@@ -199,7 +200,8 @@ class FacebookSource(MessageSource):
 
                 if first:
                     # get title, participants and chat type, which are the same across all JSONs
-                    title = self._decode(data["title"])
+                    # normalization of the title ensures that Top Conversations table is aligned
+                    title = ud.normalize("NFC", self._decode(data["title"]))
                     participants = self._get_participants(data)
 
                     if data["thread_type"] == "RegularGroup":
@@ -224,7 +226,9 @@ class FacebookSource(MessageSource):
         :return: FacebookMessengerChat with the processed chats
         """
 
-    def _process_reactions(self, message: dict[Any, Any], name: str, participants: list[str], reactions: dict[Any, Any]) -> Any:
+    def _process_reactions(
+        self, message: dict[Any, Any], name: str, participants: list[str], reactions: dict[Any, Any]
+    ) -> Any:
         """Extracts reactions from a message and expands the reaction stats.
 
         :param message: message to analyze
@@ -305,13 +309,13 @@ class FacebookSource(MessageSource):
     def _decode_messages(messages: list[Any]) -> list[Any]:
         """Decodes all messages from the Facebook encoding"""
         for m in messages:
-            m["sender_name"] = m["sender_name"].encode("iso-8859-1").decode("utf-8")
+            m["sender_name"] = FacebookSource._decode(m["sender_name"])
             if "content" in m:
-                m["content"] = m["content"].encode("iso-8859-1").decode("utf-8")
+                m["content"] = FacebookSource._decode(m["content"])
             if "reactions" in m:
                 for r in m["reactions"]:
-                    r["reaction"] = r["reaction"].encode("iso-8859-1").decode("utf-8")
-                    r["actor"] = r["actor"].encode("iso-8859-1").decode("utf-8")
+                    r["reaction"] = FacebookSource._decode(r["reaction"])
+                    r["actor"] = FacebookSource._decode(r["actor"])
         return messages
 
     @staticmethod
