@@ -125,7 +125,7 @@ class MainGUI(tk.Tk):
         self.button1.grid(column=0, row=3, sticky="S")
         self.button2.grid(column=0, row=4)
         self.button3.grid(column=0, row=5, sticky="N")
-        self.button_back.grid(column=0, row=6, padx=(620, 15))
+        self.button_back.grid(column=0, row=6, padx=(610, 15))
         self.label_under.grid(column=0, row=6, pady=5)
 
         self._ui_elements = [
