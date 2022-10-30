@@ -35,7 +35,9 @@ class Instagram(FacebookSource):
         files = {"total": 0}
         reactions: Any = {"total": 0, "types": {}, "gave": {}, "got": {}}
         emojis: Any = {"total": 0, "types": {}, "sent": {}}
-        message_lengths: Any = {}  # list of message lengths (in words) from a given person
+        message_lengths: dict[str, list[int]] = {}  # list of message lengths (in words) from a given person
+        total_call_duration = 0
+
         days = self._days_list(messages)
         months: dict[str, int] = {}
         years: dict[str, int] = {}
@@ -66,6 +68,10 @@ class Instagram(FacebookSource):
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
                 if name in participants:
+                    if m["type"] == "Call":
+                        total_call_duration += int(m["call_duration"])
+                        continue
+
                     emojis = self._extract_emojis(m, emojis)
                     words_cnt = len(regex.findall(r"(\b[^\s]+\b)", m["content"]))  # length of the message in words
                     message_lengths[name].append(words_cnt)
@@ -111,6 +117,7 @@ class Instagram(FacebookSource):
             people,
             participants,
             title,
+            total_call_duration // 60,
             stats_type,
             self.source_type,
         )
