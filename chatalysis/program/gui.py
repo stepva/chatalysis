@@ -12,7 +12,6 @@ from tabulate import tabulate
 from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
-from utils.utility import get_file_path, open_html
 
 
 def show_error(window: tk.Tk | tk.Toplevel, err_message: str, print_stacktrace: bool) -> None:
@@ -36,22 +35,27 @@ class MainGUI(tk.Tk):
         tk.Tk.__init__(self)
         self.label_under: Any = None
         self.Program = program
-        self._create_source_selection()
 
-    def _create_source_selection(self) -> None:
-        """Creates a menu for selecting the message source"""
         # fix high DPI blurriness on Windows 10
         if sys.platform == "win32" or sys.platform == "cygwin":
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
 
-        self.title("Chatalysis")
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
 
+        self._ui_elements: list[tk.BaseWidget] = []
+        self._create_source_selection()
+
+    def _create_source_selection(self) -> None:
+        """Creates a menu for selecting the message source"""
+        self.title("Chatalysis")
+        for el in self._ui_elements:  # clear previous widgets
+            el.destroy()
+
         self.grid_columnconfigure(0, weight=1)
-        for i in range(3):
-            self.grid_rowconfigure(i, weight=1)
+        for i in range(7):
+            self.grid_rowconfigure(i, weight=1 if i < 3 else 0)
 
         self.label_select_source = ttk.Label(
             self, text="Welcome to Chatalysis!\nPlease select a message source:", justify=tk.CENTER
@@ -77,18 +81,21 @@ class MainGUI(tk.Tk):
             column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=0 if sys.platform == "darwin" else 10, ipadx=10
         )
 
+        self._ui_elements = [self.label_select_source, self.button_messenger, self.button_instagram]
+
     def _create_main(self, source_class: Type[MessageSource]) -> None:
         """Creates the main menu
         :param source_class: class of the selected message source
         """
-        # Clear source selection menu
-        self.label_select_source.destroy()
-        self.button_messenger.destroy()
-        self.button_instagram.destroy()
+        self.title(f"Chatalysis - {source_class.__name__}")
+
+        self.Program.reset_stored_data()
+        for el in self._ui_elements:  # clear source selection menu
+            el.destroy()
 
         # Configure grids & columns
         self.grid_columnconfigure(0, weight=1)
-        for i in range(2, 6):
+        for i in range(2, 7):
             self.grid_rowconfigure(i, weight=1)
 
         # Create buttons
@@ -99,9 +106,8 @@ class MainGUI(tk.Tk):
         self.button2 = ttk.Button(
             self, text="Analyze individual conversations", command=lambda: self._try_create_window(WindowIndividual)
         )
-        self.button3 = ttk.Button(
-            self, text="Show your overall personal stats", command=lambda: self.show_personal(source_class)
-        )
+        self.button3 = ttk.Button(self, text="Show your overall personal stats", command=self.show_personal)
+        self.button_back = ttk.Button(self, text="Back", command=lambda: self._create_source_selection())
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
@@ -119,7 +125,19 @@ class MainGUI(tk.Tk):
         self.button1.grid(column=0, row=3, sticky="S")
         self.button2.grid(column=0, row=4)
         self.button3.grid(column=0, row=5, sticky="N")
+        self.button_back.grid(column=0, row=6, padx=(620, 15))
         self.label_under.grid(column=0, row=6, pady=5)
+
+        self._ui_elements = [
+            self.label_select_dir,
+            self.button_select_dir,
+            self.entry_data_dir,
+            self.button1,
+            self.button2,
+            self.button3,
+            self.button_back,
+            self.label_under,
+        ]
 
     def select_dir(self, source_class: Type[MessageSource]) -> None:
         """Selects directory with the data using a dialog window and creates an instance of the message source.
@@ -143,14 +161,13 @@ class MainGUI(tk.Tk):
 
         self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")  # save last used dir
         self.Program.valid_dir = True
+        self.Program.reset_stored_data()
+
         self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
 
-    def show_personal(self, source_class: Type[MessageSource]) -> None:
-        """Opens (and creates if necessary) personal stats.
-
-        :param source_class: class of the selected message source
-        """
+    def show_personal(self) -> None:
+        """Opens (and creates if necessary) personal stats."""
         if not self.Program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
             show_error(self, "Cannot analyze until a valid directory is selected", False)
