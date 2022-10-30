@@ -38,6 +38,7 @@ class Stats(abc.ABC):
     people: dict[str, int]  # dict of people who sent messages in the chat and the number of their messages
     participants: list[str]  # list of chat participants
     title: str
+    total_call_duration: int  # duration in minutes
     stats_type: StatsType
     source_type: SourceType
 
