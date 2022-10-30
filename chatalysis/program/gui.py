@@ -9,19 +9,23 @@ from typing import Any, Type
 
 from tabulate import tabulate
 
-from sources.message_source import MessageSource, NoMessageFilesError
+from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
 from utils.utility import get_file_path, open_html
 
 
-def show_error(window: tk.Tk | tk.Toplevel, err_message: str) -> None:
+def show_error(window: tk.Tk | tk.Toplevel, err_message: str, print_stacktrace: bool) -> None:
     """Shows an error and places the last open GUI window back on top
 
     :param window: last open GUI window
     :param err_message: error message to display
+    :param print_stacktrace: bool whether to print stacktrace of the error or not
     """
-    tk.messagebox.showerror("Error", err_message)
+    if print_stacktrace:
+        tk.messagebox.showerror("Error", f"{err_message}\n\n{traceback.format_exc()}")
+    else:
+        tk.messagebox.showerror("Error", err_message)
     window.lift()
 
 
@@ -134,11 +138,7 @@ class MainGUI(tk.Tk):
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
             self.Program.valid_dir = False
-
-            if self.Program.config.load("print_stacktrace", "dev", is_bool=True):
-                show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
-            else:
-                show_error(self, repr(e))
+            show_error(self, repr(e), self.Program.print_stacktrace)
             return
 
         self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")  # save last used dir
@@ -153,15 +153,21 @@ class MainGUI(tk.Tk):
         """
         if not self.Program.valid_dir:
             # don't do anything if source directory is invalid to avoid errors
-            show_error(self, "Cannot analyze until a valid directory is selected")
+            show_error(self, "Cannot analyze until a valid directory is selected", False)
             return
 
         if not self.Program.personal_stats:
             self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
             self.update()
-            self.Program.personal_to_html()
+
+            try:
+                self.Program.personal_stats = self.Program.source.personal_stats()
+                self.Program.to_html(self.Program.personal_stats)
+            except Exception as e:
+                show_error(self, repr(e), self.Program.print_stacktrace)
+                return
         else:
-            open_html(get_file_path("Personal stats", source_class.__name__))
+            self.Program.to_html(self.Program.personal_stats)
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
@@ -169,7 +175,7 @@ class MainGUI(tk.Tk):
         if self.Program.valid_dir:
             window_class(self.Program)
         else:
-            show_error(self, "Cannot analyze until a valid directory is selected")
+            show_error(self, "Cannot analyze until a valid directory is selected", False)
 
 
 class WindowTopTen(tk.Toplevel):
@@ -336,18 +342,19 @@ class WindowIndividual(tk.Toplevel):
         self.label_under.config(text="Analyzing...", fg="black")
         self.update()
 
-        try:
-            if not name:
+        if not name:
+            if self.name_entry.get() in self.conversation_names:
                 name = self.conversation_names[self.name_entry.get()]
-            self.Program.chat_to_html(name)
-        except KeyError:  # chat wasn't found
-            show_error(self, f"Sorry, conversation {self.name_entry.get()} doesn't exist")
-            return
-        except NoMessageFilesError as e:
-            if self.Program.config.load("print_stacktrace", "dev", is_bool=True):
-                show_error(self, f"{repr(e)}\n\n{traceback.format_exc()}")
             else:
-                show_error(self, repr(e))
+                show_error(self, f"Sorry, conversation {self.name_entry.get()} doesn't exist", False)
+                self.label_under.config(text="")
+                return
+
+        try:
+            self.Program.chat_to_html(name)
+        except Exception as e:
+            show_error(self, repr(e), self.Program.print_stacktrace)
+            self.label_under.config(text="")
             return
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
