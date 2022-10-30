@@ -1,5 +1,7 @@
 from datetime import date, datetime
 from typing import Any
+from statistics import mean
+import regex
 
 from chats.stats import FacebookStats, Times, StatsType, SourceType
 from sources.facebook_source import FacebookSource
@@ -33,6 +35,7 @@ class Instagram(FacebookSource):
         files = {"total": 0}
         reactions: Any = {"total": 0, "types": {}, "gave": {}, "got": {}}
         emojis: Any = {"total": 0, "types": {}, "sent": {}}
+        message_lengths: Any = {}  # list of message lengths (in words) from a given person
         days = self._days_list(messages)
         months: dict[str, int] = {}
         years: dict[str, int] = {}
@@ -44,6 +47,7 @@ class Instagram(FacebookSource):
             reactions["gave"][n] = {"total": 0}
             reactions["got"][n] = {"total": 0}
             emojis["sent"][n] = {"total": 0}
+            message_lengths[n] = []
 
         for m in messages:
             name = m["sender_name"]
@@ -63,6 +67,8 @@ class Instagram(FacebookSource):
             if "content" in m:
                 if name in participants:
                     emojis = self._extract_emojis(m, emojis)
+                    words_cnt = len(regex.findall(r"(\b[^\s]+\b)", m["content"]))  # length of the message in words
+                    message_lengths[name].append(words_cnt)
             elif "photos" in m:
                 photos["total"] += 1
                 if name in participants:
@@ -84,9 +90,13 @@ class Instagram(FacebookSource):
                 reactions = self._process_reactions(m, name, participants, reactions)
 
         times = Times(hours, days, weekdays, months, years)
+        avg_message_lengths = {name: round(mean(lengths), 2) for name, lengths in message_lengths.items()}
+        longest_message = {name: sorted(lengths)[-1] for name, lengths in message_lengths.items()}
 
         return FacebookStats(
             messages,
+            avg_message_lengths,
+            longest_message,
             photos,
             gifs,
             stickers,
