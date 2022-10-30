@@ -16,7 +16,9 @@ class Program:
     def __init__(self) -> None:
         self.source: Any = None
         self.gui: Any = None
+
         self.config = Config()
+        self.print_stacktrace = self.config.load("print_stacktrace", "dev", is_bool=True)
 
         self.top_ten_individual: Any = None
         self.top_five_groups: Any = None
@@ -35,11 +37,6 @@ class Program:
     def chat_to_html(self, name: str) -> Any:
         chat = self.source.get_chat(name)
         self.to_html(chat)
-
-    def personal_to_html(self) -> None:
-        if not self.personal_stats:
-            self.personal_stats = self.source.personal_stats()
-        self.to_html(self.personal_stats)
 
     def to_html(self, chat: Stats) -> None:
         """Analyzes any type of chat (or PersonalStats), creates an HTML output file and opens it in the browser.
