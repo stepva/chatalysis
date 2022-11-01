@@ -3,5 +3,6 @@ emoji==2.0.0
 plotly==5.10.0
 jinja2
 regex
+requests
 tabulate
 tkmacosx

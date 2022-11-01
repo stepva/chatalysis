@@ -12,6 +12,7 @@ from tabulate import tabulate
 from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
+from utils.utility import is_latest_version, download_latest
 
 
 def show_error(window: tk.Tk | tk.Toplevel, err_message: str, print_stacktrace: bool) -> None:
@@ -60,6 +61,11 @@ class MainGUI(tk.Tk):
         self.label_select_source = ttk.Label(
             self, text="Welcome to Chatalysis!\nPlease select a message source:", justify=tk.CENTER
         )
+        self.label_version = ttk.Label(self, text="", justify=tk.CENTER)
+
+        if not is_latest_version():
+            self._notify_about_latest()
+
         if sys.platform == "darwin":
             self.button_messenger = tkm.Button(
                 self, text="Facebook Messenger", command=lambda: self._create_main(Messenger), height=50
@@ -81,7 +87,7 @@ class MainGUI(tk.Tk):
             column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=0 if sys.platform == "darwin" else 10, ipadx=10
         )
 
-        self._ui_elements = [self.label_select_source, self.button_messenger, self.button_instagram]
+        self._ui_elements.extend([self.label_select_source, self.button_messenger, self.button_instagram])
 
     def _create_main(self, source_class: Type[MessageSource]) -> None:
         """Creates the main menu
@@ -138,6 +144,22 @@ class MainGUI(tk.Tk):
             self.button_back,
             self.label_under,
         ]
+
+    def _notify_about_latest(self) -> None:
+        """Creates a label notifying about a newer version of Chatalysis and button which downloads t."""
+        self.label_version = ttk.Label(
+            self,
+            text="Looks like you don't have the latest version of Chatalysis.\n"
+            "We recommend that you download it to get all the new features.",
+            justify=tk.CENTER,
+        )
+        self.button_download = ttk.Button(self, text="Download", command=download_latest)
+
+        self.label_version.grid(column=0, row=3, padx=5, pady=5)
+        self.button_download.grid(column=0, row=4, padx=5, pady=10)
+
+        self._ui_elements.append(self.label_version)
+        self._ui_elements.append(self.button_download)
 
     def select_dir(self, source_class: Type[MessageSource]) -> None:
         """Selects directory with the data using a dialog window and creates an instance of the message source.
