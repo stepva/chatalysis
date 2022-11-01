@@ -1,14 +1,16 @@
 import os
 import sys
+import requests
 import webbrowser
 from pathlib import Path
 
 from utils.const import TRANSLATION_TABLE
+from __init__ import __version__
 
 home = Path(__file__).parent.parent.parent.absolute()
 
 
-def html_spaces(n: int) -> str|int:
+def html_spaces(n: int) -> str | int:
     """Splits number by thousands with a space"""
     return "{0:n}".format(n) if n != 1 else n
 
@@ -50,3 +52,23 @@ def list_folder(path: Path) -> list[str]:
     :return: list of strings with the file names
     """
     return [str(folder) for folder in os.listdir(path) if str(folder).find("DS_Store") == -1]
+
+
+def is_latest_version() -> bool:
+    """Checks if the current version is the latest available on GitHub
+
+    :returns: True if current version == latest or if connection could not be established
+    """
+    try:
+        latest = requests.get("https://api.github.com/repos/stepva/chatalysis/releases/latest")
+    except requests.exceptions.ConnectionError:
+        return True
+
+    latest_version = latest.json()["name"]
+    return latest_version == __version__
+
+
+def download_latest() -> None:
+    """Downloads the latest version of chatalysis via browser"""
+    latest = requests.get("https://api.github.com/repos/stepva/chatalysis/releases/latest").json()["name"]
+    webbrowser.open(f"https://github.com/stepva/chatalysis/archive/refs/tags/{latest}.zip")

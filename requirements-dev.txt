@@ -3,4 +3,5 @@
 black
 mypy>=0.982
 types-emoji
+types-requests
 types-tabulate
