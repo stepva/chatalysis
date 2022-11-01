@@ -1,16 +1,29 @@
-*.zip
-/messages*
-*.mp4
-*.json
+# Media files
 *.png
-*.pyc
-*.html
 *.jpg
-!placeholder.jpg
-!preview_v1.jpg
-!preview_personal.png
-/node_modules
-!package.json
-.DS_Store
+*.mp4
+
+# Python
+*.pyc
+.mypy_cache
+venv
+
+# Pyinstaller
+build/
+dist/
+*.exe
+*.out
+
+# IDE data
 .idea/
-todo.md
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Folders
+output/
+messages/
+
+# Other
+TODO.md
