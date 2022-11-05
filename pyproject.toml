@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=42.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+files = "chatalysis"
+strict = true
+ignore_missing_imports = true
+disallow_subclassing_any = false
+warn_return_any = false
+
+[tool.black]
+line-lnegth = 120

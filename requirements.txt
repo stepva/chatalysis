@@ -1,6 +1,6 @@
 appdirs
 emoji==2.2.0
-plotly==5.10.0
+plotly==5.11.0
 jinja2
 regex
 requests
