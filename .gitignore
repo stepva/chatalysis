@@ -5,6 +5,7 @@
 
 # Python
 *.pyc
+*.egg-info
 .mypy_cache
 venv
 
@@ -13,6 +14,10 @@ build/
 dist/
 *.exe
 *.out
+
+# Pytest
+.pytest_cache/
+.coverage
 
 # IDE data
 .idea/

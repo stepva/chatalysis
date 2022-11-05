@@ -2,6 +2,7 @@
 
 black
 mypy>=0.982
+pytest==7.2.0
 types-emoji
 types-requests
 types-tabulate
