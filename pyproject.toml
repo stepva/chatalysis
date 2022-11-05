@@ -11,3 +11,4 @@ warn_return_any = false
 
 [tool.black]
 line-lnegth = 120
+
