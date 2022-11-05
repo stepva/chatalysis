@@ -1,6 +1,7 @@
 -r requirements.txt
 
 black
+flake8
 mypy>=0.982
 pytest==7.2.0
 types-emoji

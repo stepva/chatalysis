@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - master
-            - tests
 
     pull_request:
         branches:
@@ -33,6 +32,9 @@ jobs:
 
             - name: Static analysis (mypy)
               run: mypy
+
+            - name: Code style & linting (Flake8)
+              run: flake8 chatalysis
 
             - name: Run tests
               run: pytest
