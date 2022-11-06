@@ -96,6 +96,7 @@ class MainGUI(tk.Tk):
         self.title(f"Chatalysis - {source_class.__name__}")
 
         self.Program.reset_stored_data()
+        self.Program.valid_dir = False
         for el in self._ui_elements:  # clear source selection menu
             el.destroy()
 
