@@ -18,7 +18,3 @@ def test_get_file_path():
     # check if the output folders for different sources were created
     assert os.path.exists(root / "output" / "Messenger")
     assert os.path.exists(root / "output" / "Instagram")
-
-
-def test_is_latest_version():
-    assert is_latest_version()
