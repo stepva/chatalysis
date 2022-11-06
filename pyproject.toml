@@ -10,5 +10,5 @@ disallow_subclassing_any = false
 warn_return_any = false
 
 [tool.black]
-line-lnegth = 120
-
+line-length = 120
+skip-magic-trailing-comma = true
