@@ -1,10 +1,10 @@
 import math
-from typing import Any, Dict
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
 from __init__ import __version__
-from chats.stats import StatsType, SourceType
+from chats.stats import StatsType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.stats import Stats, Times
 from utils.const import DAYS
@@ -22,31 +22,8 @@ class Analyzer:
 
     def create_html(self) -> Any:
         """Determines which HTML template is best suitable for the stats and proceeds with creating the HTML file"""
-
-        match self.chat.stats_type:
-            case StatsType.PERSONAL:
-                match self.chat.source_type:
-                    case SourceType.MESSENGER:
-                        template = "messenger_personal"
-                    case SourceType.INSTAGRAM:
-                        template = "instagram_personal"
-                return self.personalHtml(template)
-
-            case StatsType.REGULAR:
-                match self.chat.source_type:
-                    case SourceType.MESSENGER:
-                        template = "messenger_regular"
-                    case SourceType.INSTAGRAM:
-                        template = "instagram_regular"
-                return self.mrHtml(template)
-            
-            case StatsType.GROUP:
-                match self.chat.source_type:
-                    case SourceType.MESSENGER:
-                        template = "messenger_group"
-                    case SourceType.INSTAGRAM:
-                        template = "instagram_group"
-                return self.mrHtml(template)
+        template = (self.chat.source_type.name + "_" + self.chat.stats_type.name).lower()
+        return self.mrHtml(template)
 
     def mrHtml(self, template_name: str) -> str:
         """Exports chat stats and other variables into HTML"""
@@ -381,7 +358,9 @@ class Analyzer:
         avgs = {}
         for n in self.chat.participants:
             if n in to_count[keyword]:
-                avgs[n] = round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
+                avgs[n] = (
+                    round(to_count[keyword][n]["total"] / self.chat.people[n], 2) if self.chat.people[n] != 0 else 0
+                )
         return avgs
 
     def _tops_count(self, to_count: dict[Any, Any], keyword: str) -> Any:
@@ -415,16 +394,16 @@ class Analyzer:
         """Get the names of active participants who have sent at least one message"""
         if self.chat.stats_type == StatsType.GROUP:
             sorted_names = {k: v for k, v in sorted(self.chat.people.items(), key=lambda item: item[1], reverse=True)}
-            return [n for n in sorted_names if sorted_names[n] > 0 and n != 'total']
+            return [n for n in sorted_names if sorted_names[n] > 0 and n != "total"]
         else:
             return self.chat.participants
 
     def _active_names_emojis_reacts(self, to_check: dict[Any, Any], keyword: str) -> list[Any]:
         """Get the names of participants who have sent emojis or reactions"""
         if self.chat.stats_type == StatsType.GROUP:
-            sorted_names = dict(sorted(to_check[keyword].items(), key=lambda k_v: k_v[1]['total'], reverse=True))
-            return [n for n in sorted_names if sorted_names[n]['total'] != 0]
+            sorted_names = dict(sorted(to_check[keyword].items(), key=lambda k_v: k_v[1]["total"], reverse=True))
+            return [n for n in sorted_names if sorted_names[n]["total"] != 0]
         else:
             return [n for n in to_check[keyword]]
-        
+
     # endregion
