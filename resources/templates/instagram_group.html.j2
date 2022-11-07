@@ -301,16 +301,16 @@
                                         <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                     </div>
                                     <p style="margin-top: 5px; margin-bottom: 0;">
-                                        <b>{{ splits[names[-1]] }}</b>
+                                        <b>{{ splits[emojis_names[-1]] }}</b>
                                     </p>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; justify-self: start;">
                                 <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                     <p class="stats">
-                                        <b>{{ emojis_count["sent"][names[-1]]["total"]|space }}</b> total emojis<br>
-                                        <b>{{ diff_emojis[names[-1]]|space }}</b> different emojis<br>
-                                        <b>{{ avg_emojis[names[-1]] }}</b> emojis per message<br>
+                                        <b>{{ emojis_count["sent"][emojis_names[-1]]["total"]|space }}</b> total emojis<br>
+                                        <b>{{ diff_emojis[emojis_names[-1]]|space }}</b> different emojis<br>
+                                        <b>{{ avg_emojis[emojis_names[-1]] }}</b> emojis per message<br>
                                         <br>
                                         top emojis:
                                     </p>
@@ -319,7 +319,7 @@
                         </div>
                         <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
                             <div style="display: grid; grid-template-columns: repeat({{ emojis_L[names[-1]] }}, 50px);">
-                                {% for emoji, num, f in top_emojis[names[-1]] %}
+                                {% for emoji, num, f in top_emojis[emojis_names[-1]] %}
                                 <div style="display: flex; justify-content: center;">
                                     <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
                                         {{ num|space }}</p>
@@ -408,17 +408,17 @@
                                     <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                 </div>
                                 <p style="margin-top: 5px; margin-bottom: 0;">
-                                    <b>{{ splits[names[-1]] }}</b>
+                                    <b>{{ splits[reacts_names[-1]] }}</b>
                                 </p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; justify-self: start;">
                             <div style="text-align: left; padding-left: 10px; border-left: 1px solid black;">
                                 <p class="stats">
-                                    <b>{{ reacts_count["gave"][names[-1]]["total"]|space }}</b> reactions given<br>
-                                    <b>{{ diff_reacts_gave[names[-1]]|space }}</b> different reactions given<br>
-                                    <b>{{ reacts_count["got"][names[-1]]["total"]|space }}</b> reactions received<br>
-                                    <b>{{ avg_reacts[names[-1]] }}</b> reactions per message<br>
+                                    <b>{{ reacts_count["gave"][reacts_names[-1]]["total"]|space }}</b> reactions given<br>
+                                    <b>{{ diff_reacts_gave[reacts_names[-1]]|space }}</b> different reactions given<br>
+                                    <b>{{ reacts_count["got"][reacts_names[-1]]["total"]|space }}</b> reactions received<br>
+                                    <b>{{ avg_reacts[reacts_names[-1]] }}</b> reactions per message<br>
                                     <br>
                                     top reactions received:
                                 </p>
@@ -427,7 +427,7 @@
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
                         <div style="display: grid; grid-template-columns: repeat({{reacts_L[names[-1]]}}, 50px);">
-                            {% for reac, num, f in top_reacts[names[-1]] %}
+                            {% for reac, num, f in top_reacts[reacts_names[-1]] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                     {{ num|space }}</p>
