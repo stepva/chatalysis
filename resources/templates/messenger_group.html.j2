@@ -339,7 +339,7 @@
                         </div>
                         <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
                             <div style="display: grid; grid-template-columns: repeat({{ emojis_L[names[-1]] }}, 50px);">
-                                {% for emoji, num, f in top_emojis[names[-1]] %}
+                                {% for emoji, num, f in top_emojis[emojis_names[-1]] %}
                                 <div style="display: flex; justify-content: center;">
                                     <p class="emojis"><span style="font-size: {{f}}%">{{ emoji }}</span><br>
                                         {{ num|space }}</p>
@@ -447,7 +447,7 @@
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
                         <div style="display: grid; grid-template-columns: repeat({{reacts_L[names[-1]]}}, 50px);">
-                            {% for reac, num, f in top_reacts[names[-1]] %}
+                            {% for reac, num, f in top_reacts[reacts_names[-1]] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>
                                     {{ num|space }}</p>
