@@ -168,7 +168,8 @@ class MainGUI(tk.Tk):
         :param source_class: class of the selected message source
         """
         self.Program.data_dir_path = filedialog.askdirectory(
-            title="Select source directory", initialdir=self.Program.config.load(source_class.__name__, "Source_dirs")
+            title="Select source directory",
+            initialdir=self.Program.config.load(source_class.__name__.lower(), "Source_dirs"),
         )
         self.data_dir_path_tk.set(self.Program.data_dir_path)
 
@@ -182,7 +183,8 @@ class MainGUI(tk.Tk):
             show_error(self, repr(e), self.Program.print_stacktrace)
             return
 
-        self.Program.config.save(source_class.__name__, self.Program.data_dir_path, "Source_dirs")  # save last used dir
+        # save last used dir
+        self.Program.config.save(source_class.__name__.lower(), self.Program.data_dir_path, "Source_dirs")
         self.Program.valid_dir = True
         self.Program.reset_stored_data()
 
