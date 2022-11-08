@@ -4,7 +4,7 @@ import requests
 import webbrowser
 from pathlib import Path
 
-from utils.const import TRANSLATION_TABLE
+from utils.const import TRANSLATE_SPECIAL_CHARS
 from __init__ import __version__
 
 home = Path(__file__).parent.parent.parent.absolute()
@@ -42,7 +42,7 @@ def get_file_path(title: str, source_name: str) -> Path:
 
 def change_name(name: str) -> str:
     """Removes non-english characters from a name"""
-    return name.translate(name.maketrans(TRANSLATION_TABLE)).lower()
+    return name.translate(TRANSLATE_SPECIAL_CHARS).lower()
 
 
 def list_folder(path: Path) -> list[str]:
