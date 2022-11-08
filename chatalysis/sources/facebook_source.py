@@ -10,7 +10,7 @@ import unicodedata as ud
 
 import emoji
 
-from utils.const import EMOJIS_REGEX, EMOJIS_DICT
+from utils.const import EMOJIS_REGEX, EMOJIS_DICT, TRANSLATE_REMOVE_LETTERS
 from chats.stats import StatsType, FacebookStats
 from sources.message_source import MessageSource, NoMessageFilesError
 from utils.utility import list_folder
@@ -35,6 +35,9 @@ class FacebookSource(MessageSource):
 
         # cache of Stats objects
         self.chats_cache: dict[chat_id_str, FacebookStats] = {}
+
+        self._regex_emoji = regex.compile(EMOJIS_REGEX)
+        self._regex_unicode = regex.compile(r"\X")
 
         self._load_message_folders()
         self._load_all_chats()
@@ -253,20 +256,18 @@ class FacebookSource(MessageSource):
 
         return reactions
 
-    @staticmethod
-    def _extract_emojis(message: dict[Any, Any], emojis: dict[Any, Any]) -> dict[Any, Any]:
+    def _extract_emojis(self, message: dict[Any, Any], emojis: dict[Any, Any]) -> dict[Any, Any]:
         """Extracts both actual Unicode emojis and text emojis (such as ":D") from a message.
 
         :param message: message to analyze
         :param emojis: emojis dict to which the extracted emoji should be added
         :return: expanded emojis dict
         """
-        # don't touch this, hours of academic research have been spent on this function and I don't want to deal with it again any time soon
 
         name = message["sender_name"]
-        data = regex.findall(r"\X", regex.sub(r"[a-z]+", "", message["content"]))
+        data = self._regex_unicode.findall(message["content"].translate(TRANSLATE_REMOVE_LETTERS))
 
-        text_emoji = regex.search(EMOJIS_REGEX, message["content"])
+        text_emoji = self._regex_emoji.search(message["content"])
         if text_emoji:
             data.extend([EMOJIS_DICT[e] for e in text_emoji.groups()])
 
