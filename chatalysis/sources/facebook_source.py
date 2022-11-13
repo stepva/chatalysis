@@ -15,7 +15,7 @@ from chats.stats import StatsType, FacebookStats
 from sources.message_source import MessageSource, NoMessageFilesError
 from utils.utility import list_folder
 
-chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "johnsmith_djnas32owkldm")
+chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "2kqhirzyng")
 
 
 class FacebookSource(MessageSource):
@@ -26,7 +26,9 @@ class FacebookSource(MessageSource):
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
         self.folders: list[Path] = []
-        self.chat_ids: set[str] = set()  # list of all conversations identified by their chat ID
+        self.chat_ids: dict[
+            chat_id_str, list[Path]
+        ] = {}  # dict of all conversations identified by their chat ID, with their paths
 
         # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
         # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
@@ -44,7 +46,7 @@ class FacebookSource(MessageSource):
 
     # region Public API
 
-    def get_chat(self, chat_id: str) -> FacebookStats:
+    def get_chat(self, chat_id: chat_id_str) -> FacebookStats:
         if chat_id not in self.chats_cache:
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
@@ -91,6 +93,8 @@ class FacebookSource(MessageSource):
 
             # remove emoji because it ruins the aligning of the output text
             title = emoji.replace_emoji(title, "")
+            if not title:
+                title = f"chat_id: {chat_id}"
 
             if chat_type == StatsType.REGULAR:
                 chats[title] = len(messages)
@@ -101,15 +105,15 @@ class FacebookSource(MessageSource):
         top_group = sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5]
         return top_individual, top_group
 
-    def conversation_size(self, chat: str) -> int:
-        messages, _, _, _ = self._get_messages(chat)
+    def conversation_size(self, chat_id: chat_id_str) -> int:
+        messages, _, _, _ = self._get_messages(chat_id)
         return len(messages)
 
     # endregion
 
     # region Chat processing
 
-    def _compile_chat_data(self, chat_id: str) -> None:
+    def _compile_chat_data(self, chat_id: chat_id_str) -> None:
         """Gets all the chat data, processes it and stores it as a Chat object in the cache.
 
         :param chat_id: name of the chat to process
@@ -137,28 +141,13 @@ class FacebookSource(MessageSource):
         self._decode_messages(messages)
         return messages, participants, title, chat_type
 
-    def _get_paths(self, chat_id: str) -> list[Path]:
-        """Gets paths to the inbox folders with desired chat.
-
-        :param chat_id: chat ID of the desired chat
-        :return: list of paths to the inbox folders
-        """
-        paths = []
-
-        for folder in self.folders:
-            path_name = f"{folder}/{chat_id}"
-            if os.path.isdir(path_name):
-                paths.append(Path(path_name))
-
-        return paths
-
-    def _get_jsons(self, chat_id: str) -> list[Path]:
+    def _get_jsons(self, chat_id: chat_id_str) -> list[Path]:
         """Gets the json(s) with messages for a particular chat
 
         :param chat_id: chat ID of the desired chat
         :return: list of JSON files with the messages
         """
-        paths = self._get_paths(chat_id)
+        paths = self.chat_ids[chat_id]
         jsons = []
 
         for ch in paths:
@@ -189,20 +178,21 @@ class FacebookSource(MessageSource):
         :param chat_id: ID of the chat to process
         :return: messages - list of messages
                  title - name of the conversation,
-                 participants - names of conversation participants
+                 participants - names of current conversation participants
                  chat_type - type of chat (regular chat, group chat)
         """
         jsons = self._get_jsons(chat_id)
         messages = []
 
-        first = True
+        get_current_info = True
+        file_max_mod_time = max([os.path.getmtime(j) for j in jsons])
         for json_file in jsons:
             with open(json_file, "r") as data_file:
                 data = json.load(data_file)
                 messages.extend(data["messages"])
 
-                if first:
-                    # get title, participants and chat type, which are the same across all JSONs
+                if get_current_info and os.path.getmtime(json_file) == file_max_mod_time:
+                    # get current title, participants and chat type from the latest file
                     # normalization of the title ensures that Top Conversations table is aligned
                     title = ud.normalize("NFC", self._decode(data["title"]))
                     participants = self._get_participants(data)
@@ -212,7 +202,7 @@ class FacebookSource(MessageSource):
                     else:
                         chat_type = StatsType.REGULAR
 
-                    first = False
+                    get_current_info = False
 
         return messages, participants, title, chat_type
 
@@ -291,11 +281,18 @@ class FacebookSource(MessageSource):
             raise NoMessageFilesError('Looks like there is no "inbox" folder with the messages here.')
 
     def _load_all_chats(self) -> None:
-        """Load all chats from the source"""
+        """Load all chats from the source and get their relevant paths"""
         for folder in self.folders:
             for chat_id in list_folder(folder):
                 if not chat_id.startswith("._"):
-                    self.chat_ids.add(chat_id)
+                    path_to_chat_folder = Path(f"{folder}/{chat_id}")
+                    if any(x.endswith(".json") for x in list_folder(path_to_chat_folder)):
+                        if "_" in chat_id:
+                            chat_id = chat_id.split("_", 1)[1]
+                        if chat_id in self.chat_ids:
+                            self.chat_ids[chat_id].append(path_to_chat_folder)
+                        else:
+                            self.chat_ids[chat_id] = [path_to_chat_folder]
 
     # endregion
 
