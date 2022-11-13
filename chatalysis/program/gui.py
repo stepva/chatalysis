@@ -3,7 +3,6 @@ import sys
 import tkinter as tk
 import tkmacosx as tkm
 import traceback
-from collections import OrderedDict
 from tkinter import ttk, filedialog, messagebox
 from typing import Any, Type
 
@@ -12,7 +11,7 @@ from tabulate import tabulate
 from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
-from utils.utility import is_latest_version, download_latest
+from utils.utility import is_latest_version, download_latest, creation_date
 
 
 def show_error(window: tk.Tk | tk.Toplevel, err_message: str, print_stacktrace: bool) -> None:
@@ -309,8 +308,7 @@ class WindowIndividual(tk.Toplevel):
         self.searched_name = tk.StringVar(self)
         self.searched_name.trace("w", self._filter_name_list)  # type: ignore
 
-        original_names = [(chat_id.split("_")[0].lower(), chat_id) for chat_id in sorted(self.Program.source.chat_ids)]
-        self.conversation_names = self._create_name_dict(original_names)
+        self.conversation_names = self._create_name_dict()
 
         # Entry for entering the conversation name, it's bound to start the analysis when the user hits Enter.
         # Also sets focus on name_entry for immediate writing action.
@@ -331,16 +329,25 @@ class WindowIndividual(tk.Toplevel):
         self.name_box.grid(column=0, row=2, pady=(0, 5))
         self.label_under.grid(column=0, row=3, pady=5)
 
-    def _create_name_dict(self, original_names: list[Any]) -> dict[Any, Any]:
+    def _create_name_dict(self) -> dict[str, str]:
         """Creates a dict with names of conversations and their chat IDs. If two conversations have the same name,
         the number of messages is added to the conversation name, to distinguish between them.
 
-        :param original_names: list of all available conversations, stored as tuples (name, chat_id)
         :return: dict with conversation names
         """
-        conversations: OrderedDict[str, str] = OrderedDict()
+        conversations: dict[str, str] = {}
 
-        for name, chat_id in original_names:
+        for chat_id, chat_paths in self.Program.source.chat_ids.items():
+            # get the latest "name" of the conversation
+            if len(chat_paths) > 1:
+                latest_chat_time = max([creation_date(k) for k in chat_paths])
+                for path in chat_paths:
+                    if creation_date(path) == latest_chat_time:
+                        name = path._parts[-1].split("_")[0]
+                        break
+            else:
+                name = chat_paths[0]._parts[-1].split("_")[0]
+
             if name in conversations:
                 src = self.Program.source
                 chat_id_2 = str(conversations.get(name))
@@ -355,7 +362,7 @@ class WindowIndividual(tk.Toplevel):
             else:
                 conversations[name] = chat_id
 
-        return conversations
+        return dict(sorted(conversations.items()))
 
     def _filter_name_list(self, *_args: Any) -> None:
         """Updates the listbox to show names starting with the searched string"""

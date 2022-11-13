@@ -72,3 +72,23 @@ def download_latest() -> None:
     """Downloads the latest version of chatalysis via browser"""
     latest = requests.get("https://api.github.com/repos/stepva/chatalysis/releases/latest").json()["name"]
     webbrowser.open(f"https://github.com/stepva/chatalysis/archive/refs/tags/{latest}.zip")
+
+
+def creation_date(path_to_file: Path) -> float:
+    """
+    Note: stolen from the internets
+    Try to get the date that a file was created, falling back to when it was
+    last modified if that isn't possible.
+    See http://stackoverflow.com/a/39501288/1709587 for explanation.
+    """
+    if sys.platform == "win32" or sys.platform == "cygwin":
+        return os.path.getctime(path_to_file)
+    else:
+        stat = os.stat(path_to_file)
+        try:
+            # using getattr() because mypy is dumb :) see https://github.com/python/mypy/issues/8823
+            return getattr(stat, "st_birthtime")
+        except AttributeError:
+            # We're probably on Linux. No easy way to get creation dates here,
+            # so we'll settle for when its content was last modified.
+            return getattr(stat, "st_mtime")
