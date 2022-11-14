@@ -51,7 +51,11 @@ def list_folder(path: Path) -> list[str]:
     :param path: path to the directory
     :return: list of strings with the file names
     """
-    return [str(folder) for folder in os.listdir(path) if str(folder).find("DS_Store") == -1]
+    return [
+        str(folder)
+        for folder in os.listdir(path)
+        if str(folder).find("DS_Store") == -1 and str(folder).find("._") == -1
+    ]
 
 
 def is_latest_version() -> bool:
@@ -75,11 +79,8 @@ def download_latest() -> None:
 
 
 def creation_date(path_to_file: Path) -> float:
-    """
-    Note: stolen from the internets
-    Try to get the date that a file was created, falling back to when it was
-    last modified if that isn't possible.
-    See http://stackoverflow.com/a/39501288/1709587 for explanation.
+    """Get the date when a file was created or, if that isn't possible, the time it was last modified.
+    Note: stolen from the internets. See http://stackoverflow.com/a/39501288/1709587 for explanation.
     """
     if sys.platform == "win32" or sys.platform == "cygwin":
         return os.path.getctime(path_to_file)

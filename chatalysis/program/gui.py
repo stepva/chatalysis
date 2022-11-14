@@ -1,5 +1,6 @@
 import ctypes
 import sys
+import os
 import tkinter as tk
 import tkmacosx as tkm
 import traceback
@@ -340,13 +341,11 @@ class WindowIndividual(tk.Toplevel):
         for chat_id, chat_paths in self.Program.source.chat_ids.items():
             # get the latest "name" of the conversation
             if len(chat_paths) > 1:
-                latest_chat_time = max([creation_date(k) for k in chat_paths])
-                for path in chat_paths:
-                    if creation_date(path) == latest_chat_time:
-                        name = path._parts[-1].split("_")[0]
-                        break
+                creation_dates = [creation_date(k) for k in chat_paths]
+                idx = max(range(len(creation_dates)), key=creation_dates.__getitem__)
+                name = os.path.split(chat_paths[idx])[-1].split("_")[0]
             else:
-                name = chat_paths[0]._parts[-1].split("_")[0]
+                name = os.path.split(chat_paths[0])[-1].split("_")[0]
 
             if name in conversations:
                 src = self.Program.source

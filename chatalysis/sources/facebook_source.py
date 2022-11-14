@@ -26,9 +26,9 @@ class FacebookSource(MessageSource):
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
         self.folders: list[Path] = []
-        self.chat_ids: dict[
-            chat_id_str, list[Path]
-        ] = {}  # dict of all conversations identified by their chat ID, with their paths
+
+        # dict of all conversations identified by their chat ID, with their paths
+        self.chat_ids: dict[chat_id_str, list[Path]] = {}
 
         # Intermediate cache of the extracted but not yet processed messages. The values stored are tuples of
         # messages, names of the chat participants, chat title and chat type. Once the messages have been processed,
@@ -94,7 +94,7 @@ class FacebookSource(MessageSource):
             # remove emoji because it ruins the aligning of the output text
             title = emoji.replace_emoji(title, "")
             if not title:
-                title = f"chat_id: {chat_id}"
+                title = f"chat_id: {chat_id}"  # edge case - title is comprised of just emoji
 
             if chat_type == StatsType.REGULAR:
                 chats[title] = len(messages)
@@ -284,15 +284,14 @@ class FacebookSource(MessageSource):
         """Load all chats from the source and get their relevant paths"""
         for folder in self.folders:
             for chat_id in list_folder(folder):
-                if not chat_id.startswith("._"):
-                    path_to_chat_folder = Path(f"{folder}/{chat_id}")
-                    if any(x.endswith(".json") for x in list_folder(path_to_chat_folder)):
-                        if "_" in chat_id:
-                            chat_id = chat_id.split("_", 1)[1]
-                        if chat_id in self.chat_ids:
-                            self.chat_ids[chat_id].append(path_to_chat_folder)
-                        else:
-                            self.chat_ids[chat_id] = [path_to_chat_folder]
+                path_to_chat_folder = Path(f"{folder}/{chat_id}")
+                if any(x.endswith(".json") for x in list_folder(path_to_chat_folder)):
+                    if "_" in chat_id:
+                        chat_id = chat_id.split("_", 1)[1]
+                    if chat_id in self.chat_ids:
+                        self.chat_ids[chat_id].append(path_to_chat_folder)
+                    else:
+                        self.chat_ids[chat_id] = [path_to_chat_folder]
 
     # endregion
 
