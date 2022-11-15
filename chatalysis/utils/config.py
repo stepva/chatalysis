@@ -7,10 +7,7 @@ from typing import Dict, Any
 from __init__ import __version__
 from utils.utility import list_folder
 
-config_dir = Path(appdirs.user_config_dir("Chatalysis"))
-config_dir_current = config_dir / __version__
-config_dir_current.mkdir(parents=True, exist_ok=True)
-config_file = config_dir_current / "config.ini"
+config_dir_current = Path(appdirs.user_config_dir("Chatalysis")) / __version__
 
 
 class Config:
@@ -22,13 +19,17 @@ class Config:
         "dev": {"print_stacktrace": "no"},
     }
 
-    def __init__(self) -> None:
+    def __init__(self, config_dir: Path = config_dir_current) -> None:
+        config_dir.mkdir(parents=True, exist_ok=True)
+        self._config_file = config_dir / "config.ini"
         self._parser = configparser.ConfigParser()
 
-        if os.path.exists(config_file):
-            self._parser.read(config_file)
+        if os.path.exists(self._config_file):
+            self._parser.read(self._config_file)
         else:
             self._create()
+            with open(self._config_file, "w") as cfg:
+                self._parser.write(cfg)
 
     def save(self, item: str, value: str, section: str = "General") -> None:
         """Save a config item
@@ -41,7 +42,7 @@ class Config:
             self._parser.add_section(section)
 
         self._parser.set(section, item, value)
-        with open(config_file, "w") as cfg:
+        with open(self._config_file, "w") as cfg:
             self._parser.write(cfg)
 
     def load(self, item: str, section: str = "General", is_bool: bool = False) -> Any:
@@ -62,12 +63,18 @@ class Config:
 
     def _create(self) -> None:
         """Create the config file and initialize it with default values"""
-        config_versions = sorted(list_folder(config_dir))
+        config_dir = self._config_file.parent.parent
+        config_versions = sorted([item for item in list_folder(config_dir) if os.path.isdir(config_dir / item)])
 
         if len(config_versions) > 1:
             # take config values from config file for previous version of chatalysis
             # that are still present (defined) in the current version
-            prev_config = Path(config_dir, str(config_versions[-2]), "config.ini")
+            prev_config = Path(config_dir, config_versions[-2], "config.ini")
+
+            if not os.path.exists(prev_config):
+                self._parser.read_dict(self.DEFAULT_CONFIG)
+                return
+
             prev_parser = configparser.ConfigParser()
             prev_parser.read(prev_config)
 
@@ -80,6 +87,3 @@ class Config:
             self._parser.read_dict(config)
         else:
             self._parser.read_dict(self.DEFAULT_CONFIG)
-
-        with open(config_file, "w") as cfg:
-            self._parser.write(cfg)
