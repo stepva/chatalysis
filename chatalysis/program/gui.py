@@ -315,7 +315,7 @@ class WindowIndividual(tk.Toplevel):
         # Also sets focus on name_entry for immediate writing action.
         self.name_entry = tk.Entry(self, width=56, textvariable=self.searched_name)
         self.name_entry.bind("<Return>", lambda x: self.analyze_individual())
-        self.name_entry.bind("<Down>", lambda x: self.name_box.focus_set())
+        self.name_entry.bind("<Down>", self._listbox_select_first)
         self.name_entry.focus_set()
 
         string_names = " ".join(self.conversation_names.keys())
@@ -384,6 +384,12 @@ class WindowIndividual(tk.Toplevel):
         current_selection = self.name_box.curselection()  # type: ignore
         selected_name = self.conversation_names[self.name_box.get(current_selection)]
         self.analyze_individual(selected_name)
+
+    def _listbox_select_first(self, _event: Any) -> None:
+        """Selects the first item in the listbox"""
+        self.name_box.focus_set()
+        self.name_box.selection_anchor(0)
+        self.name_box.selection_set(tk.ANCHOR)
 
     def analyze_individual(self, name: str = "", _event: None | tk.Event = None) -> None:  # type: ignore
         """Analyzes an individual conversation and prints information about the process
