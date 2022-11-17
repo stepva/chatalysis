@@ -325,9 +325,13 @@ class WindowIndividual(tk.Toplevel):
         self.name_box.bind("<Double-1>", self._listbox_name_selected)
         self.name_box.bind("<Return>", self._listbox_name_selected)
 
+        self.name_box_scrollbar = tk.Scrollbar(self, command=self.name_box.yview)
+        self.name_box.config(yscrollcommand=self.name_box_scrollbar.set)
+
         self.label_instructions.grid(column=0, row=0)
         self.name_entry.grid(column=0, row=1, pady=(5, 0))
-        self.name_box.grid(column=0, row=2, pady=(0, 5))
+        self.name_box.grid(column=0, row=2, pady=0)
+        self.name_box_scrollbar.grid(column=0, row=2, sticky="NS", padx=(490, 0), pady=(2, 0))
         self.label_under.grid(column=0, row=3, pady=5)
 
     def _create_name_dict(self) -> dict[str, str]:
