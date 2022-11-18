@@ -9,9 +9,9 @@ from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
 from utils.utility import is_latest_version, download_latest
-from GUI.window_top_ten import WindowTopTen
-from GUI.window_individual import WindowIndividual
-from GUI.gui_utils import show_error
+from gui.window_top_ten import WindowTopTen
+from gui.window_individual import WindowIndividual
+from gui.gui_utils import show_error
 
 
 class MainGUI(tk.Tk):

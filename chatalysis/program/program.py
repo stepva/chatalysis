@@ -6,7 +6,7 @@ from typing import Any
 from __init__ import __version__
 from chats.analyzer import Analyzer
 from chats.stats import Stats
-from GUI.main_gui import MainGUI
+from gui.main_gui import MainGUI
 from sources.messenger import Messenger
 from utils.utility import get_file_path, open_html
 from utils.config import Config
