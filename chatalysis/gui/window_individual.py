@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from typing import Any
 
-from GUI.gui_utils import show_error
+from gui.gui_utils import show_error
 from utils.utility import creation_date
 
 
