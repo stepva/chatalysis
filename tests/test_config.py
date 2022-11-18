@@ -89,7 +89,7 @@ def test_try_create_copy_from_previous():
     # try creating a copy from previous config (the directory exists, but the file doesn't)
     # use the default config instead
 
-    new_dir = Path(f"tests/test_data/config/1.0.5")
+    new_dir = Path("tests/test_data/config/1.0.5")
     new_dir.mkdir(parents=True)
 
     config_new = Config(Path(f"tests/test_data/config/{__version__}"))
@@ -103,7 +103,7 @@ def test_try_create_copy_from_previous():
 
 
 def test_default_config_file_existence():
-    config_default = Config()
+    Config()
     assert os.path.exists(config_dir_current)
     assert os.path.exists(config_dir_current.parent)
     assert os.path.exists(config_dir_current / "config.ini")
@@ -111,8 +111,8 @@ def test_default_config_file_existence():
 
 def test_clean_up():
     # this is a separate function which ensures that the cleanup will happen even if some test fails
-    if os.path.exists(f"tests/test_data/config/1.0.5"):
-        shutil.rmtree(f"tests/test_data/config/1.0.5")
+    if os.path.exists("tests/test_data/config/1.0.5"):
+        shutil.rmtree("tests/test_data/config/1.0.5")
     if os.path.exists(f"tests/test_data/config/{__version__}"):
         shutil.rmtree(f"tests/test_data/config/{__version__}")
     if os.path.exists(f"tests/test_data/config_empty/{__version__}"):

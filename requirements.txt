@@ -6,3 +6,4 @@ regex
 requests
 tabulate
 tkmacosx
+pandas==1.5.2

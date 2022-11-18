@@ -22,8 +22,8 @@ class SourceType(Enum):
 @dataclass(frozen=True)
 class Stats(abc.ABC):
     messages: list[Any]
-    avg_message_lengths: dict[Any, Any]
-    longest_message: dict[Any, Any]
+    # avg_message_lengths: dict[Any, Any]
+    # longest_message: dict[Any, Any]
     photos: dict[Any, Any]
     gifs: dict[Any, Any]
     stickers: dict[Any, Any]
@@ -39,6 +39,8 @@ class Stats(abc.ABC):
     participants: list[str]  # list of chat participants
     title: str
     total_call_duration: int  # duration in minutes
+    nicknames: list[dict[str, Any]]
+    group_names: list[dict[str, Any]]
     stats_type: StatsType
     source_type: SourceType
 
