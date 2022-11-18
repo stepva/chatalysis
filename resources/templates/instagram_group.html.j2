@@ -405,7 +405,7 @@
                             <div
                                 style="display: grid; grid-template-rows: auto auto; padding-right: 10px; border-right: 1px solid black;">
                                 <div>
-                                    <img src="{{ pictures[names[-1]] }}" alt="Profile picture" class="profile-picture-small">
+                                    <img src="{{ pictures[reacts_names[-1]] }}" alt="Profile picture" class="profile-picture-small">
                                 </div>
                                 <p style="margin-top: 5px; margin-bottom: 0;">
                                     <b>{{ splits[reacts_names[-1]] }}</b>
@@ -426,7 +426,7 @@
                         </div>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 8px;">
-                        <div style="display: grid; grid-template-columns: repeat({{reacts_L[names[-1]]}}, 50px);">
+                        <div style="display: grid; grid-template-columns: repeat({{reacts_L[reacts_names[-1]]}}, 50px);">
                             {% for reac, num, f in top_reacts[reacts_names[-1]] %}
                             <div style="display: flex; justify-content: center;">
                                 <p class="emojis"><span style="font-size: {{f}}%">{{ reac }}</span><br>

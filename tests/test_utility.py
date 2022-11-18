@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from chatalysis.utils.utility import change_name, is_latest_version, get_file_path
+from chatalysis.utils.utility import change_name, get_file_path
 
 
 def test_change_name():
