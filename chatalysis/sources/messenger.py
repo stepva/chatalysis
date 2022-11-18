@@ -67,6 +67,15 @@ class Messenger(FacebookSource):
             if name in participants:
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
+
+                # todo get identity from autofill_information.json when loading folders (from the most recent one)
+                if "set the nickname for" in m["content"] or "set your nickname to" in m["content"]:
+                    print(
+                        regex.search(
+                            r"(?:set the nickname for |set your nickname)(.*)(?: to )(.+)[.]$", m["content"]
+                        ).groups()
+                    )
+
                 if name in participants:
                     if m["type"] == "Call":
                         total_call_duration += int(m["call_duration"])
@@ -103,8 +112,11 @@ class Messenger(FacebookSource):
                 reactions = self._process_reactions(m, name, participants, reactions)
 
         times = Times(hours, days, weekdays, months, years)
-        avg_message_lengths = {name: round(mean(lengths), 2) for name, lengths in message_lengths.items()}
-        longest_message = {name: sorted(lengths)[-1] for name, lengths in message_lengths.items()}
+        # todo mean requires at least one datapoint
+        # avg_message_lengths = {name: round(mean(lengths), 2) for name, lengths in message_lengths.items()}
+        # longest_message = {name: sorted(lengths)[-1] for name, lengths in message_lengths.items()}
+        avg_message_lengths = {}
+        longest_message = {}
 
         return FacebookStats(
             messages,
