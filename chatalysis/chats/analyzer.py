@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from __init__ import __version__
 from chats.stats import StatsType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
+from chats.charts.plotly_names import groupchat_names_plot
 from chats.stats import Stats, Times
 from utils.const import DAYS
 from utils.utility import list_folder, html_spaces, change_name, home
@@ -56,7 +57,7 @@ class Analyzer:
             # personal stats
             lines=self._pers_stats_count()[0],
             left=self._pers_stats_count()[1],
-            # messages graph
+            # messages plot
             messages_pie=messages_pie(self.chat.people),
             # time stats
             top_day=self._top_times(self.chat.times.days),
@@ -66,10 +67,12 @@ class Analyzer:
             ],
             top_month=self._top_times(self.chat.times.months),
             top_year=self._top_times(self.chat.times.years),
-            # days graph
+            # days plot
             daily_messages_bar=daily_messages_bar(self.chat.times.days),
-            # hour graph
+            # hour plot
             hourly_messages_line=hourly_messages_line(self.chat.times.hours),
+            # group names plot
+            groupchat_names_plot=groupchat_names_plot(self.chat.group_names, self.chat.from_day, self.chat.to_day),
             # emojis
             emojis_count=self.chat.emojis,
             diff_emojis=self._count_types(self.chat.emojis, "sent"),
@@ -81,7 +84,7 @@ class Analyzer:
             # reactions
             reacts_count=self.chat.reactions,
             diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
-            avg_reacts=self._avg_counts(self.chat.reactions, "gave"),
+            avg_reacts=self._avg_counts(self.chat.reactions, "got"),
             top_reacts=self._top_emojis(self.chat.reactions, "got"),
             reacts_L=self._tops_count(self.chat.reactions, "got"),
             left_reacts=self._emoji_stats_count(self.chat.reactions, "gave"),

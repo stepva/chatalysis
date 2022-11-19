@@ -1,6 +1,9 @@
 from datetime import date, datetime
 from typing import Any
 from statistics import mean
+from pathlib import Path
+import os
+import json
 import regex
 
 from chats.stats import StatsType, FacebookStats, Times, SourceType
@@ -12,6 +15,10 @@ class Messenger(FacebookSource):
     def __init__(self, path: str):
         FacebookSource.__init__(self, path)
         self.source_type = SourceType.MESSENGER
+        self.user_name = self._get_user_name()
+
+        self.nicknames_regex = regex.compile(r"(?:set the nickname for |set your nickname)(.*)(?: to )(.+)[.]$")
+        self.group_names_regex = regex.compile(r"(?:named the group )(.*)[.]$")
 
     def _process_messages(
         self, messages: list[Any], participants: list[str], title: str, stats_type: StatsType = None
@@ -37,6 +44,8 @@ class Messenger(FacebookSource):
         emojis: Any = {"total": 0, "types": {}, "sent": {}}
         message_lengths: dict[str, list[int]] = {}  # list of message lengths (in words) from a given person
         total_call_duration = 0
+        nicknames: list[dict[str, Any]] = []
+        group_names: list[dict[str, Any]] = []
 
         days = self._days_list(messages)
         months: dict[str, int] = {}
@@ -67,14 +76,16 @@ class Messenger(FacebookSource):
             if name in participants:
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
+                found, new_nickname = self._process_nicknames(m)
+                if found:
+                    nicknames.append(new_nickname)
+                    continue
 
-                # todo get identity from autofill_information.json when loading folders (from the most recent one)
-                if "set the nickname for" in m["content"] or "set your nickname to" in m["content"]:
-                    print(
-                        regex.search(
-                            r"(?:set the nickname for |set your nickname)(.*)(?: to )(.+)[.]$", m["content"]
-                        ).groups()
-                    )
+                if stats_type == StatsType.GROUP:
+                    found, new_group_name = self._process_group_names(m)
+                    if found:
+                        group_names.append(new_group_name)
+                        continue
 
                 if name in participants:
                     if m["type"] == "Call":
@@ -137,6 +148,44 @@ class Messenger(FacebookSource):
             participants,
             title,
             total_call_duration // 60,
+            nicknames,
+            group_names,
             stats_type,
             self.source_type,
         )
+
+    def _process_nicknames(self, message: dict[Any, Any]) -> tuple[bool, dict[str, Any]]:
+        data = self.nicknames_regex.search(message["content"])
+        if data:
+            target, nickname = data.groups()
+            if target == "":
+                target = self.user_name
+            return True, {"timestamp": message["timestamp_ms"], "target": target, "nickname": nickname}
+
+        else:
+            return False, {}
+
+    def _process_group_names(self, message: dict[Any, Any]) -> tuple[bool, dict[str, Any]]:
+        data = self.group_names_regex.search(message["content"])
+        if data:
+            group_name = data.groups()
+            return True, {"timestamp": message["timestamp_ms"], "group_name": group_name[0]}
+
+        else:
+            return False, {}
+
+    def _get_user_name(self) -> str:
+        """Gets the full name of the user from metadata files downloaded with Facebook Messenger messages"""
+        info_files = [
+            Path(root, f)
+            for root, _, files in os.walk(self._data_dir_path)
+            for f in files
+            if f == "autofill_information.json"
+        ]
+        info_files_mod_times = [os.path.getmtime(i) for i in info_files]
+        idx = max(range(len(info_files_mod_times)), key=info_files_mod_times.__getitem__)
+
+        with open(info_files[idx], "r") as data_file:
+            data = json.load(data_file)
+
+        return self._decode(data["autofill_information_v2"]["FULL_NAME"][0])

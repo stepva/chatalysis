@@ -147,6 +147,8 @@ def daily_messages_bar(days: dict[Any, Any]) -> str:
         yaxis=dict(linecolor="rgba(0,0,0,0.75)"),
         hovermode="x",
     )
+    fig.update_yaxes(fixedrange=True)
+
     # fig.show()
     html = pl.offline.plot(fig, include_plotlyjs=False, output_type="div")
     return html

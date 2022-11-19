@@ -39,6 +39,8 @@ class Stats(abc.ABC):
     participants: list[str]  # list of chat participants
     title: str
     total_call_duration: int  # duration in minutes
+    nicknames: list[dict[str, Any]]
+    group_names: list[dict[str, Any]]
     stats_type: StatsType
     source_type: SourceType
 
