@@ -187,6 +187,11 @@
             {{daily_messages_bar}}
             {{hourly_messages_line}}
         </section>
+        {% if nicknames_plot != '' %}
+            <section id="nicknames plot" style="padding-bottom: 40px; padding-top: 0px; padding-right: 75px; padding-left: 75px;">
+                {{nicknames_plot}}
+            </section>
+        {% endif %}
         {% if emojis_count["total"] > 0 %}
             <section id="emoji stats" style="display: grid; grid-template-columns: 1fr 60% 1fr; padding-bottom: 10px; padding-top: 10px; background-clip: padding-box; background-color: #F2F2F2;">
                 <div style="display: flex; align-items: center; justify-self: end;">

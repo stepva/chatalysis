@@ -17,7 +17,6 @@ class Messenger(FacebookSource):
         self.source_type = SourceType.MESSENGER
         self.user_name = self._get_user_name()
 
-        self.nicknames_regex = regex.compile(r"(?:set the nickname for |set your nickname)(.*)(?: to )(.+)[.]$")
         self.group_names_regex = regex.compile(r"(?:named the group )(.*)[.]$")
 
     def _process_messages(
@@ -31,6 +30,9 @@ class Messenger(FacebookSource):
         :param stats_type: type of stats (regular / group chat / overall personal)
         :return: FacebookMessengerChat with the processed chats
         """
+        nicknames_regex_prep = f"(?:set the nickname for |set your nickname)(|{'|'.join(participants)})(?: to )(.+)[.]$"
+        nicknames_regex = regex.compile(nicknames_regex_prep)
+
         from_day = date.fromtimestamp(messages[0]["timestamp_ms"] // 1000)
         to_day = date.fromtimestamp(messages[-1]["timestamp_ms"] // 1000)
         people = {"total": 0}
@@ -76,7 +78,7 @@ class Messenger(FacebookSource):
             if name in participants:
                 people[name] = 1 + people.get(name, 0)
             if "content" in m:
-                found, new_nickname = self._process_nicknames(m)
+                found, new_nickname = self._process_nicknames(m, nicknames_regex)
                 if found:
                     nicknames.append(new_nickname)
                     continue
@@ -154,13 +156,20 @@ class Messenger(FacebookSource):
             self.source_type,
         )
 
-    def _process_nicknames(self, message: dict[Any, Any]) -> tuple[bool, dict[str, Any]]:
-        data = self.nicknames_regex.search(message["content"])
+    def _process_nicknames(
+        self, message: dict[Any, Any], nicknames_regex: regex.Pattern
+    ) -> tuple[bool, dict[str, Any]]:
+        data = nicknames_regex.search(message["content"])
         if data:
             target, nickname = data.groups()
             if target == "":
                 target = self.user_name
-            return True, {"timestamp": message["timestamp_ms"], "target": target, "nickname": nickname}
+            return True, {
+                "timestamp": message["timestamp_ms"],
+                "target": target,
+                "nickname": nickname,
+                "changed_by": message["sender_name"],
+            }
 
         else:
             return False, {}
@@ -169,7 +178,11 @@ class Messenger(FacebookSource):
         data = self.group_names_regex.search(message["content"])
         if data:
             group_name = data.groups()
-            return True, {"timestamp": message["timestamp_ms"], "group_name": group_name[0]}
+            return True, {
+                "timestamp": message["timestamp_ms"],
+                "group_name": group_name[0],
+                "changed_by": message["sender_name"],
+            }
 
         else:
             return False, {}

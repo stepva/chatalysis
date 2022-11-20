@@ -243,13 +243,18 @@
                 ({{ top_weekday[1]|space }})</p>
             </div>
         </section>
-        <section id="time graphs" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 40px; padding-top: 20px; padding-right: 75px; padding-left: 75px;">
+        <section id="time plots" style="display: grid; grid-template-columns: 75% 25%; padding-bottom: 40px; padding-top: 20px; padding-right: 75px; padding-left: 75px;">
             {{daily_messages_bar}}
             {{hourly_messages_line}}
         </section>
         {% if groupchat_names_plot != '' %}
-            <section id="name graphs" style="padding-bottom: 40px; padding-top: 0px; padding-right: 75px; padding-left: 75px;">
+            <section id="groupchat names plot" style="padding-bottom: 40px; padding-top: 0px; padding-right: 75px; padding-left: 75px;">
                 {{groupchat_names_plot}}
+            </section>
+        {% endif %}
+        {% if nicknames_plot != '' %}
+            <section id="nicknames plot" style="padding-bottom: 40px; padding-top: 0px; padding-right: 75px; padding-left: 75px;">
+                {{nicknames_plot}}
             </section>
         {% endif %}
         {% if emojis_count["total"] > 0 %}
