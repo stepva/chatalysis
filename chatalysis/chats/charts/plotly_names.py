@@ -48,7 +48,7 @@ def groupchat_names_plot(group_names: list[dict[str, Any]], from_day: date, to_d
     fig1.update_traces(
         textposition="inside",
         insidetextanchor="start",
-        hovertemplate="<b>%{customdata[2]}</b><br>%{customdata[0]|%x} - %{customdata[1]|%x}<br>Changed by %{customdata[3]}<extra></extra>",
+        hovertemplate="<b>%{customdata[2]}</b><br>%{customdata[0]|%x} - %{customdata[1]}<br>Changed by %{customdata[3]}<extra></extra>",
     )
     fig1.update_yaxes(visible=False)
     fig1.update_yaxes(fixedrange=True)
