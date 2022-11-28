@@ -3,7 +3,7 @@
 Chatalysis lets you analyse and, more importantly, visualise stats from your own **Facebook Messenger** and **Instagram** chats in a nice and clean way (see below), which is easily shareable with your friends. It works for group chats, too, and includes emojis and reactions as well. All on your computer, without giving your messages and data to any third-party apps. Not even to us.
 
 <p align="center">
-<img height="650" src="output/preview_v1.jpg">
+<img height="650" src="output/preview_regular.png">
 </p>
 
 There is also an option to generate your own Personal stats - overview of anything related to all messages sent only by you, across all conversations.
