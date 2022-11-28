@@ -95,8 +95,9 @@ class Messenger(FacebookSource):
                         continue
 
                     emojis = self._extract_emojis(m, emojis)
-                    words_cnt = len(regex.findall(r"(\b[^\s]+\b)", m["content"]))  # length of the message in words
-                    message_lengths[name].append(words_cnt)
+                    # kept here for later
+                    # words_cnt = len(regex.findall(r"(\b[^\s]+\b)", m["content"]))  # length of the message in words
+                    # message_lengths[name].append(words_cnt)
             elif "photos" in m:
                 photos["total"] += 1
                 if name in participants:
@@ -125,16 +126,15 @@ class Messenger(FacebookSource):
                 reactions = self._process_reactions(m, name, participants, reactions)
 
         times = Times(hours, days, weekdays, months, years)
-        # todo mean requires at least one datapoint
+
+        # kept here for later, but beware - mean requires at least one datapoint
         # avg_message_lengths = {name: round(mean(lengths), 2) for name, lengths in message_lengths.items()}
         # longest_message = {name: sorted(lengths)[-1] for name, lengths in message_lengths.items()}
-        avg_message_lengths = {}
-        longest_message = {}
+        # avg_message_lengths = {}
+        # longest_message = {}
 
         return FacebookStats(
             messages,
-            avg_message_lengths,
-            longest_message,
             photos,
             gifs,
             stickers,
