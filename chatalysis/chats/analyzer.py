@@ -169,7 +169,7 @@ class Analyzer:
 
         for n in self.chat.participants:
             # needs to be relative path from the output directory inside HTML
-            pics[n] = os.path.relpath(home / "resources" / "images" / "placeholder.jpg", start=output_dir / src_name)
+            pics[n] = "https://github.com/stepva/chatalysis/blob/master/resources/images/placeholder.jpg?raw=true"
             for p in list_folder(home / "resources" / "images"):
                 if p.startswith(change_name(n)):
                     pics[n] = os.path.relpath(home / "resources" / "images" / p, start=output_dir / src_name)
