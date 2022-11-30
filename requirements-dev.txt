@@ -7,3 +7,4 @@ pytest==7.2.0
 types-emoji
 types-requests
 types-tabulate
+pyinstaller

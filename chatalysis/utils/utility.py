@@ -7,11 +7,15 @@ from pathlib import Path
 from utils.const import TRANSLATE_SPECIAL_CHARS
 from __init__ import __version__
 
-try:
-    # Pyinstaller creates a temp folder and stores path in _MEIPASS
+# Pyinstaller creates a temp folder and stores path in _MEIPASS
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     home = Path(sys._MEIPASS)  # type: ignore
-    output_dir = Path(os.getcwd(), "output")
-except Exception:
+    if sys.platform == "darwin":
+        exe_location = Path(sys.executable).parent.parent.parent.parent.absolute()
+    else:
+        exe_location = Path(os.getcwd())
+    output_dir = exe_location / "output"
+else:
     home = Path(__file__).parent.parent.parent.absolute()
     output_dir = home / "output"
 
