@@ -1,15 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+
 block_cipher = None
 
 data_files = [
-    ("resources/images/placeholder.jpg", "resources/images"),
-    ("resources/templates/instagram_group.html.j2", "resources/templates"),
-    ("resources/templates/instagram_personal.html.j2", "resources/templates"),
-    ("resources/templates/instagram_regular.html.j2", "resources/templates"),
-    ("resources/templates/messenger_group.html.j2", "resources/templates"),
-    ("resources/templates/messenger_personal.html.j2", "resources/templates"),
-    ("resources/templates/messenger_regular.html.j2", "resources/templates")
+    ("resources/images", "resources/images"),
+    ("resources/templates", "resources/templates")
 ]
 
 a = Analysis(
@@ -32,11 +28,9 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
     [],
-    name="Chatalysis",
+    exclude_binaries=True,
+    name="Chatalysis_exe",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -49,4 +43,20 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+)
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='Chatalysis',
+)
+app = BUNDLE(
+    coll,
+    name='Chatalysis.app',
+    icon=None,
+    bundle_identifier=None,
 )
