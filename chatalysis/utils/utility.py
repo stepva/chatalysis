@@ -9,7 +9,7 @@ from __init__ import __version__
 
 # Pyinstaller creates a temp folder and stores path in _MEIPASS
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-    home = Path(sys._MEIPASS)  # type: ignore
+    home = Path(getattr(sys, "_MEIPASS"))
     if sys.platform == "darwin":
         exe_location = Path(sys.executable).parent.parent.parent.parent.absolute()
     else:
