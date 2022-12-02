@@ -2,46 +2,7 @@
 
 <head>
     <title>Chatalysis - {{ title }}</title>
-    <style>
-        body {
-            font-family: "Helvetica Neue", Tahoma, Verdana, Arial, sans-serif;
-            margin: 0;
-            padding: 0
-        }
-        div.root {
-            text-align: center;
-        }
-        .profile-picture {
-            border-radius: 50%;
-            object-fit: cover;
-            width: 100px;
-            height: 100px;
-            border: 10px double black;
-        }
-        .profile-picture-small {
-            border-radius: 50%;
-            object-fit: cover;
-            width: 75px;
-            height: 75px;
-            border: 5px double black;
-        }
-        .stats {
-            margin-top: 1px;
-            margin-bottom: 1px;
-        }
-        .stats-num {
-            margin: 0;
-            font-size: 30;
-            font-weight: 200;
-        }
-        .stats-text {
-            margin: 0;
-        }
-        .emojis {
-            margin: 0;
-            align-self: flex-end;
-        }
-    </style>
+    <link rel="stylesheet" href="../../resources/templates/style.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <meta charset="utf-8">
 </head>
@@ -49,7 +10,7 @@
 <body>
     <div class="root">
         <section id="header" style="background-clip: padding-box; padding-top: 5px; padding-bottom: 5px; background-color: #F2F2F2;">
-            <i>Chatalysis {{ version }}</i>
+            <img src="https://github.com/stepva/chatalysis/blob/master/resources/images/logo.png?raw=true" alt="logo" class="logo">
         </section>
         <section id="names" style="display: grid; grid-template-columns: repeat(3, auto); padding-top: 20px; padding-bottom: 30px;">
             <div></div>
