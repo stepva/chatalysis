@@ -43,6 +43,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon="resources/images/icon.ico"
 )
 coll = COLLECT(
     exe,
@@ -57,6 +58,6 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Chatalysis.app',
-    icon=None,
+    icon="resources/images/icon.icns",
     bundle_identifier=None,
 )
