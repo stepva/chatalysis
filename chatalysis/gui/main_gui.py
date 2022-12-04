@@ -5,6 +5,7 @@ import tkmacosx as tkm
 from tkinter import ttk, filedialog
 from typing import Any, Optional, Type
 
+from paths import HOME
 from sources.message_source import MessageSource
 from sources.instagram import Instagram
 from sources.messenger import Messenger
@@ -27,6 +28,7 @@ class MainGUI(tk.Tk):
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
 
+        self.iconbitmap(HOME / "resources" / "images" / "icon.ico")
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
 
