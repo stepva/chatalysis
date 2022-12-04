@@ -5,12 +5,13 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from __init__ import __version__
+from paths import HOME, OUTPUT_DIR
 from chats.stats import StatsType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.charts.plotly_names import groupchat_names_plot, nicknames_plot
 from chats.stats import Stats
 from utils.const import DAYS
-from utils.utility import list_folder, html_spaces, change_name, home, output_dir
+from utils.utility import list_folder, html_spaces, change_name
 
 # emojis = {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
 # reactions = {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
@@ -29,7 +30,7 @@ class Analyzer:
 
     def mrHtml(self, template_name: str) -> str:
         """Exports chat stats and other variables into HTML"""
-        file_loader = FileSystemLoader(home / "resources" / "templates")
+        file_loader = FileSystemLoader(HOME / "resources" / "templates")
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
@@ -97,7 +98,7 @@ class Analyzer:
 
     def personalHtml(self, template_name: str) -> str:
         """Exports personal stats and other variables into HTML"""
-        file_loader = FileSystemLoader(home / "resources" / "templates")
+        file_loader = FileSystemLoader(HOME / "resources" / "templates")
         env = Environment(loader=file_loader)
         env.filters["space"] = html_spaces
 
@@ -170,9 +171,9 @@ class Analyzer:
         for n in self.chat.participants:
             # needs to be relative path from the output directory inside HTML
             pics[n] = "https://github.com/stepva/chatalysis/blob/master/resources/images/placeholder.jpg?raw=true"
-            for p in list_folder(home / "resources" / "images"):
+            for p in list_folder(HOME / "resources" / "images"):
                 if p.startswith(change_name(n)):
-                    pics[n] = os.path.relpath(home / "resources" / "images" / p, start=output_dir / src_name)
+                    pics[n] = os.path.relpath(HOME / "resources" / "images" / p, start=OUTPUT_DIR / src_name)
         return pics
 
     @staticmethod

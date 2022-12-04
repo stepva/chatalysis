@@ -6,18 +6,7 @@ from pathlib import Path
 
 from utils.const import TRANSLATE_SPECIAL_CHARS
 from __init__ import __version__
-
-# Pyinstaller creates a temp folder and stores path in _MEIPASS
-if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-    home = Path(getattr(sys, "_MEIPASS"))
-    if sys.platform == "darwin":
-        exe_location = Path(sys.executable).parent.parent.parent.parent.absolute()
-    else:
-        exe_location = Path(os.getcwd())
-    output_dir = exe_location / "output"
-else:
-    home = Path(__file__).parent.parent.parent.absolute()
-    output_dir = home / "output"
+from paths import OUTPUT_DIR
 
 
 def html_spaces(n: int) -> str | int:
@@ -45,7 +34,7 @@ def get_file_path(title: str, source_name: str) -> Path:
     :param title: name of the chat
     :param source_name: name of the message source
     """
-    file_path = output_dir / source_name / f"{title}.html"
+    file_path = OUTPUT_DIR / source_name / f"{title}.html"
     file_path.parent.mkdir(parents=True, exist_ok=True)  # create source folder in "output" folder
     return file_path
 
