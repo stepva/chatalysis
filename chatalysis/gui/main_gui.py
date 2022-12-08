@@ -3,7 +3,7 @@ import sys
 import tkinter as tk
 import tkmacosx as tkm
 from tkinter import ttk, filedialog
-from typing import Any, Type
+from typing import Any, Optional, Type
 
 from sources.message_source import MessageSource
 from sources.instagram import Instagram
@@ -29,6 +29,9 @@ class MainGUI(tk.Tk):
 
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
+
+        self.window_top_ten: Optional[WindowTopTen] = None
+        self.window_individual: Optional[WindowIndividual] = None
 
         self._ui_elements: list[tk.BaseWidget] = []
         self._create_source_selection()
@@ -93,17 +96,17 @@ class MainGUI(tk.Tk):
         # Create buttons
         self.button_select_dir = ttk.Button(self, text="Select folder", command=lambda: self.select_dir(source_class))
         self.button1 = ttk.Button(
-            self, text="Show top conversations", command=lambda: self._try_create_window(WindowTopTen)
+            self, text="Show top conversations", command=lambda: self._try_create_window("top_ten")
         )
         self.button2 = ttk.Button(
-            self, text="Analyze individual conversations", command=lambda: self._try_create_window(WindowIndividual)
+            self, text="Analyze individual conversations", command=lambda: self._try_create_window("individual")
         )
         self.button3 = ttk.Button(self, text="Show your overall personal stats", command=self.show_personal)
         self.button_back = ttk.Button(self, text="Back", command=lambda: self._create_source_selection())
 
         # Create labels
         self.label_under = tk.Label(self, text="", wraplength=650)
-        self.label_select_dir = tk.Label(self, text="Please select folder with the messages:")
+        self.label_select_dir = ttk.Label(self, text="Please select folder with the messages:")
 
         # Create entry widgets
         self.data_dir_path_tk = tk.StringVar()
@@ -184,7 +187,7 @@ class MainGUI(tk.Tk):
             return
 
         if not self.Program.personal_stats:
-            self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
+            self.label_under.config(text="Analyzing... (this may take a while)")
             self.update()
 
             try:
@@ -198,8 +201,11 @@ class MainGUI(tk.Tk):
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
-    def _try_create_window(self, window_class: Type[tk.Toplevel]) -> None:
+    def _try_create_window(self, window_type: str) -> None:
         if self.Program.valid_dir:
-            window_class(self.Program)
+            if window_type == "top_ten":
+                WindowTopTen(self.Program, self) if not self.window_top_ten else self.window_top_ten.lift()
+            elif window_type == "individual":
+                WindowIndividual(self.Program, self) if not self.window_individual else self.window_individual.lift()
         else:
             show_error(self, "Cannot analyze until a valid directory is selected", False)

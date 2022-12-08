@@ -1,19 +1,26 @@
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 import os
 import tkinter as tk
-from typing import Any
 
+from gui.singleton_window import SingletonWindow
 from gui.gui_utils import show_error
 from utils.utility import creation_date
 
+if TYPE_CHECKING:
+    from gui.main_gui import MainGUI
 
-class WindowIndividual(tk.Toplevel):
-    def __init__(self, program: Any) -> None:
-        tk.Toplevel.__init__(self)
+
+class WindowIndividual(SingletonWindow):
+    def __init__(self, program: Any, main_gui: MainGUI) -> None:
+        SingletonWindow.__init__(self)
         self.Program = program
+        self.main_gui = main_gui
+        self.main_gui.window_individual = self
 
         self.title("Analyze individual conversations")
         self.geometry("600x400")
-        self.resizable(False, False)
+
         self._create()
 
     def _create(self) -> None:
@@ -142,3 +149,7 @@ class WindowIndividual(tk.Toplevel):
             return
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
+
+    def _close(self) -> None:
+        self.main_gui.window_individual = None
+        self.destroy()
