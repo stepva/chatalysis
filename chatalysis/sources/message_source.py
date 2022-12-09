@@ -1,5 +1,6 @@
 import abc
 from pathlib import Path
+from typing import Any
 
 from chats.stats import Stats
 
@@ -27,12 +28,14 @@ class MessageSource(abc.ABC):
 
     @abc.abstractmethod
     def personal_stats(self) -> Stats:
-        """Extracts overall personal stats (stats across all available conversations)"""
+        """Gets overall personal stats (stats across all available conversations)
+
+        :return: Stats object with the personal stats
+        """
 
     @abc.abstractmethod
-    def top_ten(self) -> tuple[dict[str, int], dict[str, int]]:
-        """Goes through conversations and returns the top 10 individual chats
-        and top 5 group chats based on number of messages.
+    def top_ten(self) -> tuple[list[Any], list[Any]]:
+        """Gets the top 10 individual chats and top 5 group chats based on number of messages.
 
         :return: dictionary of top 10 individual conversations & top 5 group chats
                  with the structure {conversation name: number of messages}
