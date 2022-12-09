@@ -1,7 +1,7 @@
 import abc
 import json
 import os
-from typing import Any
+from typing import Any, Optional
 import regex
 from datetime import date, timedelta
 from pathlib import Path
@@ -38,6 +38,9 @@ class FacebookSource(MessageSource):
         # cache of Stats objects
         self.chats_cache: dict[chat_id_str, FacebookStats] = {}
 
+        self._top_conversations: Optional[tuple[list[Any], list[Any]]] = None
+        self._personal_stats: Optional[FacebookStats] = None
+
         self._regex_emoji = regex.compile(EMOJIS_REGEX)
         self._regex_unicode = regex.compile(r"\X")
 
@@ -52,30 +55,27 @@ class FacebookSource(MessageSource):
         return self.chats_cache[chat_id]
 
     def personal_stats(self) -> FacebookStats:
-        messages = []
-        participants = []  # list of participants from all conversations
+        if not self._personal_stats:
+            self._get_personal_stats()
+        return self._personal_stats
 
-        for chat_id in self.chat_ids:
-            if chat_id in self.chats_cache:
-                messages.extend(self.chats_cache[chat_id].messages)
-                participants.extend(self.chats_cache[chat_id].participants)
-            elif chat_id in self.messages_cache:
-                messages.extend(self.messages_cache[chat_id][0])
-                participants.extend(self.messages_cache[chat_id][1])
-            else:
-                # extract data for the chat and cache it
-                self.messages_cache[chat_id] = self._prepare_chat_data(chat_id)
-                messages.extend(self.messages_cache[chat_id][0])
-                participants.extend(self.messages_cache[chat_id][1])
+    def top_ten(self) -> tuple[list[Any], list[Any]]:
+        if not self._top_conversations:
+            self._get_top_conversations()
+        return self._top_conversations  # type: ignore
 
-        # find the user's name (the one that appears in all conversations)
-        name = mode(participants)
+    def conversation_size(self, chat_id: chat_id_str) -> int:
+        messages, _, _, _ = self._get_messages(chat_id)
+        return len(messages)
 
-        messages = [m for m in messages if m["sender_name"] == name]
-        messages = sorted(messages, key=lambda k: k["timestamp_ms"])
-        return self._process_messages(messages, [name], "Personal stats", StatsType.PERSONAL)
+    # endregion
 
-    def top_ten(self) -> tuple[Any, Any]:
+    # region Chat processing
+
+    def _get_top_conversations(self) -> None:
+        """Calculates the top 10 individual chats and top 5 group chats based on number of messages
+        and store it in a "cache" variable.
+        """
         chats = {}
         groups = {}
 
@@ -103,15 +103,32 @@ class FacebookSource(MessageSource):
 
         top_individual = sorted(chats.items(), key=lambda item: item[1], reverse=True)[0:10]
         top_group = sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5]
-        return top_individual, top_group
+        self._top_conversations = top_individual, top_group
 
-    def conversation_size(self, chat_id: chat_id_str) -> int:
-        messages, _, _, _ = self._get_messages(chat_id)
-        return len(messages)
+    def _get_personal_stats(self) -> None:
+        """Extracts and calculates overall personal stats"""
+        messages = []
+        participants = []  # list of participants from all conversations
 
-    # endregion
+        for chat_id in self.chat_ids:
+            if chat_id in self.chats_cache:
+                messages.extend(self.chats_cache[chat_id].messages)
+                participants.extend(self.chats_cache[chat_id].participants)
+            elif chat_id in self.messages_cache:
+                messages.extend(self.messages_cache[chat_id][0])
+                participants.extend(self.messages_cache[chat_id][1])
+            else:
+                # extract data for the chat and cache it
+                self.messages_cache[chat_id] = self._prepare_chat_data(chat_id)
+                messages.extend(self.messages_cache[chat_id][0])
+                participants.extend(self.messages_cache[chat_id][1])
 
-    # region Chat processing
+        # find the user's name (the one that appears in all conversations)
+        name = mode(participants)
+
+        messages = [m for m in messages if m["sender_name"] == name]
+        messages = sorted(messages, key=lambda k: k["timestamp_ms"])
+        self._personal_stats = self._process_messages(messages, [name], "Personal stats", StatsType.PERSONAL)
 
     def _compile_chat_data(self, chat_id: chat_id_str) -> None:
         """Gets all the chat data, processes it and stores it as a Chat object in the cache.

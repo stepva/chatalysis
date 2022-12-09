@@ -30,34 +30,24 @@ class WindowTopTen(SingletonWindow):
     def show_top(self) -> None:
         """Analyzes and shows the top conversations"""
         # Calculate the top conversations if not done already
-        if self.Program.top_ten_individual is None:
-            self.label.config(text="Analyzing...")
-            self.label.grid(column=0, row=0)
-            self.update()
+        self.label.config(text="Analyzing...")
+        self.label.grid(column=0, row=0)
+        self.update()
 
-            topIndividual, topGroup = self.Program.source.top_ten()
+        top_individual, top_group = self.Program.source.top_ten()
 
-            self.Program.top_ten_individual = tabulate(
-                topIndividual, headers=["Conversation", "Messages"], colalign=("left", "right")
+        top_individual = tabulate(top_individual, headers=["Conversation", "Messages"], colalign=("left", "right"))
+        if len(top_group) > 0:
+            top_group = tabulate(
+                top_group, headers=["Conversation", "Messages"], colalign=("left", "right")
             )
-
-            if len(topGroup) > 0:
-                self.Program.top_five_groups = tabulate(
-                    topGroup, headers=["Conversation", "Messages"], colalign=("left", "right")
-                )
-            else:
-                self.Program.top_five_groups = "No group chats available"
+        else:
+            top_group = "No group chats available"
 
         # Print the top conversation, fixed font is necessary for the correct table formatting done by tabulate
         self.label.config(
             text="\n".join(
-                [
-                    "Top 10 individual conversations\n",
-                    self.Program.top_ten_individual,
-                    "\n",
-                    "Top 5 group chats\n",
-                    self.Program.top_five_groups,
-                ]
+                ["Top 10 individual conversations\n", top_individual, "\n", "Top 5 group chats\n", top_group]
             ),
             justify="center",
             font=("TkFixedFont",),

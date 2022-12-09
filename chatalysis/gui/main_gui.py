@@ -83,7 +83,6 @@ class MainGUI(tk.Tk):
         """
         self.title(f"Chatalysis - {source_class.__name__}")
 
-        self.Program.reset_stored_data()
         self.Program.valid_dir = False
         for el in self._ui_elements:  # clear source selection menu
             el.destroy()
@@ -174,7 +173,6 @@ class MainGUI(tk.Tk):
         # save last used dir
         self.Program.config.save(source_class.__name__.lower(), self.Program.data_dir_path, "Source_dirs")
         self.Program.valid_dir = True
-        self.Program.reset_stored_data()
 
         self.label_under.config(text="")
         self.entry_data_dir.config(background="#17850b")  # display directory path in green
@@ -186,18 +184,15 @@ class MainGUI(tk.Tk):
             show_error(self, "Cannot analyze until a valid directory is selected", False)
             return
 
-        if not self.Program.personal_stats:
-            self.label_under.config(text="Analyzing... (this may take a while)")
-            self.update()
+        self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
+        self.update()
 
-            try:
-                self.Program.personal_stats = self.Program.source.personal_stats()
-                self.Program.to_html(self.Program.personal_stats)
-            except Exception as e:
-                show_error(self, repr(e), self.Program.print_stacktrace)
-                return
-        else:
+        try:
+            self.Program.personal_stats = self.Program.source.personal_stats()
             self.Program.to_html(self.Program.personal_stats)
+        except Exception as e:
+            show_error(self, repr(e), self.Program.print_stacktrace)
+            return
 
         self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 

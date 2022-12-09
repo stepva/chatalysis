@@ -20,18 +20,8 @@ class Program:
         self.config = Config()
         self.print_stacktrace = self.config.load("print_stacktrace", "dev", is_bool=True)
 
-        self.top_ten_individual: Any = None
-        self.top_five_groups: Any = None
-        self.personal_stats: Any = None
-
         self.data_dir_path = ""
         self.valid_dir = False
-
-    def reset_stored_data(self) -> None:
-        """Resets cached data from a particualr message source"""
-        self.top_ten_individual = None
-        self.top_five_groups = None
-        self.personal_stats = None
 
     def run(self, cli: bool = False) -> None:
         if cli:
