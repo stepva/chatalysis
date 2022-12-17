@@ -40,4 +40,4 @@ class Program:
         with io.open(output_file, "w", encoding="utf-8") as data:
             data.write(source)
 
-        open_html(file_path)
+        open_html(output_file)

@@ -60,4 +60,9 @@ app = BUNDLE(
     name='Chatalysis.app',
     icon="resources/images/icon.icns",
     bundle_identifier=None,
+    info_plist={
+        'LSEnvironment': {
+            'LC_NUMERIC': 'cs_CZ.UTF-8'
+        }
+    }
 )
