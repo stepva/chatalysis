@@ -5,10 +5,10 @@ import sys
 from __init__ import __version__
 from program.program import Program
 
-locale.setlocale(locale.LC_ALL, "")
-
 
 def main() -> None:
+    locale.setlocale(locale.LC_ALL, "")
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-V", "-version", help="Version info", action="version", version=__version__)
 
