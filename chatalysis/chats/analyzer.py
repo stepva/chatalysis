@@ -36,8 +36,13 @@ class Analyzer:
 
         template = env.get_template(f"{template_name}.html.j2")
 
+        stylesheet = os.path.relpath(
+            HOME / "resources" / "templates" / "style.css", start=OUTPUT_DIR / self.chat.source_type.name.lower()
+        )
+
         return template.render(
             # utility
+            stylesheet=stylesheet,
             participants=len(self.chat.participants),
             version=__version__,
             from_day=self.chat.from_day,
@@ -104,8 +109,13 @@ class Analyzer:
 
         template = env.get_template(f"{template_name}.html.j2")
 
+        stylesheet = os.path.relpath(
+            HOME / "resources" / "templates" / "style.css", start=OUTPUT_DIR / self.chat.source_type.name.lower()
+        )
+
         return template.render(
             # utility
+            stylesheet=stylesheet,
             version=__version__,
             from_day=self.chat.from_day,
             to_day=self.chat.to_day,
