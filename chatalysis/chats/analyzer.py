@@ -7,7 +7,7 @@ from __init__ import __version__
 from chats.stats import StatsType
 from chats.charts.plotly_messages import daily_messages_bar, hourly_messages_line, messages_pie
 from chats.charts.plotly_names import groupchat_names_plot, nicknames_plot
-from chats.stats import Stats, Times
+from chats.stats import Stats
 from utils.const import DAYS
 from utils.utility import list_folder, html_spaces, change_name, home
 
@@ -143,139 +143,6 @@ class Analyzer:
             top_reacts=self._top_emojis(self.chat.reactions, "got"),
             reacts_L=self._tops_count(self.chat.reactions, "got"),
         )
-
-    @staticmethod
-    def emoji_stats(emojis: dict[Any, Any], names: list[Any], people: list[int]) -> dict[str, Any]:
-        """Prepares emoji stats for terminal output
-
-        :param emojis: dict with structure
-                    {"total": 0, "types": {"type": x}, "sent": {"name": {"total": x, "type": y}}}
-        :param names:
-        :param people:
-        :return: dictionary with emoji stats
-        """
-        sents = {}
-        sents_avg = {}
-
-        for n in names:
-            sents[n] = emojis["sent"][n]["total"]
-            sents_avg[n] = round(emojis["sent"][n]["total"] / people[n], 2)
-
-        stats = {
-            "1) total emojis": emojis["total"],
-            "2) total different emojis": len(emojis["types"]),
-            "3) top emojis": sorted(emojis["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
-            "4) sent most emojis": sorted(sents.items(), key=lambda item: item[1], reverse=True)[0],
-            "5) sent most emojis on avg": sorted(sents_avg.items(), key=lambda item: item[1], reverse=True)[0],
-        }
-
-        for n in names:
-            stats[n] = {
-                "total": sents[n],
-                "avg": sents_avg[n],
-                "dif": len(emojis["sent"][n]) - 1,
-                "top": sorted(emojis["sent"][n].items(), key=lambda item: item[1], reverse=True)[1:6],
-            }
-
-        return stats
-
-    @staticmethod
-    def time_stats(times: Times) -> dict[Any, Any]:
-        """Creates time stats for terminal output
-
-        :param times: namedtuple of [hours, days, weekdays, months, years]
-        :return: dictionary of time stats
-        """
-        wd_names = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
-
-        top_day = sorted(times.days.items(), key=lambda item: item[1], reverse=True)[0]
-        top_wd = sorted(times.weekdays.items(), key=lambda item: item[1], reverse=True)[0]
-        top_month = sorted(times.months.items(), key=lambda item: item[1], reverse=True)[0]
-        top_year = sorted(times.years.items(), key=lambda item: item[1], reverse=True)[0]
-
-        stats = {
-            "1) The top day": [top_day[0], f"{top_day[1]} messages"],
-            "2) Top hours of day": sorted(times[0].items(), key=lambda item: item[1], reverse=True)[0:3],
-            "3) Top weekday": [wd_names[top_wd[0]], top_wd[1]],
-            "4) Top month": top_month,
-            "5) Top year": top_year,
-        }
-        return stats
-
-    def chat_stats(self, names: "list[str]") -> "dict[str, Any]":
-        """Creates basic chat stats for a terminal output
-
-        :param names: list of names of participants in the conversation
-        :return: dictionary of conversation stats
-        """
-        info = {
-            "1) Total messages": self.chat.people["total"],
-            "2) Total audios": self.chat.audios["total"],
-            "3) Total files": self.chat.files["total"],
-            "4) Total gifs": self.chat.gifs["total"],
-            "5) Total images": self.chat.photos["total"],
-            "6) Total stickers": self.chat.stickers["total"],
-            "7) Total videos": self.chat.videos["total"],
-        }
-        for n in names:
-            if n in self.chat.people:
-                info[n] = self.chat.people[n]
-                info[f"{n} %"] = round(self.chat.people[n] / self.chat.people["total"] * 100, 2)
-            if n in self.chat.photos:
-                info[n + " images"] = self.chat.photos[n]
-            if n in self.chat.gifs:
-                info[n + " gifs"] = self.chat.gifs[n]
-            if n in self.chat.videos:
-                info[n + " videos"] = self.chat.videos[n]
-            if n in self.chat.stickers:
-                info[n + " stickers"] = self.chat.stickers[n]
-            if n in self.chat.audios:
-                info[n + " audio"] = self.chat.audios[n]
-            if n in self.chat.files:
-                info[n + " files"] = self.chat.files[n]
-
-        return info
-
-    @staticmethod
-    def reaction_stats(reactions: dict[Any, Any], names: list[str], people: Any) -> Any:
-        """Creates reaction stats for a terminal output
-
-        :param reactions: dictionary with structure
-                        {"total": 0, "types": {}, "gave": {"name": {"total": x, "type": y}}, "got": {"name": {"total": x, "type": y}}}
-        :param names:
-        :param people:
-        :return: dictionary of reaction stats
-        """
-        gaves = {}
-        gots = {}
-        gots_avg = {}
-
-        for n in names:
-            gaves[n] = reactions["gave"][n]["total"]
-            gots[n] = reactions["got"][n]["total"]
-            gots_avg[n] = round(reactions["got"][n]["total"] / people[n], 2)
-
-        stats = {
-            "1) total reactions": reactions["total"],
-            "2) total different reactions": len(reactions["types"]),
-            "3) top reactions": sorted(reactions["types"].items(), key=lambda item: item[1], reverse=True)[0:5],
-            "4) got most reactions": sorted(gots.items(), key=lambda item: item[1], reverse=True)[0],
-            "5) got most reactions on avg": sorted(gots_avg.items(), key=lambda item: item[1], reverse=True)[0],
-            "6) gave most reactions": sorted(gaves.items(), key=lambda item: item[1], reverse=True)[0],
-        }
-
-        for n in names:
-            stats[n] = {
-                "total got": gots[n],
-                "avg got": gots_avg[n],
-                "dif got": len(reactions["got"][n]) - 1,
-                "top got": sorted(reactions["got"][n].items(), key=lambda item: item[1], reverse=True)[1:4],
-                "total gave": gaves[n],
-                "dif gave": len(reactions["gave"][n]) - 1,
-                "top gave": sorted(reactions["gave"][n].items(), key=lambda item: item[1], reverse=True)[1:4],
-            }
-
-        return stats
 
     # endregion
 
