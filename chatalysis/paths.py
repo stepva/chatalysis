@@ -6,7 +6,7 @@ from pathlib import Path
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     HOME = Path(getattr(sys, "_MEIPASS"))
     if sys.platform == "darwin":
-        exe_location = Path(sys.executable).parent.parent.parent.absolute()
+        exe_location = Path(sys.executable).parent.parent.parent.parent.absolute()
     else:
         exe_location = Path(os.getcwd())
     OUTPUT_DIR = exe_location / "output"
