@@ -1,6 +1,7 @@
 import ctypes
 import sys
 import tkinter as tk
+import tkmacosx as tkm
 from tkinter import ttk, filedialog
 from typing import Any, Optional, Type
 
@@ -22,12 +23,12 @@ class MainGUI(tk.Tk):
         self.label_under: Any = None
         self.Program = program
 
-        # fix high DPI blurriness on Windows 10
+        # fix high DPI blurriness on Windows 10 and add bar icon
         if sys.platform == "win32" or sys.platform == "cygwin":
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
+            self.iconbitmap(HOME / "resources" / "images" / "icon.ico")
 
-        self.iconbitmap(HOME / "resources" / "images" / "icon.ico")
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
 
@@ -65,34 +66,24 @@ class MainGUI(tk.Tk):
             # the image buttons don't match the background color even with the translucent background
             # therefore this feature is only available on Windows and Linux
             self.button_messenger = tk.Button(
-                self,
-                image=self._logo_messenger,
-                borderwidth=0,
-                command=lambda: self._create_main(Messenger),
+                self, image=self._logo_messenger, borderwidth=0, command=lambda: self._create_main(Messenger)
             )
             self.button_instagram = tk.Button(
-                self,
-                image=self._logo_instagram,
-                borderwidth=0,
-                command=lambda: self._create_main(Instagram),
+                self, image=self._logo_instagram, borderwidth=0, command=lambda: self._create_main(Instagram)
             )
 
             self.button_messenger.grid(column=0, row=1, sticky="E", columnspan=2, padx=50)
             self.button_instagram.grid(column=2, row=1, sticky="W", columnspan=2, padx=50)
         else:
-            self.button_messenger = ttk.Button(
-                self, text="Messenger", command=lambda: self._create_main(Messenger)
+            self.button_messenger = tkm.Button(
+                self, text="Messenger", command=lambda: self._create_main(Messenger), height=50
             )
-            self.button_instagram = ttk.Button(
-                self, text="Instagram", command=lambda: self._create_main(Instagram)
+            self.button_instagram = tkm.Button(
+                self, text="Instagram", command=lambda: self._create_main(Instagram), height=50
             )
 
-            self.button_messenger.grid(
-                column=0, row=1, sticky="E", columnspan=2, padx=50, ipady=10, ipadx=10
-            )
-            self.button_instagram.grid(
-                column=2, row=1, sticky="W", columnspan=2, padx=50, ipady=10, ipadx=10
-            )
+            self.button_messenger.grid(column=0, row=1, sticky="E", columnspan=2, padx=50, ipady=10, ipadx=10)
+            self.button_instagram.grid(column=2, row=1, sticky="W", columnspan=2, padx=50, ipady=10, ipadx=10)
 
         self._ui_elements.extend([self.label_select_source, self.button_messenger, self.button_instagram])
 
