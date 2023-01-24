@@ -114,6 +114,9 @@ class MainGUI(tk.Tk):
         self.entry_data_dir = tk.Entry(self, textvariable=self.data_dir_path_tk, width=60)
         self.entry_data_dir.config(background="#f02663")  # display directory path in red until a valid path is entered
 
+        # Create progress bar
+        self.progress_bar = ttk.Progressbar(self, length=300, mode="determinate")
+
         # Render objects onto a grid
         self.label_select_dir.grid(column=0, row=0, pady=5)
         self.button_select_dir.grid(column=0, row=1)
@@ -133,6 +136,7 @@ class MainGUI(tk.Tk):
             self.button3,
             self.button_back,
             self.label_under,
+            self.progress_bar
         ]
 
     def _notify_about_latest(self) -> None:
@@ -186,17 +190,20 @@ class MainGUI(tk.Tk):
             show_error(self, "Cannot analyze until a valid directory is selected", False)
             return
 
-        self.label_under.config(text="Analyzing... (this may take a while)", fg="black")
-        self.update()
+        self.progress_bar.grid(column=0, row=6, pady=5)
 
         try:
-            self.Program.personal_stats = self.Program.source.personal_stats()
+            self.Program.personal_stats = self.Program.source.personal_stats(self)
+
+            self.progress_bar.destroy()
+            self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
+            self.update()
+
             self.Program.to_html(self.Program.personal_stats)
+
         except Exception as e:
             show_error(self, repr(e), self.Program.print_stacktrace)
             return
-
-        self.label_under.config(text="Done. You can find it in the output folder!", fg="green")
 
     def _try_create_window(self, window_type: str) -> None:
         if self.Program.valid_dir:

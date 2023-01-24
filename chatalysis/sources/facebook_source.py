@@ -1,7 +1,8 @@
+from __future__ import annotations
 import abc
 import json
 import os
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 import regex
 from datetime import date, timedelta
 from pathlib import Path
@@ -14,6 +15,8 @@ from utils.const import EMOJIS_REGEX, EMOJIS_DICT, TRANSLATE_REMOVE_LETTERS
 from chats.stats import StatsType, FacebookStats
 from sources.message_source import MessageSource, NoMessageFilesError
 from utils.utility import list_folder
+if TYPE_CHECKING:
+    from gui.main_gui import MainGUI
 
 chat_id_str = str  # alias for str that denotes a unique chat ID (for example: "2kqhirzyng")
 
@@ -54,9 +57,9 @@ class FacebookSource(MessageSource):
             self._compile_chat_data(chat_id)
         return self.chats_cache[chat_id]
 
-    def personal_stats(self) -> FacebookStats:
+    def personal_stats(self, gui: MainGUI = None) -> FacebookStats:
         if not self._personal_stats:
-            self._get_personal_stats()
+            self._get_personal_stats(gui)
         return self._personal_stats
 
     def top_ten(self) -> tuple[list[Any], list[Any]]:
@@ -105,8 +108,11 @@ class FacebookSource(MessageSource):
         top_group = sorted(groups.items(), key=lambda item: item[1], reverse=True)[0:5]
         self._top_conversations = top_individual, top_group
 
-    def _get_personal_stats(self) -> None:
-        """Extracts and calculates overall personal stats"""
+    def _get_personal_stats(self, gui: MainGUI = None) -> None:
+        """Extracts and calculates overall personal stats
+
+        :param gui: main GUI displaying the progress bar
+        """
         messages = []
         participants = []  # list of participants from all conversations
 
@@ -122,6 +128,10 @@ class FacebookSource(MessageSource):
                 self.messages_cache[chat_id] = self._prepare_chat_data(chat_id)
                 messages.extend(self.messages_cache[chat_id][0])
                 participants.extend(self.messages_cache[chat_id][1])
+
+            if gui:
+                gui.progress_bar["value"] += 1/len(self.chat_ids) * 100
+                gui.update()
 
         # find the user's name (the one that appears in all conversations)
         name = mode(participants)

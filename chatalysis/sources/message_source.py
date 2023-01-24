@@ -1,8 +1,11 @@
+from __future__ import annotations
 import abc
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from chats.stats import Stats
+if TYPE_CHECKING:
+    from gui.main_gui import MainGUI
 
 
 class NoMessageFilesError(RuntimeError):
@@ -27,9 +30,10 @@ class MessageSource(abc.ABC):
         """
 
     @abc.abstractmethod
-    def personal_stats(self) -> Stats:
+    def personal_stats(self, gui: MainGUI = None) -> Stats:
         """Gets overall personal stats (stats across all available conversations)
 
+        :param gui: main GUI displaying the progress bar
         :return: Stats object with the personal stats
         """
 
