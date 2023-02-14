@@ -44,7 +44,6 @@ class Messenger(FacebookSource):
         reactions: Any = {"total": 0, "types": {}, "gave": {}, "got": {}}
         emojis: Any = {"total": 0, "types": {}, "sent": {}}
         message_lengths: dict[str, list[int]] = {}  # list of message lengths (in words) from a given person
-        total_call_duration = 0
         nicknames: list[dict[str, Any]] = []
         group_names: list[dict[str, Any]] = []
 
@@ -89,10 +88,6 @@ class Messenger(FacebookSource):
                         continue
 
                 if name in participants:
-                    if m["type"] == "Call":
-                        total_call_duration += int(m["call_duration"])
-                        continue
-
                     emojis = self._extract_emojis(m, emojis)
                     # kept here for later
                     # words_cnt = len(regex.findall(r"(\b[^\s]+\b)", m["content"]))  # length of the message in words
@@ -148,7 +143,6 @@ class Messenger(FacebookSource):
             people,
             participants,
             title,
-            total_call_duration // 60,
             nicknames,
             group_names,
             stats_type,
