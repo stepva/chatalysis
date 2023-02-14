@@ -15,6 +15,7 @@ from utils.const import EMOJIS_REGEX, EMOJIS_DICT, TRANSLATE_REMOVE_LETTERS
 from chats.stats import StatsType, FacebookStats
 from sources.message_source import MessageSource, NoMessageFilesError
 from utils.utility import list_folder
+
 if TYPE_CHECKING:
     from gui.main_gui import MainGUI
 
@@ -130,7 +131,7 @@ class FacebookSource(MessageSource):
                 participants.extend(self.messages_cache[chat_id][1])
 
             if gui:
-                gui.progress_bar["value"] += 1/len(self.chat_ids) * 100
+                gui.progress_bar["value"] += 1 / len(self.chat_ids) * 100
                 gui.update()
 
         # find the user's name (the one that appears in all conversations)
@@ -224,10 +225,10 @@ class FacebookSource(MessageSource):
                     title = ud.normalize("NFC", self._decode(data["title"]))
                     participants = self._get_participants(data)
 
-                    if data["thread_type"] == "RegularGroup":
-                        chat_type = StatsType.GROUP
-                    else:
+                    if len(participants) == 2:
                         chat_type = StatsType.REGULAR
+                    else:
+                        chat_type = StatsType.GROUP
 
                     get_current_info = False
 
