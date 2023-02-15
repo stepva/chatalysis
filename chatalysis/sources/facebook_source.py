@@ -316,6 +316,10 @@ class FacebookSource(MessageSource):
                 if any(x.endswith(".json") for x in list_folder(path_to_chat_folder)):
                     if "_" in chat_id:
                         chat_id = chat_id.split("_", 1)[1]
+                    else:
+                        # chats with deleted accounts don't contain a name and only consist of the chat ID
+                        continue
+
                     if chat_id in self.chat_ids:
                         self.chat_ids[chat_id].append(path_to_chat_folder)
                     else:
