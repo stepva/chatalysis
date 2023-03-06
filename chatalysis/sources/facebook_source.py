@@ -59,16 +59,30 @@ class FacebookSource(MessageSource):
         return self.chats_cache[chat_id]
 
     def personal_stats(self, gui: MainGUI = None) -> FacebookStats:
+        """Gets overall personal stats (stats across all available conversations)
+
+        :param gui: main GUI displaying the progress bar
+        :return: Stats object with the personal stats
+        """
         if not self._personal_stats:
             self._get_personal_stats(gui)
         return self._personal_stats
 
     def top_ten(self) -> tuple[list[Any], list[Any]]:
+        """Gets the top 10 individual chats and top 5 group chats based on number of messages.
+
+        :return: dictionary of top 10 individual conversations & top 5 group chats
+                 with the structure {conversation name: number of messages}
+        """
         if not self._top_conversations:
             self._get_top_conversations()
         return self._top_conversations  # type: ignore
 
     def conversation_size(self, chat_id: chat_id_str) -> int:
+        """Gets amount of messages in a conversation.
+
+        :param chat_id: name of the conversation / chat ID
+        """
         messages, _, _, _ = self._get_messages(chat_id)
         return len(messages)
 
@@ -304,7 +318,7 @@ class FacebookSource(MessageSource):
 
     def _load_message_folders(self) -> None:
         """Load folders containing the messages"""
-        self.folders = [Path(root, d) for root, dirs, _ in os.walk(self._data_dir_path) for d in dirs if d == "inbox"]
+        self.folders = [Path(root, d) for root, dirs, _ in os.walk(self._data_path) for d in dirs if d == "inbox"]
         if not self.folders:
             raise NoMessageFilesError('Looks like there is no "inbox" folder with the messages here.')
 

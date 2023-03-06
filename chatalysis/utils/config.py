@@ -15,7 +15,7 @@ class Config:
 
     DEFAULT_CONFIG: Dict[str, Any] = {
         "General": {},
-        "Source_dirs": {"messenger": os.getcwd(), "instagram": os.getcwd()},
+        "Source_dirs": {"messenger": os.getcwd(), "instagram": os.getcwd(), "whatsapp": os.getcwd()},
         "dev": {"print_stacktrace": "no"},
     }
 

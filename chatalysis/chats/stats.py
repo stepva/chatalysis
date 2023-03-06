@@ -2,54 +2,49 @@ import abc
 from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
+from enum import Enum, auto
 from typing import Any
 
 Times = namedtuple("Times", ["hours", "days", "weekdays", "months", "years"])
 
 
 class StatsType(Enum):
-    REGULAR = 1
-    GROUP = 2
-    PERSONAL = 3
+    REGULAR = auto()
+    GROUP = auto()
+    PERSONAL = auto()
 
 
 class SourceType(Enum):
-    MESSENGER = 1
-    INSTAGRAM = 2
+    MESSENGER = auto()
+    INSTAGRAM = auto()
+    WHATSAPP = auto()
 
 
 @dataclass(frozen=True)
 class Stats(abc.ABC):
-    messages: list[Any]
+    # fmt: off
+    messages:       list[Any] | None
+    photos:         dict[Any, Any] | None
+    gifs:           dict[Any, Any] | None
+    stickers:       dict[Any, Any] | None
+    videos:         dict[Any, Any] | None
+    audios:         dict[Any, Any] | None
+    files:          dict[Any, Any] | None
+    reactions:      dict[Any, Any] | None
+    emojis:         dict[Any, Any] | None
+    times:          Times
+    from_day:       date
+    to_day:         date
+    people:         dict[str, int]  # dict of people who sent messages in the chat and the number of their messages
+    participants:   list[str]  # list of chat participants
+    title:          str | None
+    nicknames:      list[dict[str, Any]] | None
+    group_names:    list[dict[str, Any]] | None
+    stats_type:     StatsType
+    source_type:    SourceType
     # avg_message_lengths: dict[Any, Any]
     # longest_message: dict[Any, Any]
-    photos: dict[Any, Any]
-    gifs: dict[Any, Any]
-    stickers: dict[Any, Any]
-    videos: dict[Any, Any]
-    audios: dict[Any, Any]
-    files: dict[Any, Any]
-    reactions: dict[Any, Any]
-    emojis: dict[Any, Any]
-    times: Times
-    from_day: date
-    to_day: date
-    people: dict[str, int]  # dict of people who sent messages in the chat and the number of their messages
-    participants: list[str]  # list of chat participants
-    title: str
-    nicknames: list[dict[str, Any]]
-    group_names: list[dict[str, Any]]
-    stats_type: StatsType
-    source_type: SourceType
-
-    @abc.abstractmethod
-    def first_message(self) -> dict[Any, Any]:
-        """Returns the first ever message in the conversation
-
-        :return: dictionary with the first message
-        """
-        pass
+    # fmt: on
 
 
 class FacebookStats(Stats):

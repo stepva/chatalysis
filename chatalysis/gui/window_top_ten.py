@@ -38,9 +38,7 @@ class WindowTopTen(SingletonWindow):
 
         top_individual = tabulate(top_individual, headers=["Conversation", "Messages"], colalign=("left", "right"))
         if len(top_group) > 0:
-            top_group = tabulate(
-                top_group, headers=["Conversation", "Messages"], colalign=("left", "right")
-            )
+            top_group = tabulate(top_group, headers=["Conversation", "Messages"], colalign=("left", "right"))
         else:
             top_group = "No group chats available"
 

@@ -184,7 +184,7 @@ class Messenger(FacebookSource):
         """Gets the full name of the user from metadata files downloaded with Facebook Messenger messages"""
         info_files = [
             Path(root, f)
-            for root, _, files in os.walk(self._data_dir_path)
+            for root, _, files in os.walk(self._data_path)
             for f in files
             if f == "autofill_information.json"
         ]
