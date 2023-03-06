@@ -4,6 +4,7 @@ import tkinter as tk
 import tkmacosx as tkm
 from tkinter import ttk, filedialog
 from typing import Any, Optional, Type
+from pathlib import Path
 
 from paths import HOME
 from sources.message_source import MessageSource
@@ -208,13 +209,13 @@ class MainGUI(tk.Tk):
 
         :param source_class: class of the selected message source
         """
-        self.Program.data_dir_path = filedialog.askopenfilename(
+        data_path = filedialog.askopenfilename(
             filetypes=[("Text file", ".txt")],
             title="Select source file",
             initialdir=self.Program.config.load(source_class.__name__.lower(), "Source_dirs"),
         )
-        self.data_dir_path_tk.set(self.Program.data_dir_path)
-        self._instantiate_message_source(source_class)
+        self.data_dir_path_tk.set(data_path)
+        self._instantiate_message_source(data_path, source_class)
 
         self.label_under.config(text="Analyzing...", fg="black")
         self.update()
@@ -233,21 +234,22 @@ class MainGUI(tk.Tk):
 
         :param source_class: class of the selected message source
         """
-        self.Program.data_dir_path = filedialog.askdirectory(
+        data_path = filedialog.askdirectory(
             title="Select source directory",
             initialdir=self.Program.config.load(source_class.__name__.lower(), "Source_dirs"),
         )
-        self.data_dir_path_tk.set(self.Program.data_dir_path)
-        self._instantiate_message_source(source_class)
+        self.data_dir_path_tk.set(data_path)
+        self._instantiate_message_source(data_path, source_class)
 
-    def _instantiate_message_source(self, source_class: Type[MessageSource]) -> None:
+    def _instantiate_message_source(self, data_path: Path | str, source_class: Type[MessageSource]) -> None:
         """Creates an instance of the message source after the data path is selected.
 
+        :param data_path: path to the directory or file with the data
         :param source_class: class of the selected message source
         """
         try:
             # create message source instance filled with data from the selected dir
-            self.Program.source = source_class(self.Program.data_dir_path)
+            self.Program.source = source_class(data_path)
         except Exception as e:
             # directory is not valid (missing 'messages' folder or other issue)
             self.entry_data_dir.config(background="#f02663")  # display directory path in red
@@ -256,7 +258,7 @@ class MainGUI(tk.Tk):
             return
 
         # save last used dir
-        self.Program.config.save(source_class.__name__.lower(), self.Program.data_dir_path, "Source_dirs")
+        self.Program.config.save(source_class.__name__.lower(), data_path, "Source_dirs")
         self.Program.valid_dir = True
 
         self.label_under.config(text="")
