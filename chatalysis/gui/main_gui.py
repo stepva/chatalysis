@@ -23,12 +23,12 @@ class MainGUI(tk.Tk):
         self.label_under: Any = None
         self.Program = program
 
-        # fix high DPI blurriness on Windows 10
+        # fix high DPI blurriness on Windows 10 and add bar icon
         if sys.platform == "win32" or sys.platform == "cygwin":
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
+            self.iconbitmap(HOME / "resources" / "images" / "icon.ico")
 
-        self.iconbitmap(HOME / "resources" / "images" / "icon.ico")
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
 
@@ -44,7 +44,8 @@ class MainGUI(tk.Tk):
         for el in self._ui_elements:  # clear previous widgets
             el.destroy()
 
-        self.grid_columnconfigure(0, weight=1)
+        for i in range(4):
+            self.grid_columnconfigure(i, weight=1)
         for i in range(7):
             self.grid_rowconfigure(i, weight=1 if i < 3 else 0)
 
@@ -56,26 +57,33 @@ class MainGUI(tk.Tk):
         if not is_latest_version():
             self._notify_about_latest()
 
-        if sys.platform == "darwin":
+        self._logo_instagram = tk.PhotoImage(file=HOME / "resources" / "images" / "instagram_small.png")
+        self._logo_messenger = tk.PhotoImage(file=HOME / "resources" / "images" / "messenger_small.png")
+
+        self.label_select_source.grid(column=1, row=0, padx=5, pady=5, columnspan=2)
+
+        if not sys.platform == "darwin":
+            # the image buttons don't match the background color even with the translucent background
+            # therefore this feature is only available on Windows and Linux
+            self.button_messenger = tk.Button(
+                self, image=self._logo_messenger, borderwidth=0, command=lambda: self._create_main(Messenger)
+            )
+            self.button_instagram = tk.Button(
+                self, image=self._logo_instagram, borderwidth=0, command=lambda: self._create_main(Instagram)
+            )
+
+            self.button_messenger.grid(column=0, row=1, sticky="E", columnspan=2, padx=50)
+            self.button_instagram.grid(column=2, row=1, sticky="W", columnspan=2, padx=50)
+        else:
             self.button_messenger = tkm.Button(
-                self, text="Facebook Messenger", command=lambda: self._create_main(Messenger), height=50
+                self, text="Messenger", command=lambda: self._create_main(Messenger), height=50
             )
             self.button_instagram = tkm.Button(
                 self, text="Instagram", command=lambda: self._create_main(Instagram), height=50
             )
-        else:
-            self.button_messenger = ttk.Button(
-                self, text="Facebook Messenger", command=lambda: self._create_main(Messenger)
-            )
-            self.button_instagram = ttk.Button(self, text="Instagram", command=lambda: self._create_main(Instagram))
 
-        self.label_select_source.grid(column=0, row=0, padx=5, pady=5)
-        self.button_messenger.grid(
-            column=0, row=1, sticky="S", padx=5, pady=5, ipady=0 if sys.platform == "darwin" else 10, ipadx=10
-        )
-        self.button_instagram.grid(
-            column=0, row=2, sticky="N", padx=5, pady=(5, 50), ipady=0 if sys.platform == "darwin" else 10, ipadx=10
-        )
+            self.button_messenger.grid(column=0, row=1, sticky="E", columnspan=2, padx=50, ipady=10, ipadx=10)
+            self.button_instagram.grid(column=2, row=1, sticky="W", columnspan=2, padx=50, ipady=10, ipadx=10)
 
         self._ui_elements.extend([self.label_select_source, self.button_messenger, self.button_instagram])
 
@@ -149,8 +157,8 @@ class MainGUI(tk.Tk):
         )
         self.button_download = ttk.Button(self, text="Download", command=download_latest)
 
-        self.label_version.grid(column=0, row=3, padx=5, pady=5)
-        self.button_download.grid(column=0, row=4, padx=5, pady=10)
+        self.label_version.grid(column=1, row=3, padx=5, pady=5, columnspan=2)
+        self.button_download.grid(column=1, row=4, padx=5, pady=10, columnspan=2)
 
         self._ui_elements.append(self.label_version)
         self._ui_elements.append(self.button_download)
