@@ -2,6 +2,7 @@ import datetime
 import regex
 import emoji
 from collections import defaultdict
+from typing import Any
 
 from chats.stats import Times, SourceType, StatsType
 from sources.message_source import MessageSource
@@ -79,9 +80,6 @@ class WhatsApp(MessageSource):
             if text_emoji:
                 data += "".join([EMOJIS_DICT[e] for e in text_emoji.groups()])
 
-            # FIXME the emojis dict has a different structure than the Messenger one.
-            #   The Analyzer class needs to be modified to support this dict structure.
-
             # Remaining lines of multiline messages are not matched by the regex (only the first line is)
             # but their content is still analyzed for emoji and the emoji are attributed to the last name
             # matched by the regex. There might be some edge case that will break this, but it works for now.
@@ -104,7 +102,7 @@ class WhatsApp(MessageSource):
             audios=None,
             files=None,
             reactions=None,
-            emojis=emojis,
+            emojis=self._reshape_emoji_dict(emojis),
             times=times,
             from_day=dates[0],
             to_day=dates[-1],
@@ -116,3 +114,16 @@ class WhatsApp(MessageSource):
             stats_type=stats_type,
             source_type=SourceType.WHATSAPP,
         )
+
+    @staticmethod
+    def _reshape_emoji_dict(emoji_dict: dict[Any, Any]) -> dict[Any, Any]:
+        """Change the dict structure to be the same as used in the rest of the program.
+
+        :param emoji_dict: dict with emoji to restructure
+        :return: restructured dict
+        """
+        return {
+            "total": emoji_dict["total"]["total"],
+            "types": {k: v for k, v in emoji_dict["total"].items() if k != "total"},
+            "sent": {k: dict(v) for k, v in emoji_dict.items() if k != "total"}
+        }
