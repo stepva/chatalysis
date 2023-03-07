@@ -49,6 +49,7 @@ class Stats(abc.ABC):
 
 class FacebookStats(Stats):
     """Facebook Messenger / Instagram stats"""
+    messages: list[Any]
 
     def first_message(self) -> Any:
         author = self.messages[0]["sender_name"]
