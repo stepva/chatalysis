@@ -16,7 +16,6 @@ class Program:
         self.config = Config()
         self.print_stacktrace = self.config.load("print_stacktrace", "dev", is_bool=True)
 
-        self.data_dir_path = ""
         self.valid_dir = False
 
     def run(self) -> None:
