@@ -78,7 +78,7 @@ def hourly_messages_line(hours: dict[Any, Any]) -> str:
 
     :param hours: dict of message counts per hour of day of the conversation
     :return: HTML code of the chart"""
-    data = list(hours.values())
+    hours = {key: hours[key] for key in sorted(hours)}
 
     data = [h / sum(hours.values()) for h in hours.values()]
     fig = go.Figure(

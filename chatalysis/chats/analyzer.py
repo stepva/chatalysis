@@ -90,13 +90,13 @@ class Analyzer:
             left_emojis=self._emoji_stats_count(self.chat.emojis, "sent"),
             emojis_names=self._active_names_emojis_reacts(self.chat.emojis, "sent"),
             # reactions
-            reacts_count=self.chat.reactions,
-            diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
-            avg_reacts=self._avg_counts(self.chat.reactions, "got"),
-            top_reacts=self._top_emojis(self.chat.reactions, "got"),
-            reacts_L=self._tops_count(self.chat.reactions, "got"),
-            left_reacts=self._emoji_stats_count(self.chat.reactions, "gave"),
-            reacts_names=self._active_names_emojis_reacts(self.chat.reactions, "gave"),
+            reacts_count=self.chat.reactions if self.chat.reactions else None,
+            diff_reacts_gave=self._count_types(self.chat.reactions, "gave") if self.chat.reactions else None,
+            avg_reacts=self._avg_counts(self.chat.reactions, "got") if self.chat.reactions else None,
+            top_reacts=self._top_emojis(self.chat.reactions, "got") if self.chat.reactions else None,
+            reacts_L=self._tops_count(self.chat.reactions, "got") if self.chat.reactions else None,
+            left_reacts=self._emoji_stats_count(self.chat.reactions, "gave") if self.chat.reactions else None,
+            reacts_names=self._active_names_emojis_reacts(self.chat.reactions, "gave") if self.chat.reactions else None,
             # chat type
             chat_type=self.chat.stats_type.value,
         )
@@ -150,10 +150,10 @@ class Analyzer:
             top_emojis=self._top_emojis(self.chat.emojis, "sent"),
             emojis_L=self._tops_count(self.chat.emojis, "sent"),
             # reactions
-            reacts_count=self.chat.reactions,
-            diff_reacts_gave=self._count_types(self.chat.reactions, "gave"),
-            top_reacts=self._top_emojis(self.chat.reactions, "got"),
-            reacts_L=self._tops_count(self.chat.reactions, "got"),
+            reacts_count=self.chat.reactions if self.chat.reactions else None,
+            diff_reacts_gave=self._count_types(self.chat.reactions, "gave") if self.chat.reactions else None,
+            top_reacts=self._top_emojis(self.chat.reactions, "got") if self.chat.reactions else None,
+            reacts_L=self._tops_count(self.chat.reactions, "got") if self.chat.reactions else None,
         )
 
     # endregion
