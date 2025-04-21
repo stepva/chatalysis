@@ -1,9 +1,10 @@
-appdirs
+appdirs==1.4.4
 emoji==2.2.0
 plotly==5.11.0
-jinja2
-regex
-requests
-tabulate
-tkmacosx
+jinja2==3.1.2
+regex==2024.11.6
+requests==2.32.3
+tabulate==0.9.0
+tkmacosx==1.0.5
 pandas==1.5.2
+numpy==1.26.4

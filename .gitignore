@@ -8,6 +8,7 @@
 *.egg-info
 .mypy_cache
 venv
+.venv
 
 # Pyinstaller
 build/
