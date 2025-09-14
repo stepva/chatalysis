@@ -118,7 +118,7 @@ class WhatsApp(MessageSource):
             to_day=dates[-1],
             people=people,
             participants=list(participants),
-            title=None,
+            title=self._get_chat_name(),
             nicknames=None,
             group_names=None,
             stats_type=stats_type,
@@ -156,3 +156,11 @@ class WhatsApp(MessageSource):
                 if dt is not None:
                     return dt, name, message
         return None
+
+    def _get_chat_name(self) -> str:
+        """Get name of the chat if the source file follows the standard naming convention 'WhatsApp Chat with <NAME>'.
+
+        :return: Name of the chat if it was successfully parsed, 'WhatsApp chat' otherwise.
+        """
+        m = regex.match(WHATSAPP_CHAT_NAME_REGEX, self._data_path.stem)
+        return m.group(1) if m else "WhatsApp chat"
