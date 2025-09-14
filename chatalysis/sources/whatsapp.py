@@ -4,18 +4,29 @@ import emoji
 from collections import defaultdict
 from typing import Any
 
+import dateparser
+
 from chats.stats import Times, SourceType, StatsType
 from sources.message_source import MessageSource
 from chats.stats import Stats
 from utils.const import EMOJIS_REGEX, EMOJIS_DICT, TRANSLATE_REMOVE_LETTERS
 
 
+# WhatsApp export files can have different formats including different delimiters. These two patterns
+# cover the formats that we've encountered so far, although it is likely there are many more formats :(
+WHATSAPP_REGEXES = [
+    regex.compile(r"^([^[]+?)\s[-~]\s(.+):\s(.+)"),   # "3/30/24, 15:55 - name: message"
+    regex.compile(r"^\[(.+?)\]\s[-~]\s(.+):\s(.+)"),  # "[13.06.2023, 18:08:08] ~ name: message"
+]
+
+WHATSAPP_CHAT_NAME_REGEX = regex.compile(r"WhatsApp Chat with (.+)")
+
+
 class WhatsApp(MessageSource):
-    """WhatsApp message source for a single conversation (file)"""
+    """WhatsApp message source for a single conversation (file)."""
 
     def __init__(self, path: str):
         MessageSource.__init__(self, path)
-        self._regex_whatsapp = regex.compile(r"([0-9]*)/([0-9]*)/([0-9]*), ([0-9]*):[0-9]* - ([^:]*):(.*)")
         self._regex_emoji = regex.compile(EMOJIS_REGEX)
 
         self._messages = self._process_messages()
@@ -57,18 +68,17 @@ class WhatsApp(MessageSource):
         dates = []
 
         for line in lines:
-            match = self._regex_whatsapp.match(line)
+            ret = self._parse_line(line)
 
-            if match:
-                month, day, year, hour, name, message = match.groups()
-                date = datetime.date(int(year) + 2000, int(month), int(day))
+            if ret:
+                dt, name, message = ret
 
-                dates.append(date)
-                days[str(date)] += 1
-                months[f"{date.month}/{date.year}"] += 1
-                years[str(date.year)] += 1
-                weekdays[date.isoweekday()] += 1
-                hours[int(hour)] += 1
+                dates.append(dt.date())
+                days[str(dt.date())] += 1
+                months[f"{dt.month}/{dt.year}"] += 1
+                years[str(dt.year)] += 1
+                weekdays[dt.isoweekday()] += 1
+                hours[int(dt.hour)] += 1
 
                 people["total"] += 1
                 people[name] += 1
@@ -127,3 +137,22 @@ class WhatsApp(MessageSource):
             "types": {k: v for k, v in emoji_dict["total"].items() if k != "total"},
             "sent": {k: dict(v) for k, v in emoji_dict.items() if k != "total"}
         }
+
+    @staticmethod
+    def _parse_line(line: str) -> tuple[datetime.datetime, str, str] | None:
+        """Try parsing a date, name and message from a line. Since the lines can have different formats,
+        the function tries matching using different regexes.
+
+        :param line: Line to parse.
+        :return: Return a tuple of (datetime object, name, message) if the message was successfully parsed. If no
+            regex matched the string or the date could not be parsed, None is returned.
+        """
+        for pattern in WHATSAPP_REGEXES:
+            m = regex.match(pattern, line)
+            if m:
+                datetime_str, name, message = m.groups()
+                dt = dateparser.parse(datetime_str)  # try parsing the extracted date string
+
+                if dt is not None:
+                    return dt, name, message
+        return None
