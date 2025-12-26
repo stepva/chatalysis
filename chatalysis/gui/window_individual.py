@@ -40,7 +40,7 @@ class WindowIndividual(SingletonWindow):
 
         # set searched_name var to trace any writing action
         self.searched_name = tk.StringVar(self)
-        self.searched_name.trace("w", self._filter_name_list)  # type: ignore
+        self.searched_name.trace("w", self._filter_name_list)
 
         self.conversation_names = self._create_name_dict()
 
@@ -124,7 +124,7 @@ class WindowIndividual(SingletonWindow):
         self.name_box.selection_anchor(0)
         self.name_box.selection_set(tk.ANCHOR)
 
-    def analyze_individual(self, name: str = "", _event: None | tk.Event = None) -> None:  # type: ignore
+    def analyze_individual(self, name: str = "", _event: None | tk.Event = None) -> None:
         """Analyzes an individual conversation and prints information about the process
 
         :param name: name of the conversation to analyze

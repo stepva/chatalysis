@@ -16,7 +16,7 @@ from utils.const import EMOJIS_REGEX, EMOJIS_DICT, TRANSLATE_REMOVE_LETTERS
 # cover the formats that we've encountered so far, although it is likely there are many more formats :(
 WHATSAPP_REGEXES = [
     regex.compile(r"^([^[]+?)\s[-~]\s(.+):\s(.+)"),   # "3/30/24, 15:55 - name: message"
-    regex.compile(r"^\[(.+?)\]\s[-~]\s(.+):\s(.+)"),  # "[13.06.2023, 18:08:08] ~ name: message"
+    regex.compile(r"^\[(.+?)\][\s]+(.+):\s(.+)")  # "[13.06.2023, 18:08:08] name: message"
 ]
 
 WHATSAPP_CHAT_NAME_REGEX = regex.compile(r"WhatsApp Chat with (.+)")
