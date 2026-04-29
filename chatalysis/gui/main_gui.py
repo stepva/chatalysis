@@ -30,7 +30,11 @@ class MainGUI(tk.Tk):
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
             self.tk.call("tk", "scaling", 1.75)
 
-        self.iconbitmap(HOME / "resources" / "images" / "icon.ico")  # type: ignore
+        if sys.platform == "win32" or sys.platform == "cygwin":
+            self.iconbitmap(HOME / "resources" / "images" / "icon.ico")  # type: ignore
+        else:
+            icon = tk.PhotoImage(file=HOME / "resources" / "images" / "icon.png")
+            self.iconphoto(True, icon)
         self.geometry("700x350")
         self.resizable(False, False)  # disable maximize button
 
