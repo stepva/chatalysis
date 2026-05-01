@@ -17,13 +17,13 @@ There is also an option to generate your own Personal stats - overview of anythi
 ## Installation
 
 1. Download your messages from [Facebook](https://www.facebook.com/dyi/) or [Instagram](https://www.instagram.com/download/request/). Make sure to choose **JSON** as the output format. For Messenger, you only need to download **Messages** with **Low** media quality (you can select higher media quality, but it will make the files larger and it is not necessary for Chatalysis). It will take Facebook some time (several hours) to prepare your file and you can expect it to be a few gigabytes large. You will get a notification or an email when it's ready to download. For Whatsapp, we are not aware of an option to export all data, but you can export each chat individually in the app and then import the **txt** into Chatalysis.
-2. [Download chatalysis in a zip folder](https://github.com/stepva/chatalysis/archive/refs/tags/v1.2.0.zip) and extract it wherever you want to.
+2. [Download chatalysis in a zip folder](https://github.com/stepva/chatalysis/archive/refs/tags/v1.2.1.zip) and extract it wherever you want to.
 3. Extract the downloaded data into any folder you like. It is possible that Facebook splits your data into multiple files. Download all of them and extract them into one folder. When selecting a folder in Chatalysis, select the parent folder into which you extracted all the data. However, make sure to save the Messenger data and Instagram data to different places! Don't get them mixed up in one parent folder.
 4. Download and install [mise](https://mise.jdx.dev/getting-started.html#installing-mise-cli) if you don't have it. On Linux you might also need to install tkinter for Python, which can be done via `sudo apt-get install python-tk`.
 5. In your terminal, navigate to the chatalysis folder, for example:
 
 ```
-    cd Desktop/chatalysis-1.2.0
+    cd Desktop/chatalysis-1.2.1
 ```
 
 6. And just run chatalysis like this:
